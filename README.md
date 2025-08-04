@@ -3,7 +3,7 @@
 一个基于 Valence-Arousal 模型的音乐情感实时标注系统，用于研究音乐情感感知的个体差异。
 ## 🎨 界面设计
 
-![应用界面](interface.png)
+![应用界面](interface.png.jpg)
 
 ## ✨ 项目简化说明
 

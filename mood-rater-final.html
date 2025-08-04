@@ -271,8 +271,8 @@
         }
 
         .control-btn {
-            padding: 12px 24px;
-            margin: 8px;
+            padding: 12px 16px;
+            margin: 0;
             border: none;
             border-radius: 25px;
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -281,6 +281,8 @@
             font-weight: 600;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            font-size: 14px;
+            min-height: 45px;
         }
 
         .control-btn:hover {
@@ -310,11 +312,13 @@
         }
 
         .controls-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-top: 15px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 </head>
@@ -340,11 +344,13 @@
             <div class="player-section">
                 <h3>🎼 音乐播放器</h3>
                 <audio id="audioPlayer" controls>
-                    <source src="https://cdn.jwplayer.com/videos/LCzPbzWR-rRek1hQx.m4a" type="audio/mpeg">
+                    <source src="https://www.soundjay.com/free-music/destination-01.mp3" type="audio/mpeg">
                     您的浏览器不支持音频播放。
                 </audio>
+                <input type="file" id="localMusicInput" accept="audio/*" style="display: none;" onchange="handleLocalMusicSelect(event)">
                 <div class="controls-wrapper">
                     <button class="control-btn" onclick="loadSampleMusic()">🎵 加载示例音乐</button>
+                    <button class="control-btn" onclick="loadLocalMusic()">📁 选择本地音乐</button>
                     <button class="control-btn" onclick="clearHistory()">🗑️ 清除历史</button>
                     <button class="control-btn" onclick="exportData()">📥 导出数据</button>
                 </div>
@@ -501,36 +507,22 @@
             const width = canvas.width;
             const height = canvas.height;
             
-            // 创建渐变背景
-            const gradient = ctx.createLinearGradient(0, 0, width, height);
-            gradient.addColorStop(0, '#ffebee');    // 左上 - 浅红
-            gradient.addColorStop(0.25, '#fff3e0'); // 右上 - 浅橙
-            gradient.addColorStop(0.75, '#e8f5e8'); // 右下 - 浅绿
-            gradient.addColorStop(1, '#e3f2fd');    // 左下 - 浅蓝
+            // 使用更清晰的颜色配置
+            const tl = {r: 180, g: 0, b: 0};      // 左上 - 深红色
+            const tr = {r: 220, g: 120, b: 0};    // 右上 - 橙红色
+            const bl = {r: 0, g: 40, b: 120};     // 左下 - 深蓝色
+            const br = {r: 120, g: 180, b: 60};   // 右下 - 绿色
             
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-            
-            // 绘制网格线
-            ctx.strokeStyle = '#e0e0e0';
-            ctx.lineWidth = 1;
-            
-            // 垂直网格线
-            for (let i = 1; i < 4; i++) {
-                const x = (width / 4) * i;
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, height);
-                ctx.stroke();
-            }
-            
-            // 水平网格线
-            for (let i = 1; i < 4; i++) {
-                const y = (height / 4) * i;
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(width, y);
-                ctx.stroke();
+            // 逐像素绘制渐变背景
+            for (let y = 0; y < height; y += 1) {
+                const left = interpolateColor(tl, bl, y / height);
+                const right = interpolateColor(tr, br, y / height);
+                
+                for (let x = 0; x < width; x += 1) {
+                    const color = interpolateColor(left, right, x / width);
+                    ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
+                    ctx.fillRect(x, y, 1, 1);
+                }
             }
             
             // 绘制坐标轴
@@ -561,8 +553,8 @@
             const width = canvas.width;
             const height = canvas.height;
             
-            ctx.font = '12px Arial';
-            ctx.fillStyle = '#666';
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#ffffff';
             ctx.textAlign = 'center';
             
             // 四个象限的说明
@@ -580,6 +572,15 @@
             if (!ctx) return;
             drawVASpaceBackground();
             drawVASpaceLabels();
+        }
+
+        // 颜色插值函数
+        function interpolateColor(a, b, x) {
+            return {
+                r: Math.floor(a.r + (b.r - a.r) * x),
+                g: Math.floor(a.g + (b.g - a.g) * x),
+                b: Math.floor(a.b + (b.b - a.b) * x)
+            };
         }
 
         // 初始化音频播放器
@@ -692,7 +693,7 @@
                     emotionTranslations[emotion] || emotion
                 ).join('、');
                 
-                emotionElement.innerHTML = `${englishText}<br><small style="color: #764ba2;">${chineseText}</small>`;
+                emotionElement.innerHTML = `${englishText} (Guide Only)<br><small style="color: #764ba2;">${chineseText}（仅供参考）</small>`;
             } else {
                 emotionElement.innerHTML = '无匹配标签<br><small style="color: #764ba2;">No matching tags</small>';
             }
@@ -740,9 +741,9 @@
                     const chineseText = rating.emotions.map(emotion => 
                         emotionTranslations[emotion] || emotion
                     ).join('、');
-                    emotionDisplay = `${englishText}<br><small style="color: #666;">${chineseText}</small>`;
+                    emotionDisplay = `${englishText} (Guide Only)<br><small style="color: #764ba2;">${chineseText}（仅供参考）</small>`;
                 } else {
-                    emotionDisplay = '无匹配标签<br><small style="color: #666;">No matching tags</small>';
+                    emotionDisplay = '无匹配标签<br><small style="color: #764ba2;">No matching tags</small>';
                 }
                 
                 return `
@@ -764,16 +765,36 @@
 
         // 加载示例音乐
         function loadSampleMusic() {
-            const sampleMusic = [
-                'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
-                'https://cdn.jwplayer.com/videos/LCzPbzWR-rRek1hQx.m4a'
-            ];
+            const sampleMusic = 'https://www.soundjay.com/free-music/destination-01.mp3';
             
-            const randomMusic = sampleMusic[Math.floor(Math.random() * sampleMusic.length)];
             if (audioPlayer) {
-                audioPlayer.src = randomMusic;
+                audioPlayer.src = sampleMusic;
                 audioPlayer.load();
-                console.log('加载音乐:', randomMusic);
+                console.log('加载音乐:', sampleMusic);
+            }
+        }
+
+        // 加载本地音乐
+        function loadLocalMusic() {
+            const fileInput = document.getElementById('localMusicInput');
+            if (fileInput) {
+                fileInput.click();
+            }
+        }
+
+        // 处理本地音乐文件选择
+        function handleLocalMusicSelect(event) {
+            const file = event.target.files[0];
+            if (file && audioPlayer) {
+                const url = URL.createObjectURL(file);
+                audioPlayer.src = url;
+                audioPlayer.load();
+                console.log('加载本地音乐:', file.name);
+                
+                // 清理URL对象（在音频加载完成后）
+                audioPlayer.onloadeddata = function() {
+                    URL.revokeObjectURL(url);
+                };
             }
         }
 
