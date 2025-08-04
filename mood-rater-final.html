@@ -5,174 +5,209 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>音乐情感标注系统 - Mood Rater</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: "Benton Sans", "Helvetica Neue", helvetica, arial, sans-serif;
-            margin: 3em;
+            font-family: "Segoe UI", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
             padding: 20px;
-            background: #f5f5f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             color: #1f2937;
         }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             padding: 30px;
+            min-height: calc(100vh - 40px);
         }
+
         .header {
             text-align: center;
             margin-bottom: 30px;
-            color: #333;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
         }
+
         .header h1 {
-            font-family: 'Zilla Slab', serif;
-            font-style: bold;
-            font-size: xx-large;
-            color: #373fff;
+            font-size: 2.5rem;
+            color: #667eea;
             margin-bottom: 10px;
+            font-weight: 700;
         }
+
         .header h2 {
+            font-size: 1.2rem;
+            color: #764ba2;
+            font-weight: 400;
             font-style: italic;
-            color: #6699ff;
         }
+
         .instructions {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-left: 4px solid #667eea;
             padding: 20px;
             margin-bottom: 30px;
             border-radius: 0 10px 10px 0;
-            color: #1e3a8a;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
         .instructions li {
             color: #374151;
             line-height: 1.6;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
         }
+
+        .instructions li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
         .main-section {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 30px;
             margin-bottom: 30px;
         }
-        .player-section {
-            flex: 1;
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
+
+        @media (max-width: 1024px) {
+            .main-section {
+                grid-template-columns: 1fr;
+            }
         }
+
+        .player-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .player-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
         .va-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .va-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .va-container {
             position: relative;
-            width: 550px; /* Increased width to accommodate labels */
-            height: 500px; /* Fixed height for stability */
-            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .va-y-labels {
-            position: absolute;
-            left: 0;
-            top: 45px; /* Vertically align with the canvas */
-            width: 90px;
-            height: 400px; /* Match canvas height */
-            text-align: right;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            pointer-events: none; /* Make it non-interactive */
-            z-index: 10; /* Ensure labels stay on top */
+            height: 400px;
+            text-align: right;
+            padding-right: 10px;
         }
 
-        .va-canvas-container {
-            position: absolute;
-            left: 100px; /* Position it to the right of the labels */
-            top: 0;
-            width: 400px; /* Fixed width */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-        .va-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
         .y-label-fixed {
             font-weight: bold;
             font-size: 14px;
             color: #2c3e50;
             user-select: none;
-            line-height: 1.2;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
         }
 
-        .y-top { }
-        .y-center { }
-        .y-bottom { }
-        .va-canvas-container {
+        .va-canvas-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 10px;
         }
+
         .x-axis-labels {
             display: flex;
             justify-content: space-between;
             width: 400px;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             color: #2c3e50;
-            height: 40px; /* Fixed height */
-            align-items: center;
-            position: relative;
-            z-index: 5; /* Keep labels on top */
         }
+
         .x-label {
-            padding: 8px 0;
             user-select: none;
         }
+
         .va-canvas {
-            border: 2px solid #333;
+            border: 3px solid #667eea;
             border-radius: 10px;
             cursor: crosshair;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            /* 确保canvas不影响布局 */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             display: block;
-            /* 固定canvas尺寸，防止任何变化 */
-            min-width: 400px;
-            max-width: 400px;
-            min-height: 400px;
-            max-height: 400px;
-            /* 隔离canvas重绘，防止影响其他元素 */
-            isolation: isolate;
-            will-change: contents;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            /* 防止任何布局偏移 */
-            contain: layout style paint;
+            width: 400px;
+            height: 400px;
         }
+
         .current-emotion-display {
-            background: #f8f9fa;
-            padding: 10px 15px;
-            border-radius: 8px;
-            border-left: 4px solid #373fff;
-            margin-top: 5px;
-            min-width: 300px;
-            width: 400px; /* Fixed width to match canvas */
-            min-height: 80px; /* Fixed minimum height */
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+            margin-top: 15px;
+            width: 400px;
+            min-height: 80px;
             text-align: center;
-            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+
         .current-emotion-display #currentEmotion {
             font-weight: bold;
-            font-size: 18px;
-            color: #1e3a8a;
-            margin-bottom: 5px;
+            font-size: 16px;
+            color: #667eea;
+            margin-bottom: 8px;
             line-height: 1.4;
         }
+
         .current-emotion-display #coordinates {
             font-size: 14px;
             color: #374151;
@@ -181,9 +216,17 @@
 
         .history-section {
             background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
+
+        .history-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
         .history-item {
             padding: 15px;
             border-bottom: 1px solid #dee2e6;
@@ -191,61 +234,96 @@
             justify-content: space-between;
             align-items: center;
             background: white;
-            margin-bottom: 5px;
-            border-radius: 5px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
+
         .history-item:last-child {
             border-bottom: none;
         }
+
         .history-audio-time {
-            background: #007bff;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
+            padding: 6px 12px;
+            border-radius: 15px;
             font-size: 12px;
             font-weight: bold;
-            margin-right: 10px;
+            margin-right: 15px;
         }
+
         .history-emotion {
             font-weight: bold;
-            color: #1e3a8a;
+            color: #667eea;
             font-size: 16px;
         }
+
         .history-coords {
             color: #374151;
             font-size: 14px;
             font-weight: 500;
         }
+
         .history-local-time {
             color: #6b7280;
             font-size: 12px;
         }
+
         .control-btn {
-            padding: 10px 20px;
-            margin: 5px;
+            padding: 12px 24px;
+            margin: 8px;
             border: none;
-            border-radius: 5px;
-            background: #373fff;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
+
         .control-btn:hover {
-            background: #2a2fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
         .va-labels {
-            margin-top: 15px;
-            font-size: 15px;
+            margin-top: 20px;
+            font-size: 14px;
             color: #374151;
-            background: #f8f9fa;
+            background: white;
             padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #1e3a8a;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        audio {
+            width: 100%;
+            margin: 15px 0;
+            border-radius: 10px;
+        }
+
+        .controls-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-
+        <div class="header">
+            <h1>🎵 音乐情感标注系统</h1>
+            <h2>Music Emotion Annotation System</h2>
+        </div>
 
         <div class="instructions">
             <h3>📋 使用说明</h3>
@@ -261,52 +339,54 @@
         <div class="main-section">
             <div class="player-section">
                 <h3>🎼 音乐播放器</h3>
-                <audio id="audioPlayer" controls style="width: 100%; margin: 15px 0;">
+                <audio id="audioPlayer" controls>
                     <source src="https://cdn.jwplayer.com/videos/LCzPbzWR-rRek1hQx.m4a" type="audio/mpeg">
+                    您的浏览器不支持音频播放。
                 </audio>
-                <div>
-                    <button class="control-btn" onclick="loadSampleMusic()">加载示例音乐</button>
-                    <button class="control-btn" onclick="clearHistory()">清除历史</button>
-                    <button class="control-btn" onclick="exportData()">导出数据</button>
+                <div class="controls-wrapper">
+                    <button class="control-btn" onclick="loadSampleMusic()">🎵 加载示例音乐</button>
+                    <button class="control-btn" onclick="clearHistory()">🗑️ 清除历史</button>
+                    <button class="control-btn" onclick="exportData()">📥 导出数据</button>
                 </div>
             </div>
 
             <div class="va-section">
-                <div class="va-y-labels">
-                    <div class="y-label-fixed y-top">高能量</div>
-                    <div class="y-label-fixed y-center">Arousal<br>(唤醒度)</div>
-                    <div class="y-label-fixed y-bottom">低能量</div>
-                </div>
-
-                <div class="va-canvas-container">
-                    <div class="x-axis-labels">
-                        <div class="x-label left">消极</div>
-                        <div class="x-label center">Valence (效价)</div>
-                        <div class="x-label right">积极</div>
+                <h3>🎯 VA 情感空间标注</h3>
+                <div class="va-container">
+                    <div class="va-y-labels">
+                        <div class="y-label-fixed">高能量<br>High Arousal</div>
+                        <div class="y-label-fixed">唤醒度<br>Arousal</div>
+                        <div class="y-label-fixed">低能量<br>Low Arousal</div>
                     </div>
-                    
-                    <canvas id="vaCanvas" class="va-canvas" width="400" height="400"></canvas>
-                    
-                    <div class="current-emotion-display">
-                        <div id="currentEmotion">请点击 VA 空间进行标注</div>
-                        <div id="coordinates"></div>
+
+                    <div class="va-canvas-wrapper">
+                        <div class="x-axis-labels">
+                            <div class="x-label">消极<br>Negative</div>
+                            <div class="x-label">效价 Valence</div>
+                            <div class="x-label">积极<br>Positive</div>
+                        </div>
+                        
+                        <canvas id="vaCanvas" class="va-canvas" width="400" height="400"></canvas>
+                        
+                        <div class="current-emotion-display">
+                            <div id="currentEmotion">请点击 VA 空间进行标注</div>
+                            <div id="coordinates"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 轴说明 -->
         <div class="va-labels">
-            <div style="margin-top: 10px; font-size: 14px; color: #374151; font-weight: 500;">
-                四个象限: 左上(愤怒/紧张) | 右上(兴奋/快乐) | 左下(悲伤/疲惫) | 右下(平静/放松)
-            </div>
+            <strong>四个象限说明：</strong>
+            左上(愤怒/紧张) | 右上(兴奋/快乐) | 左下(悲伤/疲惫) | 右下(平静/放松)
         </div>
 
         <div class="history-section">
             <h3>📊 标注历史</h3>
             <div id="historyList">
                 <div class="history-item">
-                    <span>暂无标注记录</span>
+                    <span>暂无标注记录，请开始标注</span>
                 </div>
             </div>
         </div>
@@ -390,10 +470,11 @@
         let canvas, ctx;
         let ratingHistory = [];
         let audioPlayer;
-        let cleanCanvasImageData = null; // 用于存储干净的Canvas图像
+        let cleanCanvasImageData = null;
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始初始化...');
             initCanvas();
             initAudioPlayer();
             initEventListeners();
@@ -401,113 +482,120 @@
 
         // 初始化画布
         function initCanvas() {
+            console.log('初始化画布...');
             canvas = document.getElementById('vaCanvas');
+            if (!canvas) {
+                console.error('找不到canvas元素');
+                return;
+            }
             ctx = canvas.getContext('2d');
-            drawVASpace(); // 首次绘制
-            // 捕获初始绘制的图像数据，用于快速恢复
+            drawVASpace();
             setTimeout(() => {
                 cleanCanvasImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            }, 0);
+                console.log('画布初始化完成');
+            }, 100);
         }
 
-        // 绘制 VA 空间背景（不包含文字标签）
+        // 绘制 VA 空间背景
         function drawVASpaceBackground() {
             const width = canvas.width;
             const height = canvas.height;
             
-            // 使用更清晰的颜色配置
-            const tl = {r: 180, g: 0, b: 0};      // 左上 - 深红色
-            const tr = {r: 220, g: 120, b: 0};    // 右上 - 橙红色
-            const bl = {r: 0, g: 40, b: 120};     // 左下 - 深蓝色
-            const br = {r: 120, g: 180, b: 60};   // 右下 - 绿色
+            // 创建渐变背景
+            const gradient = ctx.createLinearGradient(0, 0, width, height);
+            gradient.addColorStop(0, '#ffebee');    // 左上 - 浅红
+            gradient.addColorStop(0.25, '#fff3e0'); // 右上 - 浅橙
+            gradient.addColorStop(0.75, '#e8f5e8'); // 右下 - 浅绿
+            gradient.addColorStop(1, '#e3f2fd');    // 左下 - 浅蓝
             
-            // 逐像素绘制渐变背景
-            for (let y = 0; y < height; y += 1) {
-                const left = interpolateColor(tl, bl, y / height);
-                const right = interpolateColor(tr, br, y / height);
-                
-                for (let x = 0; x < width; x += 1) {
-                    const color = interpolateColor(left, right, x / width);
-                    ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
-                    ctx.fillRect(x, y, 1, 1);
-                }
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+            
+            // 绘制网格线
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            
+            // 垂直网格线
+            for (let i = 1; i < 4; i++) {
+                const x = (width / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
             }
             
-            // 绘制坐标轴 - 更粗更清晰
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 3;
+            // 水平网格线
+            for (let i = 1; i < 4; i++) {
+                const y = (height / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
             
-            // X轴 (Valence) - 水平轴
+            // 绘制坐标轴
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            
+            // X轴 (Valence)
             ctx.beginPath();
             ctx.moveTo(0, height/2);
             ctx.lineTo(width, height/2);
             ctx.stroke();
             
-            // Y轴 (Arousal) - 垂直轴
+            // Y轴 (Arousal)
             ctx.beginPath();
             ctx.moveTo(width/2, 0);
             ctx.lineTo(width/2, height);
             ctx.stroke();
             
             // 绘制中心点
-            ctx.fillStyle = '#000';
+            ctx.fillStyle = '#333';
             ctx.beginPath();
             ctx.arc(width/2, height/2, 4, 0, 2 * Math.PI);
             ctx.fill();
         }
 
-        // 绘制坐标轴文字标签（只在初始化时调用一次）
+        // 绘制坐标轴文字标签
         function drawVASpaceLabels() {
             const width = canvas.width;
             const height = canvas.height;
             
-            // 添加四个象限的说明
-            ctx.font = '14px Arial';
-            ctx.fillStyle = '#333';
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#666';
+            ctx.textAlign = 'center';
             
-            // 左上象限 - 消极高能量
-            ctx.fillText('愤怒', 100, 100);
-            ctx.fillText('紧张', 100, 120);
-            
-            // 右上象限 - 积极高能量
-            ctx.fillText('兴奋', width - 100, 100);
-            ctx.fillText('快乐', width - 100, 120);
-            
-            // 左下象限 - 消极低能量
-            ctx.fillText('悲伤', 100, height - 120);
-            ctx.fillText('疲惫', 100, height - 100);
-            
-            // 右下象限 - 积极低能量
-            ctx.fillText('平静', width - 100, height - 120);
-            ctx.fillText('放松', width - 100, height - 100);
+            // 四个象限的说明
+            ctx.fillText('愤怒/紧张', width * 0.25, 30);
+            ctx.fillText('兴奋/快乐', width * 0.75, 30);
+            ctx.fillText('悲伤/疲惫', width * 0.25, height - 15);
+            ctx.fillText('平静/放松', width * 0.75, height - 15);
             
             // 中心点标签
             ctx.fillText('中性', width/2, height/2 - 10);
         }
 
-        // 绘制完整的 VA 空间（仅在初始化时调用）
+        // 绘制完整的 VA 空间
         function drawVASpace() {
+            if (!ctx) return;
             drawVASpaceBackground();
             drawVASpaceLabels();
         }
 
-        // 颜色插值函数
-        function interpolateColor(a, b, x) {
-            return {
-                r: Math.floor(a.r + (b.r - a.r) * x),
-                g: Math.floor(a.g + (b.g - a.g) * x),
-                b: Math.floor(a.b + (b.b - a.b) * x)
-            };
-        }
-
         // 初始化音频播放器
         function initAudioPlayer() {
+            console.log('初始化音频播放器...');
             audioPlayer = document.getElementById('audioPlayer');
+            if (!audioPlayer) {
+                console.error('找不到音频播放器元素');
+                return;
+            }
+            console.log('音频播放器初始化完成');
         }
 
         // 获取音频当前时间
         function getVideoCurrentTime() {
-            return audioPlayer.currentTime || 0;
+            return audioPlayer ? audioPlayer.currentTime || 0 : 0;
         }
 
         // 格式化时间显示
@@ -519,11 +607,16 @@
 
         // 初始化事件监听器
         function initEventListeners() {
-            canvas.addEventListener('click', handleCanvasClick);
+            console.log('初始化事件监听器...');
+            if (canvas) {
+                canvas.addEventListener('click', handleCanvasClick);
+                console.log('画布点击事件监听器已添加');
+            }
         }
 
         // 处理画布点击
         function handleCanvasClick(event) {
+            console.log('画布被点击');
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
@@ -532,6 +625,8 @@
             const valence = x / canvas.width;
             const arousal = 1 - (y / canvas.height);
             
+            console.log(`点击坐标: V=${valence.toFixed(3)}, A=${arousal.toFixed(3)}`);
+            
             // 找到附近的情感标签
             const nearbyEmotions = findNearbyEmotions(valence, arousal);
             addRating(valence, arousal, nearbyEmotions);
@@ -539,19 +634,14 @@
 
         // 找到附近的情感标签
         function findNearbyEmotions(valence, arousal) {
-            const circleRadius = canvas.width / 8; // 1/8 of VA interface width
+            const circleRadius = 0.15; // 15% of VA space
             const nearbyEmotions = [];
             
             emotionTags.forEach(tag => {
                 const [name, tagValence, tagArousal] = tag;
-                const tagX = tagValence * canvas.width;
-                const tagY = (1 - tagArousal) * canvas.height;
-                const clickX = valence * canvas.width;
-                const clickY = (1 - arousal) * canvas.height;
-                
                 const distance = Math.sqrt(
-                    Math.pow(clickX - tagX, 2) + 
-                    Math.pow(clickY - tagY, 2)
+                    Math.pow(valence - tagValence, 2) + 
+                    Math.pow(arousal - tagArousal, 2)
                 );
                 
                 if (distance <= circleRadius) {
@@ -562,14 +652,13 @@
                 }
             });
             
-            // 按距离排序，最多返回5个
+            // 按距离排序，最多返回3个
             nearbyEmotions.sort((a, b) => a.distance - b.distance);
-            return nearbyEmotions.slice(0, 5);
+            return nearbyEmotions.slice(0, 3);
         }
 
         // 添加标注
         function addRating(valence, arousal, nearbyEmotions) {
-            // 获取音频当前时间戳
             const timestamp = getVideoCurrentTime();
             const utcTimestamp = new Date().toISOString();
             
@@ -583,6 +672,8 @@
             };
             
             ratingHistory.push(rating);
+            console.log('添加新标注:', rating);
+            
             updateDisplay(rating);
             updateHistory();
             drawRatingPoint(valence, arousal);
@@ -590,71 +681,68 @@
 
         // 更新显示
         function updateDisplay(rating) {
+            const emotionElement = document.getElementById('currentEmotion');
+            const coordsElement = document.getElementById('coordinates');
+            
+            if (!emotionElement || !coordsElement) return;
+            
             if (rating.emotions.length > 0) {
-                // 生成英文标签
-                const englishText = rating.emotions.join(', ') + ' (Guide Only)';
-                
-                // 生成对应的中文翻译
+                const englishText = rating.emotions.join(', ');
                 const chineseText = rating.emotions.map(emotion => 
                     emotionTranslations[emotion] || emotion
-                ).join('、') + '（仅供参考）';
+                ).join('、');
                 
-                // 显示英文和中文
-                document.getElementById('currentEmotion').innerHTML = 
-                    englishText + '<br>' + chineseText;
+                emotionElement.innerHTML = `${englishText}<br><small style="color: #764ba2;">${chineseText}</small>`;
             } else {
-                // 如果没有标签落在点击区域内，不显示任何引导标签
-                document.getElementById('currentEmotion').innerHTML = '无引导标签<br>No guide tags in this area';
+                emotionElement.innerHTML = '无匹配标签<br><small style="color: #764ba2;">No matching tags</small>';
             }
             
-            document.getElementById('coordinates').textContent = 
-                `V: ${rating.valence.toFixed(3)}, A: ${rating.arousal.toFixed(3)}`;
+            coordsElement.textContent = `V: ${rating.valence.toFixed(3)}, A: ${rating.arousal.toFixed(3)}`;
         }
 
+        // 绘制标注点
         function drawRatingPoint(valence, arousal) {
-            // 1. 快速恢复干净的canvas背景和标签
             if (cleanCanvasImageData) {
                 ctx.putImageData(cleanCanvasImageData, 0, 0);
             } else {
-                // Fallback if the image data wasn't captured yet
                 drawVASpace();
             }
             
-            // 2. 在干净的canvas上只绘制新的点
             const x = valence * canvas.width;
             const y = (1 - arousal) * canvas.height;
 
-            // 绘制新的标记点
-            ctx.fillStyle = 'rgba(20, 20, 20, 0.9)'; // Darker, more visible point
+            // 绘制标注点
+            ctx.fillStyle = '#667eea';
             ctx.beginPath();
-            ctx.arc(x, y, 8, 0, 2 * Math.PI, true);
+            ctx.arc(x, y, 8, 0, 2 * Math.PI);
             ctx.fill();
 
-            // 添加白色边框，使其更突出
-            ctx.strokeStyle = '#FFFFFF';
+            // 添加白色边框
+            ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = 2;
             ctx.stroke();
         }
 
-        // 更新历史记录 - 强调音频时间
+        // 更新历史记录
         function updateHistory() {
             const historyList = document.getElementById('historyList');
+            if (!historyList) return;
             
             if (ratingHistory.length === 0) {
-                historyList.innerHTML = '<div class="history-item"><span>暂无标注记录</span></div>';
+                historyList.innerHTML = '<div class="history-item"><span>暂无标注记录，请开始标注</span></div>';
                 return;
             }
             
-            historyList.innerHTML = ratingHistory.map((rating, index) => {
+            historyList.innerHTML = ratingHistory.slice(-10).reverse().map((rating, index) => {
                 let emotionDisplay;
                 if (rating.emotions.length > 0) {
                     const englishText = rating.emotions.join(', ');
                     const chineseText = rating.emotions.map(emotion => 
                         emotionTranslations[emotion] || emotion
-                    ).join('、') + '（仅供参考）';
+                    ).join('、');
                     emotionDisplay = `${englishText}<br><small style="color: #666;">${chineseText}</small>`;
                 } else {
-                    emotionDisplay = '无引导标签<br><small style="color: #666;">No guide tags in this area</small>';
+                    emotionDisplay = '无匹配标签<br><small style="color: #666;">No matching tags</small>';
                 }
                 
                 return `
@@ -677,14 +765,16 @@
         // 加载示例音乐
         function loadSampleMusic() {
             const sampleMusic = [
-                'https://cdn.jwplayer.com/videos/LCzPbzWR-rRek1hQx.m4a',
-                'https://cdn.jwplayer.com/videos/ODXfHHU4-rRek1hQx.m4a',
-                'https://cdn.jwplayer.com/videos/2DX7Zp4g-rRek1hQx.m4a'
+                'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+                'https://cdn.jwplayer.com/videos/LCzPbzWR-rRek1hQx.m4a'
             ];
             
             const randomMusic = sampleMusic[Math.floor(Math.random() * sampleMusic.length)];
-            audioPlayer.src = randomMusic;
-            audioPlayer.load();
+            if (audioPlayer) {
+                audioPlayer.src = randomMusic;
+                audioPlayer.load();
+                console.log('加载音乐:', randomMusic);
+            }
         }
 
         // 清除历史
@@ -692,14 +782,15 @@
             if (confirm('确定要清除所有标注历史吗？')) {
                 ratingHistory = [];
                 updateHistory();
-                document.getElementById('currentEmotion').textContent = '请点击 VA 空间进行标注';
+                document.getElementById('currentEmotion').innerHTML = '请点击 VA 空间进行标注';
                 document.getElementById('coordinates').textContent = '';
-                // 清除点并重绘干净的VA空间
+                
                 if (cleanCanvasImageData) {
                     ctx.putImageData(cleanCanvasImageData, 0, 0);
                 } else {
                     drawVASpace();
                 }
+                console.log('历史记录已清除');
             }
         }
 
@@ -725,7 +816,16 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            
+            console.log('数据已导出');
         }
+
+        // 添加调试信息
+        window.addEventListener('load', function() {
+            console.log('窗口加载完成');
+            console.log('Canvas元素:', document.getElementById('vaCanvas'));
+            console.log('Audio元素:', document.getElementById('audioPlayer'));
+        });
     </script>
 </body>
-</html> 
+</html>
