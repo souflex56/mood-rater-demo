@@ -45,10 +45,12 @@ The server checks the original byte checksum, validates the session, computes 10
 - `GET /api/admin/submissions/:id/export?format=json|csv` downloads one ready package; `X-Package-SHA256` reports the stored JSON package hash (also for CSV derived from that package).
 - `GET /api/admin/export?studyId=&assetId=&participantId=&format=ndjson|csv` downloads every matching ready result, pagewise, one R2 package at a time. NDJSON rows contain `{submission,package}`; CSV contains 10 Hz samples plus identifiers. A storage read failure aborts the stream rather than silently omitting a result.
 
-CSV columns: `submission_id,study_id,asset_id,participant_id,research_code,revision,emotion_target,media_time,valence,arousal,value_origin,source_event_id,pass_id`. Missing scores are empty fields. User strings are escaped and spreadsheet formula prefixes neutralized.
+CSV columns: `submission_id,study_id,asset_id,participant_id,research_code,revision,emotion_target,media_time,valence,arousal,value_origin,source_event_id,pass_id,source_event_utc_timestamp`. Missing scores are empty fields. User strings are escaped and spreadsheet formula prefixes neutralized.
 
 ## Operations and limits
 
 Apply generated `drizzle/*.sql` migrations before serving requests. Bind `DB` and `BUCKET`; configure a real owner ID or designated bootstrap email before opening a public research invitation. Production secrets must never appear in tracked source. Free-mode audio and annotations remain in the browser.
 
 R2 and D1 do not share a transaction. Completion deliberately persists/checksums R2 first, then marks D1 ready; retry repairs the latter. Study clones and their asset indexes are inserted in one D1 batch. Audio metadata is measured on the trusted owner's browser; uploaded media contents are not decoded or duration-validated by the worker. Invite URLs are bearer access to study materials and should only be shared with intended participants. Closed studies stop new participants/new uploads; existing submissions remain exportable.
+
+New raw events include ISO UTC `utcTimestamp`; missing UTC on historical v2 events remains absent. Optional `interfaceProfile` stores the validated VA configuration and full tag list. New clients snapshot it; older v2 uploads without it remain compatible. CSV `source_event_utc_timestamp` refers to the original event, including on held rows; unknown values are empty.

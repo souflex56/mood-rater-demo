@@ -6,8 +6,10 @@ import { addRating, closePass, createSession, deriveSamples, sessionStats, start
 import { importSession, sessionToCsv, sessionToJson } from '@/lib/export';
 import { deleteSession, loadSession, loadSessions, saveSession } from '@/lib/persistence';
 import type { AnnotationSessionV2, AudioAsset, EmotionTarget, RatingEvent, RecordingPass, ResearchContext } from '@/lib/types';
+import { defaultVAInterface, type VAInterfaceProfile } from '@/lib/va-config';
 import { useLanguage } from './LanguageProvider';
 import AnnotationTimeline, { formatTime } from './AnnotationTimeline';
+import VAPlane from './VAPlane';
 import styles from './Annotator.module.css';
 
 const MAX_BYTES = 100 * 1024 * 1024;
@@ -50,7 +52,7 @@ async function responseJson<T>(response: Response): Promise<T> {
   return payload as T;
 }
 
-export default function Annotator({ research, onSubmitted }: { research?: ResearchContext; onSubmitted?: (assetId: string) => void }) {
+export default function Annotator({ research, onSubmitted, interfaceProfile }: { research?: ResearchContext; onSubmitted?: (assetId: string) => void; interfaceProfile?: VAInterfaceProfile }) {
   const { locale, t } = useLanguage();
   const [session, setSession] = useState<AnnotationSessionV2 | null>(null);
   const sessionRef = useRef<AnnotationSessionV2 | null>(null);
@@ -61,13 +63,13 @@ export default function Annotator({ research, onSubmitted }: { research?: Resear
   const mediaRef = useRef<HTMLAudioElement>(null);
   const localFileRef = useRef<HTMLInputElement>(null);
   const importRef = useRef<HTMLInputElement>(null);
-  const planeRef = useRef<HTMLDivElement>(null);
   const [target, setTarget] = useState<EmotionTarget>(research?.study.emotionTarget ?? 'perceived');
   const [currentTime, setCurrentTime] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [rating, setRating] = useState<[number, number]>([.5, .5]);
   const ratingRef = useRef<[number, number]>([.5, .5]);
   const [hasInput, setHasInput] = useState(false);
+  const [touched, setTouched] = useState(false);
   const [practice, setPractice] = useState(false);
   const practiceRef = useRef(false);
   const practiceBackup = useRef<{ session: AnnotationSessionV2 | null; source: string; time: number } | null>(null);
@@ -78,7 +80,6 @@ export default function Annotator({ research, onSubmitted }: { research?: Resear
   const [drafts, setDrafts] = useState<AnnotationSessionV2[]>([]);
   const [showDrafts, setShowDrafts] = useState(false);
   const [showTimeline, setShowTimeline] = useState(true);
-  const [showWords, setShowWords] = useState(false);
   const [submission, setSubmission] = useState<'idle' | 'sending' | 'ready' | 'error'>('idle');
   const [submittedSnapshot, setSubmittedSnapshot] = useState<{ sessionId: string; revision: number } | null>(null);
   const submissionInFlight = useRef(false);
@@ -90,11 +91,13 @@ export default function Annotator({ research, onSubmitted }: { research?: Resear
   const lastCapture = useRef(0);
   const pendingSeek = useRef(0);
   const requestSequence = useRef(0);
-  const dragging = useRef(false);
   const recording = Boolean(activePass(session));
   const duration = session?.asset.duration ?? 0;
+  const configuredProfile = interfaceProfile ?? defaultVAInterface;
+  const activeProfile = session?.interfaceProfile ?? configuredProfile;
 
   const replace = useCallback((next: AnnotationSessionV2 | null) => {
+    if (sessionRef.current?.id !== next?.id) { setTouched(false); setRating([.5, .5]); ratingRef.current = [.5, .5]; }
     sessionRef.current = next; setSession(next);
     if (next && !practiceRef.current) setSaveState('saving');
     if (!activePass(next)) setPreview(next);
@@ -179,10 +182,10 @@ export default function Annotator({ research, onSubmitted }: { research?: Resear
   }, [recording, stop, t]);
 
   const createForAsset = useCallback((asset: AudioAsset) => {
-    let next = createSession(asset, locale, research?.study.emotionTarget ?? target, research ? 'research' : 'free');
+    let next = createSession(asset, locale, research?.study.emotionTarget ?? target, research ? 'research' : 'free', configuredProfile);
     if (research) next = { ...next, studyId: research.study.id, studyVersion: research.study.version, participantId: research.participantId, researchCode: research.researchCode };
     return next;
-  }, [locale, research, target]);
+  }, [locale, research, target, configuredProfile]);
 
   async function selectAsset(asset: AudioAsset) {
     if (submissionInFlight.current) return;
@@ -258,8 +261,9 @@ export default function Annotator({ research, onSubmitted }: { research?: Resear
     lastReliable.current = time; setCurrentTime(time); setHasInput(false);
   }
   function capture(v: number, a: number, input: RatingEvent['input'], force = false) {
+    if (busy || submissionInFlight.current) return;
     const nextRating: [number, number] = [clamp(v), clamp(a)];
-    ratingRef.current = nextRating; setRating(nextRating);
+    ratingRef.current = nextRating; setRating(nextRating); setTouched(true);
     const current = sessionRef.current, media = mediaRef.current;
     if (!current || !media || !activePass(current) || media.paused || media.seeking) return;
     const now = performance.now();
@@ -267,18 +271,14 @@ export default function Annotator({ research, onSubmitted }: { research?: Resear
     lastCapture.current = now; setHasInput(true);
     replace(addRating(current, media.currentTime, now, nextRating[0], nextRating[1], input));
   }
-  function point(clientX: number, clientY: number, force = false) {
-    const rect = planeRef.current?.getBoundingClientRect(); if (!rect) return;
-    capture((clientX - rect.left) / rect.width, 1 - (clientY - rect.top) / rect.height, 'pointer', force);
-  }
   const startPractice = useCallback(() => {
     if (submissionInFlight.current || practiceRef.current) return;
     stop(); mediaRef.current?.pause(); void persist();
     practiceBackup.current = { session: sessionRef.current, source: sourceRef.current, time: mediaRef.current?.currentTime ?? 0 };
     practiceRef.current = true; setPractice(true);
-    pendingSeek.current = 0; replace(createSession(DEMO, locale, target, 'free')); changeSource(DEMO.url!); setCurrentTime(0); lastReliable.current = 0;
+    pendingSeek.current = 0; replace(createSession(DEMO, locale, target, 'free', configuredProfile)); changeSource(DEMO.url!); setCurrentTime(0); lastReliable.current = 0;
     setError(''); setNotice(''); setHasInput(false);
-  }, [stop, persist, locale, target, replace, changeSource]);
+  }, [stop, persist, locale, target, replace, changeSource, configuredProfile]);
   useEffect(() => {
     const timer = window.setTimeout(() => {
       if (demoInitialized.current) return;
@@ -369,6 +369,7 @@ export default function Annotator({ research, onSubmitted }: { research?: Resear
   const isSubmitted = submission === 'ready' && submittedSnapshot?.sessionId === session?.id && submittedSnapshot?.revision === session?.revision;
   const closedPasses = session?.passes.filter(pass => !pass.revoked && pass.end !== null).length ?? 0;
   const selectedTarget = session?.emotionTarget ?? target;
+  const axisLabel = (axis: 'x' | 'y', field: 'name' | 'low' | 'high') => activeProfile.config.axes[axis][field][locale];
   return <div className={styles.workspace}>
     <div className={styles.workspaceTop}>
       <div><p className="eyebrow">{research ? t('RESEARCH SESSION', '研究会话') : t('YOUR LISTENING SPACE', '你的聆听空间')}</p>
@@ -435,27 +436,12 @@ export default function Annotator({ research, onSubmitted }: { research?: Resear
 
       <section className={styles.annotationCard} aria-label={t('Emotion annotation', '情绪标注')}>
         <div className={styles.sectionHeading}><h2><span className={styles.sectionNumber}>02</span>{t('The emotion', '描绘情绪')}</h2><span className={`${styles.statusBadge} ${recording ? styles.recordingBadge : ''}`}><span/>{recording ? t('Recording', '正在标注') : playing ? t('Listening', '正在试听') : t('Ready when you are', '准备好即可开始')}</span></div>
-        <div className={styles.planeHeader}><span>{t('HIGH AROUSAL', '高唤醒度')}</span><small>{t('energized · activated', '活跃 · 兴奋')}</small></div>
-        <div className={styles.planeWrapper}>
-          <div className={styles.valenceLow}>{t('UNPLEASANT', '不愉悦')}</div>
-          <div ref={planeRef} className={`${styles.plane} ${recording ? styles.planeRecording : ''}`} tabIndex={0} role="group" aria-label={t('Emotion plane. Horizontal: valence. Vertical: arousal. Use arrow keys to move.', '情绪平面。横轴为效价，纵轴为唤醒度。可使用方向键移动。')} aria-describedby="plane-help"
-            onPointerDown={event => { if (locked) return; event.currentTarget.focus(); event.currentTarget.setPointerCapture(event.pointerId); dragging.current = true; point(event.clientX, event.clientY, true); }}
-            onPointerMove={event => { if (dragging.current) point(event.clientX, event.clientY); }}
-            onPointerUp={event => { if (dragging.current) point(event.clientX, event.clientY, true); dragging.current = false; }}
-            onPointerCancel={() => { dragging.current = false; }}
-            onKeyDown={event => { const delta = event.shiftKey ? .1 : .02; const [v, a] = ratingRef.current; if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); capture(v + (event.key === 'ArrowLeft' ? -delta : event.key === 'ArrowRight' ? delta : 0), a + (event.key === 'ArrowUp' ? delta : event.key === 'ArrowDown' ? -delta : 0), 'keyboard', true); } }}>
-            <div className={styles.planeHorizontal}/><div className={styles.planeVertical}/>
-            {showWords && <><span className={`${styles.corner} ${styles.topLeft}`}>{t('tense', '紧张')}</span><span className={`${styles.corner} ${styles.topRight}`}>{t('excited', '兴奋')}</span><span className={`${styles.corner} ${styles.bottomLeft}`}>{t('low', '低落')}</span><span className={`${styles.corner} ${styles.bottomRight}`}>{t('calm', '平静')}</span></>}
-            <span className={`${styles.ratingDot} ${!hasInput ? styles.ratingDotUnset : ''}`} style={{ left: `${rating[0] * 100}%`, top: `${(1 - rating[1]) * 100}%` }}/>
-          </div>
-          <div className={styles.valenceHigh}>{t('PLEASANT', '愉悦')}</div>
-        </div>
-        <div className={styles.planeFooter}><span>{t('LOW AROUSAL', '低唤醒度')}</span><small>{t('quiet · deactivated', '安静 · 松弛')}</small></div>
+        <VAPlane profile={activeProfile} locale={locale} rating={rating} touched={touched} recording={recording} locked={locked} onChange={capture}/>
         <p className={styles.planeHint} id="plane-help">{recording ? (hasInput ? t('Move as emotion changes. Releasing holds your last rating.', '随情绪变化移动，松手后保持最近评分。') : t('Move the point to begin your trace. No rating has been recorded yet.', '移动圆点开始绘制轨迹。目前尚未记录评分。')) : t('Explore the plane, then press Record to save your movements.', '先熟悉平面，点击「开始标注」后才会记录移动。')}</p>
-        <details className={styles.wordReference} onToggle={event => setShowWords(event.currentTarget.open)}><summary>{t('Reference words · optional', '参考情绪词 · 可选')}</summary><p>{t('Illustrative labels for orientation, not a validated word scale. Chinese labels are project translations.', '词语仅作方位提示，不代表经过验证的词表量表。中文为本项目翻译。')}</p></details>
+        {session && !session.interfaceProfile && <p className={styles.helper}>{t('This older session did not record its interface settings. The displayed guidance uses the current interface; the historical data stays unchanged.', '此旧会话未记录界面配置。当前参考提示使用现行界面，历史数据保持不变。')}</p>}
         <div className={styles.ratingSliders}>
-          <label><span><i className={styles.valenceKey}/>{t('Valence', '效价')} <small>{t('pleasantness', '愉悦程度')}</small><strong>{hasInput ? rating[0].toFixed(2) : '—'}</strong></span><input aria-label={t('Valence: unpleasant to pleasant', '效价：从不愉悦到愉悦')} type="range" min="0" max="1" step="0.01" value={rating[0]} disabled={locked} onChange={event => capture(Number(event.target.value), ratingRef.current[1], 'slider', true)}/></label>
-          <label><span><i className={styles.arousalKey}/>{t('Arousal', '唤醒度')} <small>{t('activation', '激活程度')}</small><strong>{hasInput ? rating[1].toFixed(2) : '—'}</strong></span><input aria-label={t('Arousal: low to high', '唤醒度：从低到高')} type="range" min="0" max="1" step="0.01" value={rating[1]} disabled={locked} onChange={event => capture(ratingRef.current[0], Number(event.target.value), 'slider', true)}/></label>
+          <label><span><i className={styles.valenceKey}/>{axisLabel('x', 'name')}<strong>{touched ? rating[0].toFixed(2) : '—'}</strong></span><input aria-label={`${axisLabel('x', 'name')}: ${axisLabel('x', 'low')}–${axisLabel('x', 'high')}`} type="range" min="0" max="1" step="0.01" value={rating[0]} disabled={locked} onChange={event => capture(Number(event.target.value), ratingRef.current[1], 'slider', true)}/></label>
+          <label><span><i className={styles.arousalKey}/>{axisLabel('y', 'name')}<strong>{touched ? rating[1].toFixed(2) : '—'}</strong></span><input aria-label={`${axisLabel('y', 'name')}: ${axisLabel('y', 'low')}–${axisLabel('y', 'high')}`} type="range" min="0" max="1" step="0.01" value={rating[1]} disabled={locked} onChange={event => capture(ratingRef.current[0], Number(event.target.value), 'slider', true)}/></label>
         </div>
         <div className={styles.recordActions}><button className={`${styles.recordButton} ${recording ? styles.stopButton : ''}`} disabled={!source || locked} onClick={() => void toggleRecording()}>{recording ? <Square size={15} fill="currentColor"/> : <Circle size={15} fill="currentColor"/>}{recording ? t('Stop recording', '停止标注') : closedPasses ? t('Record from here', '从此处重新标注') : t('Start recording', '开始标注')}</button><button className={styles.undoButton} disabled={!closedPasses || recording || locked} onClick={() => { if (sessionRef.current) { replace(undoPass(sessionRef.current)); setNotice(t('Last recording undone. The previous trace is restored.', '已撤销最近一次标注，恢复此前的轨迹。')); } }}><RotateCcw size={16}/>{t('Undo', '撤销')}</button></div>
       </section>

@@ -1,6 +1,6 @@
 # Annotation protocol / 标注协议
 
-[English overview](../README.md) · [中文概览](../README.zh-CN.md) · [API](API.md)
+[English overview](../README.md) · [中文概览](../README.zh-CN.md) · [API](API.md) · [VA configuration / VA 配置](VA-CUSTOMIZATION.md)
 
 This document describes the implemented v2 behavior. It separates original user observations from derived data and from claims made by the associated research paper.
 
@@ -18,6 +18,7 @@ A session records either **perceived emotion** (`perceived`: what the audio expr
 | `arousal` | 0 = low activation; 1 = high activation / 0 为低唤醒，1 为高唤醒；不等同于音量 |
 | `mediaTime` | Audio playback position in seconds / 音频播放位置，单位秒 |
 | `monotonicTime` | Browser `performance.now()` timestamp in milliseconds / 浏览器单调时钟，单位毫秒 |
+| `utcTimestamp` | Raw input time in device-clock ISO UTC; unknown in older records remains absent / 原始输入发生时的设备 UTC 时间；未知旧记录不补造 |
 | `createdAt`, `updatedAt` | ISO wall-clock timestamps / ISO 格式的日历时间 |
 
 Playback is fixed at 1×. Media time is the annotation timeline; wall-clock time is not substituted for it. Separate passes may have different monotonic-clock origins after a page reload. The interface does not estimate or compensate for human response delay.
@@ -30,9 +31,9 @@ Recording starts only after the user presses Record. Listening, moving the point
 
 只有点击开始标注后才记录。仅试听、录制前移动圆点或暂停时操作滑块不会产生观测。指针移动按约 30 Hz 节流；按下、抬起、键盘和滑块操作会明确记录。因此原始事件并非等间隔，30 Hz 也不是所有事件合计的绝对上限。
 
-Each `RatingEvent` retains an ID, within-pass sequence, media time, monotonic time, two coordinates, and input method. Finite input coordinates are clamped to 0–1. Out-of-order media or monotonic timestamps are not silently reordered by the live recorder. Two observations at the same media time are both retained; the later sequence determines the effective value.
+Each `RatingEvent` retains an ID, within-pass sequence, media time, monotonic time, UTC timestamp, two coordinates, and input method. Finite input coordinates are clamped to 0–1. Out-of-order media or monotonic timestamps are not silently reordered by the live recorder. Two observations at the same media time are both retained; the later sequence determines the effective value.
 
-每个 `RatingEvent` 保留 ID、轮内顺序、媒体时间、单调时间、两个坐标及输入方式。有限坐标值限制在 0–1；实时记录器不会悄悄重排倒退的媒体时间或单调时间。同一媒体时刻的两次输入都保留，较后一次决定有效评分。
+每个 `RatingEvent` 保留 ID、轮内顺序、媒体时间、单调时间、UTC 时间、两个坐标及输入方式。有限坐标值限制在 0–1；实时记录器不会悄悄重排倒退的媒体时间或单调时间。同一媒体时刻的两次输入都保留，较后一次决定有效评分。
 
 Before a pass’s first input, its value is missing. Afterwards, the most recent original value is held until another input or the pass end. Releasing the pointer therefore continues the last rating; it does not create a new observation at every displayed or exported frame. A neutral-looking initial pointer position is not recorded as a neutral response.
 
@@ -125,3 +126,9 @@ Reference: S. Yang, C. N. Reed, E. Chew, and M. Barthet, “Examining Emotion Pe
 The original study’s time-stamped click collection and 1 Hz step-resampling analysis inform the design. The new 10 Hz continuous-input interface, general-audio support, editing and translations are extensions. Software tests verify implementation behavior; they do not validate psychometric reliability, response accuracy, cross-language equivalence or reproduction of the paper’s findings.
 
 原研究的带时间戳点击采集及 1 Hz 阶梯重采样分析为设计提供依据。新版 10 Hz 派生、连续输入、通用音频、编辑和翻译均属于扩展。软件测试验证实现行为，不证明心理测量信度、反应准确性、跨语言等价性或论文结论得到复现。
+
+## 8. Spatial guidance and configuration / 空间引导与配置
+
+See [VA-CUSTOMIZATION.md](VA-CUSTOMIZATION.md) for all 97 supplied tags, original four-corner colors, square geometry, normalized radius 1/16 (diameter 1/8), at most five nearest labels and typed customization. New sessions retain `interfaceProfile`; old sessions without it remain readable without inventing their original interface. JSON retains each event’s `utcTimestamp`; CSV `source_event_utc_timestamp` references that original input, including held rows.
+
+具体词表、配色、正方形、直径 1/8 的筛选圆、最多 5 个邻近词及配置接口见上文链接。新会话保存 `interfaceProfile` 快照，旧会话不补造历史配置。JSON 保留事件 UTC，派生 CSV 的 UTC 列引用源输入，不为保持值生成新的观测时间。

@@ -1,6 +1,6 @@
 # Mood Rater · 音频时变情绪标注
 
-[English](README.md) · [标注协议](docs/PROTOCOL.md) · [部署说明](docs/DEPLOYMENT.md) · [研究 API](docs/API.md)
+[English](README.md) · [VA 自定义配置](docs/VA-CUSTOMIZATION.md) · [标注协议](docs/PROTOCOL.md) · [部署说明](docs/DEPLOYMENT.md) · [研究 API](docs/API.md)
 
 Mood Rater 用于记录聆听音频时，感知情绪或自身感受如何随时间变化。新版在Simin Yang博士研究实现的基础上，增加中英界面、连续效价—唤醒度标注、本地草稿、区间重录和研究邀请流程。
 
@@ -84,3 +84,7 @@ Simin Yang、Courtney N. Reed、Elaine Chew、Mathieu Barthet：**“Examining E
 - 用 `git diff 8e7ac2ffd99af7494a62193b25f434e36226d35d...HEAD` 查看已提交的升级差异；用 `git status --short` 识别尚未提交的内容。
 
 仓库包含标注协议与输入校验测试，以及本地后端流程、故障恢复和容量测试。容量脚本覆盖一份 30 分钟、108,000 个事件的会话，以及按每批 10 份处理的 1,000 份小型提交。这是本地功能容量检查，**不代表通过 1,000 人同时在线或生产可用性认证**。详见[验证与上线核对](docs/DEPLOYMENT.md#validation-and-release--验证与上线核对)。
+
+## VA 界面与引导词配置
+
+正方形平面恢复原版红、橙、蓝、绿渐变，完整保留所给 97 个标签及坐标。点击圆的直径为平面宽度 1/8，按距离选择圈内最多 5 个词；圈内没有词就不显示引导。新输入同时记录 UTC 和音频时间。词表、坐标、圆圈大小、四角配色、X/Y 轴名称和端点文案均有独立配置，详见 [VA 自定义说明](docs/VA-CUSTOMIZATION.md)。

@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { performance } from 'node:perf_hooks';
-import { addRating, closePass, createSession, deriveSamples, sessionStats, startPass, undoPass } from '../lib/annotation.ts';
+import { addRating, closePass, createSession, deriveSamples, isUtcTimestamp, sessionStats, startPass, undoPass } from '../lib/annotation.ts';
 import { csvCell, importSession, sessionToCsv, sessionToJson } from '../lib/export.ts';
 import type { AnnotationSessionV2, RatingEvent, RecordingPass } from '../lib/types.ts';
+import { defaultVAInterface } from '../lib/va-config.ts';
 
 const fresh = (duration = 1) => createSession({ id: 'audio-1', name: 'Example.wav', size: 123, duration, mimeType: 'audio/wav', sha256: 'a'.repeat(64) }, 'en', 'perceived');
 const record = (session: AnnotationSessionV2, start: number, end: number, events: [number, number, number][]) => {
@@ -33,6 +34,71 @@ test('raw input is immutable, finite, clamped and never prefills the first event
   assert.equal(samples[3].valueOrigin, 'held');
   assert.deepEqual(samples.slice(8).map(row => row.valence), [null, null]);
   assert.ok(Math.abs(sessionStats(closed).coverage - 0.55) < 1e-12);
+});
+
+test('accepted inputs capture UTC at the input boundary and held CSV rows retain that source time', context => {
+  context.mock.timers.enable({ apis: ['Date'], now: Date.parse('2026-10-22T08:00:00.123Z') });
+  try {
+    let session = startPass(fresh(0.5), 0);
+    session = addRating(session, 0.1, 10, 0.2, 0.3, 'pointer');
+    context.mock.timers.tick(173);
+    session = addRating(session, 0.3, 183, 0.8, 0.7, 'keyboard');
+    session = closePass(session, 0.5, 'stop');
+    assert.deepEqual(session.passes[0].events.map(event => event.utcTimestamp), ['2026-10-22T08:00:00.123Z', '2026-10-22T08:00:00.296Z']);
+    const rows = sessionToCsv(session).trim().split('\r\n').map(row => row.split(','));
+    assert.equal(rows[0].at(-1), '"source_event_utc_timestamp"');
+    assert.equal(rows[1].at(-1), '');
+    assert.equal(rows[2].at(-1), '"2026-10-22T08:00:00.123Z"');
+    assert.equal(rows[3].at(-1), rows[2].at(-1));
+    assert.equal(rows[4].at(-1), '"2026-10-22T08:00:00.296Z"');
+    assert.deepEqual(importSession(sessionToJson(session)), session);
+  } finally { context.mock.timers.reset(); }
+});
+
+test('sessions freeze a validated interface snapshot independent of default or caller changes', () => {
+  const custom = structuredClone(defaultVAInterface);
+  custom.config.guide.diameterRatio = 0.4;
+  custom.config.axes.x.name.en = 'Custom valence';
+  const session = createSession(fresh().asset, 'en', 'perceived', 'free', custom);
+  assert.deepEqual(session.interfaceProfile, custom);
+  assert.notEqual(session.interfaceProfile, custom);
+  assert.notEqual(session.interfaceProfile?.tags, custom.tags);
+  custom.config.guide.diameterRatio = 0.7;
+  custom.tags[0].label.en = 'Changed later';
+  assert.equal(session.interfaceProfile?.config.guide.diameterRatio, 0.4);
+  assert.notEqual(session.interfaceProfile?.tags[0].label.en, 'Changed later');
+  assert.deepEqual(importSession(sessionToJson(session)).interfaceProfile, session.interfaceProfile);
+  const ordinary = fresh();
+  assert.deepEqual(ordinary.interfaceProfile, defaultVAInterface);
+  assert.notEqual(ordinary.interfaceProfile?.config, defaultVAInterface.config);
+  const invalid = structuredClone(defaultVAInterface); invalid.config.guide.diameterRatio = 0;
+  assert.throws(() => createSession(fresh().asset, 'en', 'perceived', 'free', invalid));
+  assert.throws(() => importSession(JSON.stringify({ ...session, interfaceProfile: invalid })));
+});
+
+test('old v2 snapshots keep missing UTC and profile unknown; valid original UTC precision is preserved', () => {
+  const current = record(fresh(), 0, 1, [[0.2, 0.3, 0.4]]);
+  delete current.interfaceProfile;
+  delete current.passes[0].events[0].utcTimestamp;
+  const restored = importSession(sessionToJson(current));
+  assert.equal(Object.hasOwn(restored, 'interfaceProfile'), false);
+  assert.equal(Object.hasOwn(restored.passes[0].events[0], 'utcTimestamp'), false);
+  assert.equal(sessionToCsv(restored).trim().split('\r\n')[3].split(',').at(-1), '');
+  current.passes[0].events[0].utcTimestamp = '2026-10-22T08:00:00.123456789Z';
+  assert.equal(importSession(sessionToJson(current)).passes[0].events[0].utcTimestamp, '2026-10-22T08:00:00.123456789Z');
+});
+
+test('invalid UTC dates, local times and malformed interface profiles are rejected', () => {
+  const session = record(fresh(), 0, 1, [[0.2, 0.3, 0.4]]);
+  for (const timestamp of ['2026-02-30T08:00:00Z', '2026-10-22T25:00:00Z', '2026-10-22T08:00:00', '2026-10-22T08:00:00+08:00', '', null, 123]) {
+    assert.equal(isUtcTimestamp(timestamp), false);
+    const invalid = structuredClone(session);
+    Reflect.set(invalid.passes[0].events[0], 'utcTimestamp', timestamp);
+    assert.throws(() => importSession(JSON.stringify(invalid)));
+    assert.throws(() => importSession(JSON.stringify({ ratings: [{ timestamp: 0, valence: 0.2, arousal: 0.3, utcTimestamp: timestamp }] })));
+  }
+  assert.equal(isUtcTimestamp('2024-02-29T08:00:00Z'), true);
+  for (const profile of [null, {}, { ...defaultVAInterface, extra: true }]) assert.throws(() => importSession(JSON.stringify({ ...session, interfaceProfile: profile })));
 });
 
 test('equal-time events retain both observations but the latest drives the sampled value', () => {
@@ -153,6 +219,9 @@ test('legacy point imports retain original source and never manufacture asset id
   assert.equal(restored.asset.sha256, undefined);
   assert.deepEqual(restored.legacySource, legacy);
   assert.deepEqual(restored.passes[0].events.map(event => event.mediaTime), [5, 2]);
+  assert.equal(restored.passes[0].events[0].utcTimestamp, '2021-07-01T00:00:00Z');
+  assert.equal(Object.hasOwn(restored.passes[0].events[1], 'utcTimestamp'), false);
+  assert.equal(restored.interfaceProfile, undefined);
   assert.deepEqual(deriveSamples(restored), []);
   assert.deepEqual(sessionStats(restored), { coverage: 0, eventCount: 2, passCount: 0 });
   assert.deepEqual(importSession(sessionToJson(restored)), restored);

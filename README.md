@@ -1,6 +1,6 @@
 # Mood Rater · Audio emotion annotation
 
-[简体中文](README.zh-CN.md) · [Annotation protocol](docs/PROTOCOL.md) · [Deployment](docs/DEPLOYMENT.md) · [Research API](docs/API.md)
+[简体中文](README.zh-CN.md) · [VA configuration](docs/VA-CUSTOMIZATION.md) · [Annotation protocol](docs/PROTOCOL.md) · [Deployment](docs/DEPLOYMENT.md) · [Research API](docs/API.md)
 
 Mood Rater records how perceived or felt emotion changes while someone listens to audio. This edition extends Simin Yang’s doctoral research implementation with an English/Chinese interface, continuous valence–arousal annotation, local drafts, interval re-recording, and an invitation-based research workflow.
 
@@ -13,6 +13,8 @@ The upgrade is developed on `codex/mood-rater-v2` in a separate Git worktree. Th
 - **Manage a study:** the designated owner signs in with ChatGPT to configure bilingual instructions, upload and order audio, publish invitations, create new study versions, and export results.
 - **Use the controls that suit you:** mouse/touch dragging, arrow keys, and separate sliders. Interface language follows the browser initially and can be changed at any time.
 - **Learn with a short practice:** the 20-second synthetic example is separate from drafts and submissions. It is an interaction demo, not a validated research stimulus.
+
+The square VA plane restores the original red/orange/blue/green gradient and all 97 supplied guide tags. A circle of diameter 1/8 of the plane width selects up to five nearby labels; empty regions show no tags. Tag positions, circle size, colors and bilingual axis labels are independently configurable. New inputs record UTC alongside audio time. See [customization](docs/VA-CUSTOMIZATION.md).
 
 ## Start annotating
 
@@ -74,7 +76,7 @@ Simin Yang, Courtney N. Reed, Elaine Chew, and Mathieu Barthet. **“Examining E
 
 [IEEE record](https://ieeexplore.ieee.org/document/9468946) · [Author preprint](https://siminyang6.wordpress.com/wp-content/uploads/2021/07/journalpaper_tac_preprint_0628.pdf) · [BibTeX](public/citation.bib)
 
-The original work used time-stamped clicks and, in part of its analysis, 1 Hz step resampling. Continuous dragging, general audio, interval editing and 10 Hz exports are engineering extensions. They do not reproduce the full experimental protocol or establish the reliability claims of the paper. Optional emotion words and their Chinese translations are orientation aids, not independently validated scales.
+The original work used time-stamped clicks and, in part of its analysis, 1 Hz step resampling. Continuous dragging, general audio, interval editing and 10 Hz exports are engineering extensions. They do not reproduce the full experimental protocol or establish the reliability claims of the paper. The supplied emotion tags guide selection at their mapped VA positions; the software does not infer a listener’s emotion from these words.
 
 ## Compare with the original
 

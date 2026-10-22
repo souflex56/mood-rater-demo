@@ -3,6 +3,9 @@
 // Seeds one draft and two published versions in the local DB; never targets production.
 import assert from 'node:assert/strict';
 import { randomUUID, createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+const configuredTags=JSON.parse(readFileSync(new URL('../config/emotion-tags.json',import.meta.url),'utf8'));
+const interfaceProfile={config:JSON.parse(readFileSync(new URL('../config/va-interface.json',import.meta.url),'utf8')),tagListId:configuredTags.id,tags:configuredTags.tags};
 const base=process.env.MOOD_API_BASE;
 if(!base || !['127.0.0.1','localhost'].includes(new URL(base).hostname))throw new Error('MOOD_API_BASE must be an explicit localhost URL');
 const owner={Cookie:'__sites_local_auth=1'};
@@ -35,7 +38,7 @@ const range=await fetch(base+asset.url,{headers:{Range:'bytes=10-19'}});assert.e
 assert.equal((await fetch(base+asset.url,{headers:{Range:'bytes=999999-'}})).status,416);
 const p=await req(`/api/study/${study.token}/participate`,{method:'POST',status:201,headers:json,body:JSON.stringify({consent:true,researchCode:'=unsafe'})});
 const bearer={Authorization:`Bearer ${p.participationToken}`};const now=new Date().toISOString();
-const session={schemaVersion:2,id:randomUUID(),createdAt:now,updatedAt:now,mode:'research',locale:'en',emotionTarget:'perceived',asset,studyId:study.id,studyVersion:published.version,participantId:p.participantId,researchCode:'=unsafe',notes:'',revision:2,protocol:{scale:[0,1],sampleRateHz:10,resampling:'zero_order_hold',version:1},passes:[{id:randomUUID(),order:0,start:0.23,end:1.5,revoked:false,endReason:'stop',events:[{id:randomUUID(),sequence:0,mediaTime:0.51,monotonicTime:100,valence:0.7,arousal:0.3,input:'pointer'}]}]};
+const session={schemaVersion:2,id:randomUUID(),createdAt:now,updatedAt:now,mode:'research',locale:'en',emotionTarget:'perceived',asset,studyId:study.id,studyVersion:published.version,participantId:p.participantId,researchCode:'=unsafe',notes:'',revision:2,protocol:{scale:[0,1],sampleRateHz:10,resampling:'zero_order_hold',version:1},interfaceProfile,passes:[{id:randomUUID(),order:0,start:0.23,end:1.5,revoked:false,endReason:'stop',events:[{id:randomUUID(),sequence:0,mediaTime:0.51,monotonicTime:100,utcTimestamp:now,valence:0.7,arousal:0.3,input:'pointer'}]}]};
 const bytes=Buffer.from(JSON.stringify(session));const submissionId=randomUUID();
 const init={participationToken:p.participationToken,submissionId,sessionId:session.id,assetId:asset.id,revision:session.revision,size:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')};
 assert.equal((await req('/api/submissions/init',{method:'POST',headers:json,body:JSON.stringify(init)})).status,'pending');
@@ -51,7 +54,9 @@ await req(`/api/admin/submissions/${submissionId}/export?format=json`,{status:40
 const exported=await fetch(base+`/api/admin/submissions/${submissionId}/export?format=json`,{headers:owner});assert.equal(exported.status,200);
 const exportBytes=Buffer.from(await exported.arrayBuffer());assert.equal(createHash('sha256').update(exportBytes).digest('hex'),exported.headers.get('x-package-sha256'));
 const pack=JSON.parse(exportBytes);assert.equal(pack.samples.length,20);assert.equal(pack.samples[0].valueOrigin,'missing');assert.equal(pack.samples[6].valence,0.7);
+assert.deepEqual(pack.session.interfaceProfile,interfaceProfile);assert.equal(pack.session.passes[0].events[0].utcTimestamp,now);
 const csv=await (await fetch(base+`/api/admin/submissions/${submissionId}/export?format=csv`,{headers:owner})).text();assert.match(csv,/'=unsafe/);
+const csvRows=csv.trim().split('\r\n').map(row=>row.split(','));assert.equal(csvRows[0].at(-1),'source_event_utc_timestamp');assert.equal(csvRows[1].at(-1),'');assert.equal(csvRows[7].at(-1),now);assert.equal(csvRows[7][10],'held');
 const list=await req('/api/admin/submissions?studyId='+study.id,{headers:owner});assert.equal(list.submissions.length,1);
 const bulk=await (await fetch(base+`/api/admin/export?studyId=${study.id}&format=ndjson`,{headers:owner})).text();assert.equal(bulk.trim().split('\n').length,1);
 const cloned=(await req(`/api/admin/studies/${study.id}`,{method:'PATCH',headers:{...owner,...json},body:JSON.stringify({action:'clone'})})).study;assert.equal(cloned.version,2);assert.notEqual(cloned.token,study.token);assert.equal(cloned.assets.length,1);assert.notEqual(cloned.assets[0].id,asset.id);

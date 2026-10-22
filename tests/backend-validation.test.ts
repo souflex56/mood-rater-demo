@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { deriveSamples } from '../lib/annotation.ts';
+import { defaultVAInterface } from '../lib/va-config.ts';
 import { audioInput, csvCell, expectedChunkLength, sessionInput, studyInput, submissionInput } from '../lib/server/validation.ts';
 const fixture=()=>({schemaVersion:2,id:'s',createdAt:'2026-10-22T00:00:00.000Z',updatedAt:'2026-10-22T00:00:00.000Z',mode:'research',locale:'en',emotionTarget:'perceived',asset:{id:'a',name:'Clip',size:10,mimeType:'audio/wav',duration:10},studyId:'study',studyVersion:1,participantId:'p',researchCode:'',notes:'',revision:1,protocol:{scale:[0,1],sampleRateHz:10,resampling:'zero_order_hold',version:1},passes:[{id:'pass',order:0,start:1,end:4,revoked:false,events:[{id:'event',sequence:0,mediaTime:2,monotonicTime:10,valence:0.3,arousal:0.7,input:'pointer'}]}]});
 test('partial and empty sessions are valid; open intervals and fabricated protocol are not',()=>{
@@ -8,6 +9,30 @@ test('partial and empty sessions are valid; open intervals and fabricated protoc
   assert.equal(sessionInput.safeParse({...fixture(),passes:[]}).success,true);
   assert.equal(sessionInput.safeParse({...fixture(),passes:[{...fixture().passes[0],end:null}]}).success,false);
   assert.equal(sessionInput.safeParse({...fixture(),protocol:{...fixture().protocol,scale:[-1,1]}}).success,false);
+});
+
+test('optional UTC and interface snapshots are preserved while older research sessions remain valid', () => {
+  const legacy = sessionInput.parse(fixture());
+  assert.equal(legacy.interfaceProfile, undefined);
+  assert.equal(legacy.passes[0].events[0].utcTimestamp, undefined);
+  const session = { ...fixture(), interfaceProfile: structuredClone(defaultVAInterface) };
+  Reflect.set(session.passes[0].events[0], 'utcTimestamp', '2026-10-22T08:00:00.123Z');
+  const parsed = sessionInput.parse(session);
+  assert.deepEqual(parsed.interfaceProfile, defaultVAInterface);
+  assert.equal(parsed.passes[0].events[0].utcTimestamp, '2026-10-22T08:00:00.123Z');
+  assert.equal(parsed, session, 'large session validation must not clone the full input graph');
+});
+
+test('server rejects invalid raw UTC and bounded-profile violations', () => {
+  for (const timestamp of ['2026-02-30T08:00:00Z', '2026-10-22T08:00:00', '2026-10-22T16:00:00+08:00', '', null, 123]) {
+    const session = fixture(); Reflect.set(session.passes[0].events[0], 'utcTimestamp', timestamp);
+    assert.equal(sessionInput.safeParse(session).success, false);
+  }
+  const profile = structuredClone(defaultVAInterface); profile.config.guide.maxTags = 6;
+  assert.equal(sessionInput.safeParse({ ...fixture(), interfaceProfile: profile }).success, false);
+  assert.equal(sessionInput.safeParse({ ...fixture(), interfaceProfile: null }).success, false);
+  const oversized = structuredClone(defaultVAInterface); oversized.tags = Array.from({ length: 1001 }, (_, i) => ({ ...oversized.tags[0], id: `tag-${i}` }));
+  assert.equal(sessionInput.safeParse({ ...fixture(), interfaceProfile: oversized }).success, false);
 });
 test('reject events outside audio, duplicate events and reversed event order',()=>{
   const s=fixture();s.passes[0].events[0].mediaTime=11;assert.equal(sessionInput.safeParse(s).success,false);

@@ -1,0 +1,26 @@
+{
+  "id": "mood-rater-original-va",
+  "version": 1,
+  "guide": {
+    "diameterRatio": 0.125,
+    "maxTags": 5
+  },
+  "background": {
+    "topLeft": [180, 0, 0],
+    "topRight": [220, 120, 0],
+    "bottomLeft": [0, 40, 120],
+    "bottomRight": [120, 180, 60]
+  },
+  "axes": {
+    "x": {
+      "name": { "en": "Valence", "zh-CN": "效价" },
+      "low": { "en": "Negative", "zh-CN": "消极" },
+      "high": { "en": "Positive", "zh-CN": "积极" }
+    },
+    "y": {
+      "name": { "en": "Arousal", "zh-CN": "唤醒度" },
+      "low": { "en": "Low arousal", "zh-CN": "低唤醒" },
+      "high": { "en": "High arousal", "zh-CN": "高唤醒" }
+    }
+  }
+}

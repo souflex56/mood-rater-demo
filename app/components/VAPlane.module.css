@@ -1,0 +1,32 @@
+.container{margin-top:20px;min-width:0}
+.planeRow{position:relative;margin:0 32px}
+.square{position:relative;width:100%;aspect-ratio:1/1;height:auto;overflow:hidden;touch-action:none;user-select:none;cursor:crosshair;outline:1px solid #ccd5c7;background:#586b40;isolation:isolate}
+.square:focus-visible{outline:3px solid #244e35;outline-offset:4px}
+.square[aria-disabled=true]{cursor:not-allowed}
+.recording{box-shadow:0 0 0 4px #41644814}
+.background,.leaders{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.horizontalAxis,.verticalAxis{position:absolute;background:#ffffff75;pointer-events:none}
+.horizontalAxis{left:0;right:0;top:50%;height:1px}
+.verticalAxis{top:0;bottom:0;left:50%;width:1px}
+.xAxisName,.yAxisName{position:absolute;padding:3px 5px;background:#ffffffdf;border-radius:3px;color:#2d3b2f;font-size:10px;line-height:1.4;pointer-events:none;max-width:44%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xAxisName{right:8px;top:calc(50% + 7px)}
+.yAxisName{top:8px;left:calc(50% + 7px)}
+.endpointTop,.endpointBottom{display:flex;align-items:center;justify-content:center;gap:6px;color:#63765a;font-size:10px;line-height:1.5;min-height:25px;text-align:center}
+.endpointTop{margin-bottom:6px}.endpointBottom{margin-top:6px}
+.endpointTop small,.endpointBottom small,.endpointLeft small,.endpointRight small{font-size:9px;color:#95a18c}
+.endpointLeft,.endpointRight{position:absolute;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;font-size:10px;color:#63765a;line-height:1.5;writing-mode:vertical-rl;max-height:80%;text-align:center}
+.endpointLeft{left:-25px;transform:translateY(-50%) rotate(180deg)}.endpointRight{right:-25px}
+.guideCircle{position:absolute;transform:translate(-50%,-50%);border:2px solid white;box-shadow:0 0 0 1px #23302580,inset 0 0 0 1px #23302580;border-radius:50%;pointer-events:none;box-sizing:border-box}
+.leaders{overflow:hidden}
+.tagCallout{position:absolute;display:flex;align-items:center;gap:5px;height:24px;padding:2px 6px;border:1px solid #fff;border-radius:5px;background:#fffffff0;box-shadow:0 1px 5px #20351b1c;color:#263c2c;font-size:10px;line-height:18px;pointer-events:none;box-sizing:border-box}
+.tagCallout b{font-size:9px;font-weight:600;color:#778b6c;flex-shrink:0}
+.tagCallout>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.currentPoint{position:absolute;width:10px;height:10px;border:2px solid #fff;box-shadow:0 0 0 1px #203025;background:#26372b;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+.guideFeedback{text-align:center;min-height:63px;margin:12px 0 0;color:#708064;font-size:11px;line-height:1.65}
+.guideFeedback p{margin:0 0 5px}
+.guideFeedback small{font-size:9px;color:#98a18f}
+.guideFeedback ol{display:flex;flex-wrap:wrap;justify-content:center;gap:5px 15px;counter-reset:word;list-style:none;margin:4px 0 7px;padding:0;font-size:10px}
+.guideFeedback li{counter-increment:word;max-width:100%;overflow-wrap:anywhere}
+.guideFeedback li:before{content:counter(word) '. ';color:#9aa58e;font-size:9px}
+@media(max-width:900px){.planeRow{margin:0 25px}.endpointLeft{left:-22px}.endpointRight{right:-22px}.xAxisName,.yAxisName{font-size:9px}.tagCallout{font-size:9px;padding-left:4px;padding-right:4px}}
+@media(max-width:700px){.planeRow{margin:0 25px}.tagCallout{font-size:10px}.guideFeedback{font-size:11px}.endpointTop,.endpointBottom,.endpointLeft,.endpointRight{font-size:10px}}

@@ -1,4 +1,5 @@
 import type { AnnotationSessionV2, AudioAsset, DerivedSample, EmotionTarget, Locale, RatingEvent, RecordingPass } from './types';
+import { defaultVAInterface, parseVAInterfaceProfile, type VAInterfaceProfile } from './va-config.ts';
 
 const MAX_DURATION_SECONDS = 1800;
 const EPSILON = 1e-9;
@@ -15,7 +16,14 @@ function mediaTime(session: AnnotationSessionV2, time: number): number {
   return clamp(time, 0, session.asset.duration);
 }
 
-export function createSession(asset: AudioAsset, locale: Locale, target: EmotionTarget, mode: AnnotationSessionV2['mode'] = 'free'): AnnotationSessionV2 {
+/** Strict UTC wall-clock timestamp; preserve the supplied precision instead of rewriting historical values. */
+export function isUtcTimestamp(value: unknown): value is string {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?Z$/.test(value)) return false;
+  const parsed = new Date(value);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 19) === value.slice(0, 19);
+}
+
+export function createSession(asset: AudioAsset, locale: Locale, target: EmotionTarget, mode: AnnotationSessionV2['mode'] = 'free', interfaceProfile: VAInterfaceProfile = defaultVAInterface): AnnotationSessionV2 {
   if (!Number.isFinite(asset.duration) || asset.duration <= 0 || asset.duration > MAX_DURATION_SECONDS) {
     throw new Error('Audio duration must be greater than zero and no longer than 30 minutes.');
   }
@@ -23,7 +31,8 @@ export function createSession(asset: AudioAsset, locale: Locale, target: Emotion
   return {
     schemaVersion: 2, id: id(), createdAt: now, updatedAt: now, mode, locale, emotionTarget: target,
     asset: { ...asset }, ...(asset.studyId ? { studyId: asset.studyId } : {}), notes: '', revision: 0,
-    protocol: { scale: [0, 1], sampleRateHz: 10, resampling: 'zero_order_hold', version: 1 }, passes: [],
+    protocol: { scale: [0, 1], sampleRateHz: 10, resampling: 'zero_order_hold', version: 1 },
+    interfaceProfile: structuredClone(parseVAInterfaceProfile(interfaceProfile)), passes: [],
   };
 }
 
@@ -43,7 +52,8 @@ export function addRating(session: AnnotationSessionV2, time: number, monotonicT
   const last = pass.events[pass.events.length - 1];
   // A seek must finish a pass before recording resumes; never reorder incoming observations.
   if (time < pass.start || time > session.asset.duration || (last && (time < last.mediaTime || monotonicTime < last.monotonicTime))) return session;
-  const event: RatingEvent = { id: id(), sequence: (last?.sequence ?? -1) + 1, mediaTime: time, monotonicTime, valence: clamp(valence), arousal: clamp(arousal), input };
+  const utcTimestamp = stamp();
+  const event: RatingEvent = { id: id(), sequence: (last?.sequence ?? -1) + 1, mediaTime: time, monotonicTime, utcTimestamp, valence: clamp(valence), arousal: clamp(arousal), input };
   const passes = session.passes.slice();
   passes[index] = { ...pass, events: [...pass.events, event] };
   return changed(session, passes);

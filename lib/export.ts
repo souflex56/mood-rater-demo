@@ -1,4 +1,5 @@
-import { deriveSamples, sessionStats } from './annotation.ts';
+import { deriveSamples, isUtcTimestamp, sessionStats } from './annotation.ts';
+import { parseVAInterfaceProfile } from './va-config.ts';
 import type { AnnotationSessionV2, AudioAsset, RatingEvent, RecordingPass } from './types';
 
 type LegacySource = { timestamp?: string; totalRatings?: number; ratings: unknown[] };
@@ -47,6 +48,8 @@ export function sessionToJson(session: AnnotationSessionV2): string {
     ...session, asset, exportedAt: new Date().toISOString(),
     dataDescription: {
       mediaTimeUnit: 'seconds', inputScale: [0, 1], rawInput: 'passes[].events',
+      inputUtcTimestamp: 'Original input wall-clock UTC, captured with the client clock. Missing historical timestamps remain unknown; held samples do not create new UTC observations.',
+      interfaceProfile: 'Snapshot of the guide, color/axis configuration, tag-list identity and tag positions used for this session; absent for older sessions whose interface is unknown.',
       derivedSeries: '10 Hz, zero-order hold within the latest non-revoked half-open recording pass; null means missing',
       openPasses: 'Only observed media time is included; no future hold is inferred.',
       legacy: session.legacy ? 'Original audio identity, duration, target and monotonic clock are unknown; monotonicTime=0 is a placeholder. No continuous coverage is inferred.' : undefined,
@@ -67,13 +70,15 @@ export function csvCell(value: string | number | null | undefined): string {
 export function sessionToCsv(session: AnnotationSessionV2): string {
   const rows: (string | number | null | undefined)[][] = [[
     'record_type', 'session_id', 'asset_id', 'asset_name', 'study_id', 'study_version', 'participant_id',
-    'research_code', 'emotion_target', 'media_time_seconds', 'valence_0_1', 'arousal_0_1', 'value_origin', 'source_event_id', 'pass_id',
+    'research_code', 'emotion_target', 'media_time_seconds', 'valence_0_1', 'arousal_0_1', 'value_origin', 'source_event_id', 'pass_id', 'source_event_utc_timestamp',
   ]];
   const prefix = [session.id, session.asset.id, session.asset.name, session.studyId, session.studyVersion, session.participantId, session.researchCode, session.emotionTarget];
   if (session.legacy && session.asset.duration === 0) {
-    for (const pass of session.passes) for (const event of pass.events) rows.push(['raw_legacy', ...prefix, event.mediaTime, event.valence, event.arousal, 'new_event', event.id, pass.id]);
+    for (const pass of session.passes) for (const event of pass.events) rows.push(['raw_legacy', ...prefix, event.mediaTime, event.valence, event.arousal, 'new_event', event.id, pass.id, event.utcTimestamp]);
   } else {
-    for (const sample of deriveSamples(session)) rows.push(['derived_10hz', ...prefix, sample.mediaTime, sample.valence, sample.arousal, sample.valueOrigin, sample.sourceEventId, sample.passId]);
+    const utcByEvent = new Map<string, string>();
+    for (const pass of session.passes) for (const event of pass.events) if (event.utcTimestamp !== undefined) utcByEvent.set(event.id, event.utcTimestamp);
+    for (const sample of deriveSamples(session)) rows.push(['derived_10hz', ...prefix, sample.mediaTime, sample.valence, sample.arousal, sample.valueOrigin, sample.sourceEventId, sample.passId, sample.sourceEventId ? utcByEvent.get(sample.sourceEventId) : undefined]);
   }
   return rows.map(row => row.map(csvCell).join(',')).join('\r\n') + '\r\n';
 }
@@ -84,9 +89,11 @@ function importLegacy(source: Record<string, unknown>): AnnotationSessionV2 {
   const now = new Date().toISOString();
   const events: RatingEvent[] = ratings.map((value, index) => {
     const event = object(value, `ratings[${index}]`);
+    if (event.utcTimestamp !== undefined && !isUtcTimestamp(event.utcTimestamp)) fail('legacy UTC timestamp must be a valid UTC ISO timestamp.');
     return {
       id: crypto.randomUUID(), sequence: index, mediaTime: number(event.timestamp, 'legacy timestamp', 0, 86400),
       monotonicTime: 0, valence: number(event.valence, 'legacy valence', 0, 1), arousal: number(event.arousal, 'legacy arousal', 0, 1), input: 'legacy',
+      ...(event.utcTimestamp === undefined ? {} : { utcTimestamp: event.utcTimestamp as string }),
     };
   });
   const original: LegacySource = { ratings };
@@ -160,7 +167,8 @@ export function importSession(contents: string): AnnotationSessionV2 {
       if (sequence <= previousSequence || (!isLegacy && (time < previousTime || monotonicTime < previousClock))) fail('raw events must preserve monotonic sequence and media time within each pass.');
       previousTime = time; previousSequence = sequence; previousClock = monotonicTime;
       if (!INPUTS.includes(event.input as RatingEvent['input'])) fail('unsupported event input.');
-      return { id: uniqueId(event.id, 'event ID', ids), sequence, mediaTime: time, monotonicTime, valence: number(event.valence, 'valence', 0, 1), arousal: number(event.arousal, 'arousal', 0, 1), input: event.input as RatingEvent['input'] };
+      if (event.utcTimestamp !== undefined && !isUtcTimestamp(event.utcTimestamp)) fail('event UTC timestamp must be a valid UTC ISO timestamp.');
+      return { id: uniqueId(event.id, 'event ID', ids), sequence, mediaTime: time, monotonicTime, valence: number(event.valence, 'valence', 0, 1), arousal: number(event.arousal, 'arousal', 0, 1), input: event.input as RatingEvent['input'], ...(event.utcTimestamp === undefined ? {} : { utcTimestamp: event.utcTimestamp as string }) };
     });
     const result: RecordingPass = { id: uniqueId(pass.id, 'pass ID', ids), order, start, end, events, revoked: pass.revoked as boolean };
     if (pass.endReason !== undefined) {
@@ -180,6 +188,7 @@ export function importSession(contents: string): AnnotationSessionV2 {
     if (value !== undefined) result[key] = value;
   }
   if (source.studyVersion !== undefined) result.studyVersion = integer(source.studyVersion, 'study version', 1);
+  if (source.interfaceProfile !== undefined) result.interfaceProfile = parseVAInterfaceProfile(source.interfaceProfile);
   if (isLegacy) {
     result.legacy = true;
     if (source.legacySource !== undefined) {

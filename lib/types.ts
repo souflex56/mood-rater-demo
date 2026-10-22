@@ -1,3 +1,5 @@
+import type { VAInterfaceProfile } from './va-config.ts';
+
 export type Locale = 'en' | 'zh-CN';
 export type EmotionTarget = 'perceived' | 'felt';
 export type AudioAsset = {
@@ -6,6 +8,7 @@ export type AudioAsset = {
 };
 export type RatingEvent = {
   id: string; sequence: number; mediaTime: number; monotonicTime: number;
+  utcTimestamp?: string;
   valence: number; arousal: number; input: 'pointer' | 'keyboard' | 'slider' | 'legacy';
 };
 export type RecordingPass = {
@@ -24,6 +27,7 @@ export type AnnotationSessionV2 = {
   asset: AudioAsset; studyId?: string; studyVersion?: number; participantId?: string;
   researchCode?: string; notes: string; revision: number;
   protocol: { scale: [0, 1]; sampleRateHz: 10; resampling: 'zero_order_hold'; version: 1 };
+  interfaceProfile?: VAInterfaceProfile;
   passes: RecordingPass[]; legacy?: boolean;
   legacySource?: {timestamp?:string; totalRatings?:number; ratings:unknown[]};
   importedFromSessionId?: string;

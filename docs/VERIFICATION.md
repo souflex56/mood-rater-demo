@@ -37,3 +37,16 @@ The public browser successfully switched to Chinese, opened practice, played the
 The production administrator login currently requires the owner to finish ChatGPT sign-in and dashboard activation. The full research collection loop was verified locally, but is not yet certified end-to-end in production. No production participant data was seeded for these checks. Custom-domain redirect is pending the domain details.
 
 公开页面与音频录制已真实验证；研究后台仍需所有者首次登录激活，生产研究闭环尚未完成验收。测试未写入生产参与者记录。自有域名跳转等待域名信息。
+
+## Guided VA revision / 引导词界面修订
+
+Verified locally on 2026-10-22:
+
+- All 34 Node tests and TypeScript passed. The five guidance tests compare all 97 tags, translations and coordinates against the retained original HTML; check exact original RGB interpolation; and verify circle boundaries, distance ordering, the five-tag limit, empty regions and configuration validation.
+- The local backend smoke test passed with interface snapshots and input UTC preserved through submission and export, including the original UTC on held CSV rows.
+- Browser measurement found a 582.0625 × 582.0625 pixel VA plane and a 72.75 pixel guide diameter (12.5%, subject to CSS pixel rounding). A click at (0.82, 0.65) displayed admire, talent, care, confident and ambitious in distance order, with SVG anchors at their configured VA coordinates.
+- At (0, 0), no emotion tags appeared and the circle center remained on the corner, clipped by the plane rather than moved inward. English/Chinese axis labels and bilingual guide words were inspected. Loading another audio reset the preview point.
+- A browser-generated JSON export from the synthetic demo audio contained two keyboard inputs, each with its actual audio time and a distinct UTC timestamp, plus the 97-tag interface snapshot. UTC uses the device clock; it is not independently synchronized server time.
+- Restored sessions retain their saved interface profile. Newly created sessions use the current configured profile, avoiding accidental inheritance of an older restored profile.
+
+These checks used local synthetic data. The square's responsive CSS is implemented, but this revision was not separately tested on a physical mobile device.

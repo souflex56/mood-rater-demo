@@ -129,9 +129,11 @@ export async function listSubmissions(url:URL) {
   const page=rows.slice(0,50);const last=page.at(-1);
   return {submissions:page.map(summary),nextCursor:rows.length>50&&last?btoa(JSON.stringify([last.createdAt,last.id])):null};
 }
-const CSV_HEADER=['submission_id','study_id','asset_id','participant_id','research_code','revision','emotion_target','media_time','valence','arousal','value_origin','source_event_id','pass_id'];
+const CSV_HEADER=['submission_id','study_id','asset_id','participant_id','research_code','revision','emotion_target','media_time','valence','arousal','value_origin','source_event_id','pass_id','source_event_utc_timestamp'];
 function csvLines(pack:StoredPackage,submissionId:string) {
-  return pack.samples.map(s=>[submissionId,pack.session.studyId,pack.session.asset.id,pack.session.participantId,pack.session.researchCode??'',pack.session.revision,pack.session.emotionTarget,s.mediaTime,s.valence,s.arousal,s.valueOrigin,s.sourceEventId,s.passId].map(csvCell).join(',')+'\r\n').join('');
+  const utcByEvent = new Map<string,string>();
+  for (const pass of pack.session.passes) for (const event of pass.events) if(event.utcTimestamp!==undefined)utcByEvent.set(event.id,event.utcTimestamp);
+  return pack.samples.map(s=>[submissionId,pack.session.studyId,pack.session.asset.id,pack.session.participantId,pack.session.researchCode??'',pack.session.revision,pack.session.emotionTarget,s.mediaTime,s.valence,s.arousal,s.valueOrigin,s.sourceEventId,s.passId,s.sourceEventId?utcByEvent.get(s.sourceEventId):undefined].map(csvCell).join(',')+'\r\n').join('');
 }
 export async function exportSubmission(submissionId:string,url:URL) {
   const row=await getDb().select().from(submissions).where(and(eq(submissions.id,submissionId),eq(submissions.status,'ready'))).get();

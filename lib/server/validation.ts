@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import type { AnnotationSessionV2 } from '../types';
+import { isUtcTimestamp } from '../annotation.ts';
+import { parseVAInterfaceProfile } from '../va-config.ts';
 export const MAX_AUDIO_BYTES = 100 * 1024 * 1024;
 export const MAX_SESSION_BYTES = 32 * 1024 * 1024;
 export const AUDIO_CHUNK_BYTES = 5 * 1024 * 1024;
@@ -19,7 +21,12 @@ export const submissionInput = z.object({ participationToken: z.string().min(32)
 }).strict();
 const ratingEvent = z.object({ id: identifier, sequence: z.number().int().min(0), mediaTime: z.number().finite().min(0).max(1800),
   monotonicTime: z.number().finite().min(0), valence: coordinate, arousal: coordinate, input: z.enum(['pointer', 'keyboard', 'slider', 'legacy']),
+  utcTimestamp: z.string().max(30).refine(isUtcTimestamp, 'Expected a valid UTC ISO timestamp').optional(),
 }).strict();
+const interfaceProfile = z.unknown().superRefine((value, ctx) => {
+  try { parseVAInterfaceProfile(value); }
+  catch (error) { ctx.addIssue({code:'custom',message:error instanceof Error ? error.message : 'Invalid VA interface profile'}); }
+});
 const sessionMetadata = z.object({ schemaVersion: z.literal(2), id: identifier, createdAt: z.string().datetime(), updatedAt: z.string().datetime(),
   mode: z.literal('research'), locale: z.enum(['en', 'zh-CN']), emotionTarget: z.enum(['perceived', 'felt']),
   asset: z.object({ id: identifier, name: z.string(), size: z.number().int(), mimeType: z.string(), duration: z.number().positive().max(1800), sha256: z.string().optional(), url: z.string().optional(), studyId: identifier.optional(), status: z.enum(['pending', 'ready']).optional() }).strict(),
@@ -27,6 +34,7 @@ const sessionMetadata = z.object({ schemaVersion: z.literal(2), id: identifier, 
   protocol: z.object({ scale: z.tuple([z.literal(0), z.literal(1)]), sampleRateHz: z.literal(10), resampling: z.literal('zero_order_hold'), version: z.literal(1) }).strict(),
   passes: z.unknown(), legacy: z.boolean().optional(),
   importedFromSessionId: z.string().min(1).max(200).refine(value => value.trim().length > 0).optional(),
+  interfaceProfile: interfaceProfile.optional(),
 }).strict();
 const passMetadata = z.object({ id: identifier, order: z.number().int().min(0), start: z.number().finite().min(0).max(1800), end: z.number().finite().min(0).max(1800),
   events: z.unknown(), revoked: z.boolean(), endReason: z.enum(['stop','pause','seek','ended','hidden','buffering','interrupted','error']).optional(),

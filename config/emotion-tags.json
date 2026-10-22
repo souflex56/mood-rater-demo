@@ -1,0 +1,878 @@
+{
+  "id": "mood-rater-legacy-tags-v1",
+  "tags": [
+    {
+      "id": "angry",
+      "label": {
+        "en": "angry",
+        "zh-CN": "愤怒"
+      },
+      "valence": 0.23,
+      "arousal": 0.77
+    },
+    {
+      "id": "bright",
+      "label": {
+        "en": "bright",
+        "zh-CN": "明亮"
+      },
+      "valence": 0.81,
+      "arousal": 0.55
+    },
+    {
+      "id": "weary",
+      "label": {
+        "en": "weary",
+        "zh-CN": "疲惫"
+      },
+      "valence": 0.35,
+      "arousal": 0.35
+    },
+    {
+      "id": "tense",
+      "label": {
+        "en": "tense",
+        "zh-CN": "紧张"
+      },
+      "valence": 0.32,
+      "arousal": 0.69
+    },
+    {
+      "id": "aggressive",
+      "label": {
+        "en": "aggressive",
+        "zh-CN": "激昂"
+      },
+      "valence": 0.51,
+      "arousal": 0.6
+    },
+    {
+      "id": "romantic",
+      "label": {
+        "en": "romantic",
+        "zh-CN": "浪漫"
+      },
+      "valence": 0.92,
+      "arousal": 0.82
+    },
+    {
+      "id": "hopeful",
+      "label": {
+        "en": "hopeful",
+        "zh-CN": "希望"
+      },
+      "valence": 0.76,
+      "arousal": 0.6
+    },
+    {
+      "id": "cold",
+      "label": {
+        "en": "cold",
+        "zh-CN": "冰冷"
+      },
+      "valence": 0.38,
+      "arousal": 0.52
+    },
+    {
+      "id": "ambitious",
+      "label": {
+        "en": "ambitious",
+        "zh-CN": "雄心"
+      },
+      "valence": 0.83,
+      "arousal": 0.7
+    },
+    {
+      "id": "thoughtful",
+      "label": {
+        "en": "thoughtful",
+        "zh-CN": "沉思"
+      },
+      "valence": 0.83,
+      "arousal": 0.59
+    },
+    {
+      "id": "confident",
+      "label": {
+        "en": "confident",
+        "zh-CN": "自信"
+      },
+      "valence": 0.87,
+      "arousal": 0.65
+    },
+    {
+      "id": "cheerful",
+      "label": {
+        "en": "cheerful",
+        "zh-CN": "欢快"
+      },
+      "valence": 0.89,
+      "arousal": 0.67
+    },
+    {
+      "id": "smooth",
+      "label": {
+        "en": "smooth",
+        "zh-CN": "流畅"
+      },
+      "valence": 0.7,
+      "arousal": 0.49
+    },
+    {
+      "id": "detached",
+      "label": {
+        "en": "detached",
+        "zh-CN": "超然"
+      },
+      "valence": 0.36,
+      "arousal": 0.41
+    },
+    {
+      "id": "elegant",
+      "label": {
+        "en": "elegant",
+        "zh-CN": "优雅"
+      },
+      "valence": 0.8,
+      "arousal": 0.44
+    },
+    {
+      "id": "bored",
+      "label": {
+        "en": "bored",
+        "zh-CN": "厌倦"
+      },
+      "valence": 0.24,
+      "arousal": 0.23
+    },
+    {
+      "id": "disappointment",
+      "label": {
+        "en": "disappointment",
+        "zh-CN": "失望"
+      },
+      "valence": 0.17,
+      "arousal": 0.45
+    },
+    {
+      "id": "discomfort",
+      "label": {
+        "en": "discomfort",
+        "zh-CN": "不安"
+      },
+      "valence": 0.15,
+      "arousal": 0.4
+    },
+    {
+      "id": "discouraged",
+      "label": {
+        "en": "discouraged",
+        "zh-CN": "沮丧"
+      },
+      "valence": 0.25,
+      "arousal": 0.44
+    },
+    {
+      "id": "sad",
+      "label": {
+        "en": "sad",
+        "zh-CN": "悲伤"
+      },
+      "valence": 0.08,
+      "arousal": 0.39
+    },
+    {
+      "id": "shamed",
+      "label": {
+        "en": "shamed",
+        "zh-CN": "羞愧"
+      },
+      "valence": 0.19,
+      "arousal": 0.49
+    },
+    {
+      "id": "sorrow",
+      "label": {
+        "en": "sorrow",
+        "zh-CN": "哀伤"
+      },
+      "valence": 0.16,
+      "arousal": 0.44
+    },
+    {
+      "id": "anxiety",
+      "label": {
+        "en": "anxiety",
+        "zh-CN": "焦虑"
+      },
+      "valence": 0.22,
+      "arousal": 0.72
+    },
+    {
+      "id": "bad",
+      "label": {
+        "en": "bad",
+        "zh-CN": "阴郁"
+      },
+      "valence": 0.2,
+      "arousal": 0.57
+    },
+    {
+      "id": "harsh",
+      "label": {
+        "en": "harsh",
+        "zh-CN": "刺耳"
+      },
+      "valence": 0.24,
+      "arousal": 0.58
+    },
+    {
+      "id": "anger",
+      "label": {
+        "en": "anger",
+        "zh-CN": "暴怒"
+      },
+      "valence": 0.17,
+      "arousal": 0.83
+    },
+    {
+      "id": "attack",
+      "label": {
+        "en": "attack",
+        "zh-CN": "冲击"
+      },
+      "valence": 0.21,
+      "arousal": 0.75
+    },
+    {
+      "id": "danger",
+      "label": {
+        "en": "danger",
+        "zh-CN": "危险"
+      },
+      "valence": 0.24,
+      "arousal": 0.79
+    },
+    {
+      "id": "furious",
+      "label": {
+        "en": "furious",
+        "zh-CN": "狂怒"
+      },
+      "valence": 0.12,
+      "arousal": 0.83
+    },
+    {
+      "id": "horror",
+      "label": {
+        "en": "horror",
+        "zh-CN": "惊骇"
+      },
+      "valence": 0.22,
+      "arousal": 0.78
+    },
+    {
+      "id": "rage",
+      "label": {
+        "en": "rage",
+        "zh-CN": "暴戾"
+      },
+      "valence": 0.18,
+      "arousal": 0.9
+    },
+    {
+      "id": "stress",
+      "label": {
+        "en": "stress",
+        "zh-CN": "压抑"
+      },
+      "valence": 0.14,
+      "arousal": 0.81
+    },
+    {
+      "id": "terrified",
+      "label": {
+        "en": "terrified",
+        "zh-CN": "恐惧"
+      },
+      "valence": 0.09,
+      "arousal": 0.86
+    },
+    {
+      "id": "fatigued",
+      "label": {
+        "en": "fatigued",
+        "zh-CN": "倦怠"
+      },
+      "valence": 0.29,
+      "arousal": 0.21
+    },
+    {
+      "id": "tired",
+      "label": {
+        "en": "tired",
+        "zh-CN": "疲乏"
+      },
+      "valence": 0.29,
+      "arousal": 0.21
+    },
+    {
+      "id": "doubtful",
+      "label": {
+        "en": "doubtful",
+        "zh-CN": "疑虑"
+      },
+      "valence": 0.3,
+      "arousal": 0.41
+    },
+    {
+      "id": "indifferent",
+      "label": {
+        "en": "indifferent",
+        "zh-CN": "淡漠"
+      },
+      "valence": 0.45,
+      "arousal": 0.27
+    },
+    {
+      "id": "nonchalant",
+      "label": {
+        "en": "nonchalant",
+        "zh-CN": "漠然"
+      },
+      "valence": 0.47,
+      "arousal": 0.27
+    },
+    {
+      "id": "obstinate",
+      "label": {
+        "en": "obstinate",
+        "zh-CN": "固执"
+      },
+      "valence": 0.45,
+      "arousal": 0.37
+    },
+    {
+      "id": "preoccupied",
+      "label": {
+        "en": "preoccupied",
+        "zh-CN": "忧思"
+      },
+      "valence": 0.38,
+      "arousal": 0.49
+    },
+    {
+      "id": "skeptical",
+      "label": {
+        "en": "skeptical",
+        "zh-CN": "怀疑"
+      },
+      "valence": 0.44,
+      "arousal": 0.49
+    },
+    {
+      "id": "solemn",
+      "label": {
+        "en": "solemn",
+        "zh-CN": "肃穆"
+      },
+      "valence": 0.42,
+      "arousal": 0.32
+    },
+    {
+      "id": "awkward",
+      "label": {
+        "en": "awkward",
+        "zh-CN": "局促"
+      },
+      "valence": 0.28,
+      "arousal": 0.59
+    },
+    {
+      "id": "confused",
+      "label": {
+        "en": "confused",
+        "zh-CN": "困惑"
+      },
+      "valence": 0.28,
+      "arousal": 0.63
+    },
+    {
+      "id": "envy",
+      "label": {
+        "en": "envy",
+        "zh-CN": "妒忌"
+      },
+      "valence": 0.3,
+      "arousal": 0.56
+    },
+    {
+      "id": "forceful",
+      "label": {
+        "en": "forceful",
+        "zh-CN": "强韧"
+      },
+      "valence": 0.36,
+      "arousal": 0.59
+    },
+    {
+      "id": "fright",
+      "label": {
+        "en": "fright",
+        "zh-CN": "惊惶"
+      },
+      "valence": 0.27,
+      "arousal": 0.6
+    },
+    {
+      "id": "haunt",
+      "label": {
+        "en": "haunt",
+        "zh-CN": "萦绕"
+      },
+      "valence": 0.31,
+      "arousal": 0.7
+    },
+    {
+      "id": "obsessed",
+      "label": {
+        "en": "obsessed",
+        "zh-CN": "痴迷"
+      },
+      "valence": 0.33,
+      "arousal": 0.66
+    },
+    {
+      "id": "scary",
+      "label": {
+        "en": "scary",
+        "zh-CN": "骇人"
+      },
+      "valence": 0.28,
+      "arousal": 0.71
+    },
+    {
+      "id": "suspicious",
+      "label": {
+        "en": "suspicious",
+        "zh-CN": "猜疑"
+      },
+      "valence": 0.35,
+      "arousal": 0.66
+    },
+    {
+      "id": "fight",
+      "label": {
+        "en": "fight",
+        "zh-CN": "抗争"
+      },
+      "valence": 0.35,
+      "arousal": 0.77
+    },
+    {
+      "id": "panic",
+      "label": {
+        "en": "panic",
+        "zh-CN": "恐慌"
+      },
+      "valence": 0.27,
+      "arousal": 0.75
+    },
+    {
+      "id": "shock",
+      "label": {
+        "en": "shock",
+        "zh-CN": "震撼"
+      },
+      "valence": 0.38,
+      "arousal": 0.81
+    },
+    {
+      "id": "quiet",
+      "label": {
+        "en": "quiet",
+        "zh-CN": "静谧"
+      },
+      "valence": 0.57,
+      "arousal": 0.23
+    },
+    {
+      "id": "decency",
+      "label": {
+        "en": "decency",
+        "zh-CN": "庄重"
+      },
+      "valence": 0.6,
+      "arousal": 0.44
+    },
+    {
+      "id": "reverent",
+      "label": {
+        "en": "reverent",
+        "zh-CN": "敬畏"
+      },
+      "valence": 0.54,
+      "arousal": 0.38
+    },
+    {
+      "id": "serious",
+      "label": {
+        "en": "serious",
+        "zh-CN": "严肃"
+      },
+      "valence": 0.51,
+      "arousal": 0.38
+    },
+    {
+      "id": "challenge",
+      "label": {
+        "en": "challenge",
+        "zh-CN": "挑战"
+      },
+      "valence": 0.68,
+      "arousal": 0.68
+    },
+    {
+      "id": "complex",
+      "label": {
+        "en": "complex",
+        "zh-CN": "繁复"
+      },
+      "valence": 0.53,
+      "arousal": 0.58
+    },
+    {
+      "id": "conquer",
+      "label": {
+        "en": "conquer",
+        "zh-CN": "征服"
+      },
+      "valence": 0.73,
+      "arousal": 0.72
+    },
+    {
+      "id": "curious",
+      "label": {
+        "en": "curious",
+        "zh-CN": "好奇"
+      },
+      "valence": 0.64,
+      "arousal": 0.6
+    },
+    {
+      "id": "eagerness",
+      "label": {
+        "en": "eagerness",
+        "zh-CN": "渴望"
+      },
+      "valence": 0.65,
+      "arousal": 0.66
+    },
+    {
+      "id": "peaceful",
+      "label": {
+        "en": "peaceful",
+        "zh-CN": "平和"
+      },
+      "valence": 0.85,
+      "arousal": 0.23
+    },
+    {
+      "id": "relax",
+      "label": {
+        "en": "relax",
+        "zh-CN": "舒缓"
+      },
+      "valence": 0.86,
+      "arousal": 0.18
+    },
+    {
+      "id": "carefree",
+      "label": {
+        "en": "carefree",
+        "zh-CN": "无忧"
+      },
+      "valence": 0.82,
+      "arousal": 0.4
+    },
+    {
+      "id": "dignified",
+      "label": {
+        "en": "dignified",
+        "zh-CN": "雍容"
+      },
+      "valence": 0.76,
+      "arousal": 0.39
+    },
+    {
+      "id": "gentle",
+      "label": {
+        "en": "gentle",
+        "zh-CN": "轻柔"
+      },
+      "valence": 0.79,
+      "arousal": 0.28
+    },
+    {
+      "id": "grateful",
+      "label": {
+        "en": "grateful",
+        "zh-CN": "感恩"
+      },
+      "valence": 0.8,
+      "arousal": 0.45
+    },
+    {
+      "id": "kindness",
+      "label": {
+        "en": "kindness",
+        "zh-CN": "温情"
+      },
+      "valence": 0.85,
+      "arousal": 0.41
+    },
+    {
+      "id": "respectful",
+      "label": {
+        "en": "respectful",
+        "zh-CN": "谦恭"
+      },
+      "valence": 0.78,
+      "arousal": 0.45
+    },
+    {
+      "id": "safe",
+      "label": {
+        "en": "safe",
+        "zh-CN": "安稳"
+      },
+      "valence": 0.76,
+      "arousal": 0.36
+    },
+    {
+      "id": "secure",
+      "label": {
+        "en": "secure",
+        "zh-CN": "安心"
+      },
+      "valence": 0.82,
+      "arousal": 0.27
+    },
+    {
+      "id": "soft",
+      "label": {
+        "en": "soft",
+        "zh-CN": "柔软"
+      },
+      "valence": 0.77,
+      "arousal": 0.45
+    },
+    {
+      "id": "wise",
+      "label": {
+        "en": "wise",
+        "zh-CN": "睿智"
+      },
+      "valence": 0.82,
+      "arousal": 0.36
+    },
+    {
+      "id": "admire",
+      "label": {
+        "en": "admire",
+        "zh-CN": "倾慕"
+      },
+      "valence": 0.83,
+      "arousal": 0.65
+    },
+    {
+      "id": "amaze",
+      "label": {
+        "en": "amaze",
+        "zh-CN": "惊叹"
+      },
+      "valence": 0.82,
+      "arousal": 0.74
+    },
+    {
+      "id": "care",
+      "label": {
+        "en": "care",
+        "zh-CN": "关切"
+      },
+      "valence": 0.82,
+      "arousal": 0.63
+    },
+    {
+      "id": "competent",
+      "label": {
+        "en": "competent",
+        "zh-CN": "干练"
+      },
+      "valence": 0.76,
+      "arousal": 0.54
+    },
+    {
+      "id": "enjoy",
+      "label": {
+        "en": "enjoy",
+        "zh-CN": "愉悦"
+      },
+      "valence": 0.9,
+      "arousal": 0.67
+    },
+    {
+      "id": "funny",
+      "label": {
+        "en": "funny",
+        "zh-CN": "诙谐"
+      },
+      "valence": 0.95,
+      "arousal": 0.75
+    },
+    {
+      "id": "lust",
+      "label": {
+        "en": "lust",
+        "zh-CN": "炽热"
+      },
+      "valence": 0.77,
+      "arousal": 0.74
+    },
+    {
+      "id": "strength",
+      "label": {
+        "en": "strength",
+        "zh-CN": "力量"
+      },
+      "valence": 0.8,
+      "arousal": 0.6
+    },
+    {
+      "id": "talent",
+      "label": {
+        "en": "talent",
+        "zh-CN": "才华"
+      },
+      "valence": 0.82,
+      "arousal": 0.66
+    },
+    {
+      "id": "desire",
+      "label": {
+        "en": "desire",
+        "zh-CN": "渴望"
+      },
+      "valence": 0.84,
+      "arousal": 0.79
+    },
+    {
+      "id": "enthusiastic",
+      "label": {
+        "en": "enthusiastic",
+        "zh-CN": "热烈"
+      },
+      "valence": 0.9,
+      "arousal": 0.8
+    },
+    {
+      "id": "excitement",
+      "label": {
+        "en": "excitement",
+        "zh-CN": "激动"
+      },
+      "valence": 0.81,
+      "arousal": 0.83
+    },
+    {
+      "id": "joy",
+      "label": {
+        "en": "joy",
+        "zh-CN": "欢欣"
+      },
+      "valence": 0.95,
+      "arousal": 0.78
+    },
+    {
+      "id": "surprise",
+      "label": {
+        "en": "surprise",
+        "zh-CN": "惊奇"
+      },
+      "valence": 0.84,
+      "arousal": 0.76
+    },
+    {
+      "id": "thrill",
+      "label": {
+        "en": "thrill",
+        "zh-CN": "震颤"
+      },
+      "valence": 0.88,
+      "arousal": 0.88
+    },
+    {
+      "id": "reserved",
+      "label": {
+        "en": "reserved",
+        "zh-CN": "含蓄"
+      },
+      "valence": 0.49,
+      "arousal": 0.28
+    },
+    {
+      "id": "neutral",
+      "label": {
+        "en": "neutral",
+        "zh-CN": "中性"
+      },
+      "valence": 0.5,
+      "arousal": 0.5
+    },
+    {
+      "id": "warm",
+      "label": {
+        "en": "warm",
+        "zh-CN": "温暖"
+      },
+      "valence": 0.69,
+      "arousal": 0.52
+    },
+    {
+      "id": "tender",
+      "label": {
+        "en": "tender",
+        "zh-CN": "温柔"
+      },
+      "valence": 0.74,
+      "arousal": 0.49
+    },
+    {
+      "id": "power",
+      "label": {
+        "en": "power",
+        "zh-CN": "权力"
+      },
+      "valence": 0.69,
+      "arousal": 0.71
+    },
+    {
+      "id": "calm",
+      "label": {
+        "en": "calm",
+        "zh-CN": "沉静"
+      },
+      "valence": 0.72,
+      "arousal": 0.33
+    },
+    {
+      "id": "positive",
+      "label": {
+        "en": "positive",
+        "zh-CN": "积极"
+      },
+      "valence": 0.88,
+      "arousal": 0.57
+    }
+  ]
+}
