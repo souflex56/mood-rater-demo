@@ -45,7 +45,7 @@ export default function AnnotationTimeline({ samples, passes, duration, currentT
       <path d={curve(samples, 'arousal', duration)} stroke="#5c7f96" strokeWidth="2" fill="none" />
       <line x1={36 + currentTime / Math.max(duration, .1) * 608} x2={36 + currentTime / Math.max(duration, .1) * 608} y1="12" y2="118" stroke="#315c46" strokeWidth="1.5" />
       {[0, .25, .5, .75, 1].map(ratio => <text key={ratio} x={36 + ratio * 608} y="137" textAnchor="middle" className={styles.graphLabel}>{formatTime(duration * ratio)}</text>)}
-      {!hasData && <text x="340" y="70" textAnchor="middle" className={styles.graphEmpty}>{t('Your emotion trace will appear here', '你的情绪轨迹将在这里呈现')}</text>}
+      {!hasData && <text x="340" y="70" textAnchor="middle" className={styles.graphEmpty}>{t('Your emotion trace will appear here', '标注轨迹将在这里显示')}</text>}
     </svg>
     <input className={styles.timelineSeek} aria-label={t('Seek in annotation timeline', '在标注时间线上定位')} type="range" min="0" max={duration || 1} step="0.1" value={Math.min(currentTime, duration || 1)} disabled={!duration} onChange={event => onSeek(Number(event.target.value))} />
   </div>;

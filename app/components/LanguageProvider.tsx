@@ -1,6 +1,8 @@
 "use client";
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Locale } from '../../lib/types';
+// Chinese UI terms: 标注工作区 (workspace), 标注记录 (session), 情绪参考词 (guide words),
+// 标注区间 (recording interval), 已标注时长占比 (coverage), 数据收集服务 (backend).
 type Language = {locale: Locale; setLocale: (locale: Locale) => void; t: (en: string, zh: string) => string};
 const Context = createContext<Language>({locale:'en',setLocale:()=>{},t:(en)=>en});
 export function LanguageProvider({children}: {children:ReactNode}) {

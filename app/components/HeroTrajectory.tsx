@@ -55,14 +55,14 @@ export default function HeroTrajectory() {
 
   return <div className={`hero-art ${styles.art}`} data-motion-paused={paused} style={motionStyle}
     aria-label={t('Illustration of a valence–arousal trajectory', '愉悦度—唤醒度情绪轨迹示意')}>
-    <div className="art-top"><span><span className="status-dot"/>{t('AN EMOTIONAL LANDSCAPE', '一段情绪的旅程')}</span><AudioLines size={18}/></div>
+    <div className="art-top"><span><span className="status-dot"/>{t('AN EMOTIONAL LANDSCAPE', '情绪轨迹示意')}</span><AudioLines size={18}/></div>
     <div className="illustration-plane">
       <span className="plane-axis-top">{t('ENERGETIC', '兴奋 ↑')}</span>
       <span className="plane-axis-bottom">{t('CALM', '↓ 平静')}</span>
       <span className={`plane-axis-left ${locale === 'zh-CN' ? styles.uprightAxis : ''}`}>{t('NEGATIVE', '消极')}</span>
       <span className={`plane-axis-right ${locale === 'zh-CN' ? styles.uprightAxis : ''}`}>{t('POSITIVE', '积极')}</span>
       <svg viewBox="0 0 360 300" role="img" aria-label={t('Example trajectory, not collected data', '轨迹示意，并非实际采集数据')} aria-describedby={descriptionId}>
-        <desc id={descriptionId}>{t('An illustrative journey through neutral, sorrow, peaceful, tender, cheerful, enthusiastic, aggressive and anger, following their configured valence and arousal coordinates. This is an animation, not live ratings or a recording.', '轨迹依次经过中性、哀伤、平和、温柔、欢快、热烈、激昂、暴怒，位置来自对应词的愉悦度和唤醒度坐标。这是示意动画，不是实时评分或录音数据。')}</desc>
+        <desc id={descriptionId}>{t('An illustrative journey through neutral, sorrow, peaceful, tender, cheerful, enthusiastic, aggressive and anger, following their configured valence and arousal coordinates. This is an animation, not live ratings or a recording.', '轨迹依次经过中性、哀伤、平和、温柔、欢快、热烈、激昂、暴怒，位置由各词的愉悦度和唤醒度坐标决定。这是示意动画，不代表实时评分或实际标注数据。')}</desc>
         <style>{animationRules(animationPrefix)}</style>
         <defs><linearGradient id={gradientId} x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stopColor="#c8a17b"/><stop offset="100%" stopColor="#24594e"/></linearGradient></defs>
         <g stroke="#cbd5cd" strokeWidth="1" strokeDasharray="3 5"><path d="M180 15V285M25 150H335"/></g>

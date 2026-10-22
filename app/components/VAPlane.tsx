@@ -100,8 +100,8 @@ export default function VAPlane({ profile, locale, rating, touched, recording, l
         <span className={`${styles.axisEndpoint} ${styles.xHigh}`} data-axis-endpoint="x-high"><span>{label(axes.x.high)}</span><span aria-hidden="true">→</span></span>
       </div>
       <div className={styles.guideFeedback} id={helpId}>
-        {tags.length ? <p aria-label={t('Reference words inside the circle, nearest first', '圆内情绪参考词，按距离从近到远')}>{tags.map((tag, index) => <span key={tag.id} data-guidance-tag={tag.id}>{tagLabel(tag)}{index < tags.length - 1 ? (locale === 'zh-CN' ? '，' : ', ') : ''}</span>)}</p>
-          : <p>{touched ? t('No reference words within this circle.', '当前圆内没有情绪参考词。') : t('Select a point to view reference words.', '选择一个点，查看情绪参考词。')}</p>}
+        {tags.length ? <p aria-label={t('Reference words inside the circle, nearest first', '圆内的情绪参考词，按距圆点由近到远排列')}>{tags.map((tag, index) => <span key={tag.id} data-guidance-tag={tag.id}>{tagLabel(tag)}{index < tags.length - 1 ? (locale === 'zh-CN' ? '，' : ', ') : ''}</span>)}</p>
+          : <p>{touched ? t('No reference words within this circle.', '当前圆内没有情绪参考词。') : t('Select a point to view reference words.', '在图中选择位置，查看附近的情绪参考词。')}</p>}
       </div>
     </div>
   </div>;
