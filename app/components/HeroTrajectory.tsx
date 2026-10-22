@@ -62,7 +62,7 @@ export default function HeroTrajectory() {
       <span className={`plane-axis-left ${locale === 'zh-CN' ? styles.uprightAxis : ''}`}>{t('NEGATIVE', '消极')}</span>
       <span className={`plane-axis-right ${locale === 'zh-CN' ? styles.uprightAxis : ''}`}>{t('POSITIVE', '积极')}</span>
       <svg viewBox="0 0 360 300" role="img" aria-label={t('Example trajectory, not collected data', '轨迹示意，并非实际采集数据')} aria-describedby={descriptionId}>
-        <desc id={descriptionId}>{t('An illustrative journey through neutral, peaceful, tender, cheerful, enthusiastic, aggressive and anger, following their configured valence and arousal coordinates. This is an animation, not live ratings or a recording.', '轨迹依次经过中性、平和、温柔、欢快、热烈、激昂、暴怒，位置来自对应词的愉悦度和唤醒度坐标。这是示意动画，不是实时评分或录音数据。')}</desc>
+        <desc id={descriptionId}>{t('An illustrative journey through neutral, sorrow, peaceful, tender, cheerful, enthusiastic, aggressive and anger, following their configured valence and arousal coordinates. This is an animation, not live ratings or a recording.', '轨迹依次经过中性、哀伤、平和、温柔、欢快、热烈、激昂、暴怒，位置来自对应词的愉悦度和唤醒度坐标。这是示意动画，不是实时评分或录音数据。')}</desc>
         <style>{animationRules(animationPrefix)}</style>
         <defs><linearGradient id={gradientId} x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stopColor="#c8a17b"/><stop offset="100%" stopColor="#24594e"/></linearGradient></defs>
         <g stroke="#cbd5cd" strokeWidth="1" strokeDasharray="3 5"><path d="M180 15V285M25 150H335"/></g>

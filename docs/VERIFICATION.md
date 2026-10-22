@@ -2,6 +2,14 @@
 
 Local verification: 2026-10-22. This record describes observed checks, not a guarantee of production capacity.
 
+## Sorrow waypoint / 新增哀伤节点
+
+Verified locally on 2026-10-22:
+
+- The homepage sequence is now neutral → sorrow → peaceful → tender → cheerful → enthusiastic → aggressive → anger. Sorrow uses the configured VA (0.16, 0.44), corresponding to SVG (74.6, 166.2), and displays sorrow · 哀伤 in Chinese mode.
+- Browser DOM inspection confirmed all eight configured points in order, attached travelling labels, a 13-second cycle and zero horizontal overflow. The journey still reaches anger at nine seconds; the additional segment shares that interval, preserving the existing fade and restart timing.
+- Four trajectory tests and TypeScript checking passed. Tests include exact eight-point coordinates, curve endpoints, caption bounds, custom and missing-tag behavior, and edge/coincident coordinates. The reduced-motion layout includes an eighth static label.
+
 ## Captions following the point / 情绪词跟随圆点
 
 Verified locally on 2026-10-22:

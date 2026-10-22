@@ -1,7 +1,6 @@
 import type { EmotionTag } from '../../lib/va-config.ts';
 
 export const HERO_DURATION_SECONDS = 13;
-export const HERO_STEP_SECONDS = 1.5;
 export const HERO_WAYPOINT_HOLD_SECONDS = 0.3;
 export const HERO_FADE_IN_SECONDS = 0.2;
 export const HERO_FADE_START_SECONDS = 10.2;
@@ -11,6 +10,7 @@ export const HERO_PLOT = { left: 25, right: 335, top: 15, bottom: 285 } as const
 // Keep this exact requested sequence even when a customized tag list omits an entry.
 const REQUESTED_TAGS: EmotionTag[] = [
   { id: 'neutral', label: { en: 'neutral', 'zh-CN': '中性' }, valence: .5, arousal: .5 },
+  { id: 'sorrow', label: { en: 'sorrow', 'zh-CN': '哀伤' }, valence: .16, arousal: .44 },
   { id: 'peaceful', label: { en: 'peaceful', 'zh-CN': '平和' }, valence: .85, arousal: .23 },
   { id: 'tender', label: { en: 'tender', 'zh-CN': '温柔' }, valence: .74, arousal: .49 },
   { id: 'cheerful', label: { en: 'cheerful', 'zh-CN': '欢快' }, valence: .89, arousal: .67 },
@@ -18,8 +18,10 @@ const REQUESTED_TAGS: EmotionTag[] = [
   { id: 'aggressive', label: { en: 'aggressive', 'zh-CN': '激昂' }, valence: .51, arousal: .6 },
   { id: 'anger', label: { en: 'anger', 'zh-CN': '暴怒' }, valence: .17, arousal: .83 },
 ];
-const LABEL_WIDTHS = [124, 140, 112, 140, 166, 154, 112];
-const STATIC_LABELS = [[35, 250], [194, 250], [172, 208], [166, 159], [162, 112], [24, 67], [35, 22]];
+// Keep the journey at nine seconds as its waypoint count changes; retain the fade and loop timing.
+export const HERO_STEP_SECONDS = 9 / (REQUESTED_TAGS.length - 1);
+const LABEL_WIDTHS = [124, 124, 140, 112, 140, 166, 154, 112];
+const STATIC_LABELS = [[35, 250], [20, 180], [194, 250], [172, 208], [166, 159], [162, 112], [24, 67], [35, 22]];
 
 export type HeroPoint = { x: number; y: number };
 export type HeroSegment = { start: HeroPoint; control1: HeroPoint; control2: HeroPoint; end: HeroPoint; length: number };

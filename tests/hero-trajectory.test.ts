@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { defaultVAInterface } from '../lib/va-config.ts';
 import { buildHeroTrajectory, heroCubicPoint, heroLabelOffset, HERO_PLOT } from '../app/components/hero-trajectory-data.ts';
 
-const ids = ['neutral', 'peaceful', 'tender', 'cheerful', 'enthusiastic', 'aggressive', 'anger'];
-const positions = [[.5, .5], [.85, .23], [.74, .49], [.89, .67], [.9, .8], [.51, .6], [.17, .83]];
+const ids = ['neutral', 'sorrow', 'peaceful', 'tender', 'cheerful', 'enthusiastic', 'aggressive', 'anger'];
+const positions = [[.5, .5], [.16, .44], [.85, .23], [.74, .49], [.89, .67], [.9, .8], [.51, .6], [.17, .83]];
 
 test('travelling captions stay inside the SVG for every path sample and edge coordinates', () => {
   const result = buildHeroTrajectory(defaultVAInterface.tags);
@@ -28,7 +28,7 @@ test('travelling captions stay inside the SVG for every path sample and edge coo
   }
 });
 
-test('hero visits all seven requested VA positions in order, including each cubic endpoint', () => {
+test('hero visits all eight requested VA positions in order, including each cubic endpoint', () => {
   const result = buildHeroTrajectory(defaultVAInterface.tags);
   assert.deepEqual(result.waypoints.map(point => point.tag.id), ids);
   result.waypoints.forEach((point, index) => {
@@ -36,20 +36,23 @@ test('hero visits all seven requested VA positions in order, including each cubi
     assert.deepEqual({ x: point.x, y: point.y }, expected);
     assert.equal(point.fromConfig, true);
     if (index > 0) assert.deepEqual(heroCubicPoint(result.segments[index - 1], 1), expected);
-    if (index < 6) assert.deepEqual(heroCubicPoint(result.segments[index], 0), expected);
+    if (index < positions.length - 1) assert.deepEqual(heroCubicPoint(result.segments[index], 0), expected);
   });
   assert.equal(result.waypoints[0].progress, 0);
-  assert.equal(result.waypoints[6].progress, 1);
+  assert.equal(result.waypoints.at(-1)!.progress, 1);
+  assert.equal(result.waypoints.at(-1)!.arrivalSeconds, 9);
 });
 
 test('custom tag coordinates and labels apply without replacing omitted sequence entries', () => {
   const custom = { id: 'tender', label: { en: 'custom tender', 'zh-CN': '自定义温柔' }, valence: .2, arousal: .7 };
   const result = buildHeroTrajectory([custom]);
   assert.deepEqual(result.waypoints.map(point => point.tag.id), ids);
-  assert.deepEqual(result.waypoints[2].tag, custom);
-  assert.deepEqual([result.waypoints[2].x, result.waypoints[2].y], [87, 96]);
+  const tender = result.waypoints.find(point => point.tag.id === 'tender')!;
+  assert.deepEqual(tender.tag, custom);
+  assert.deepEqual([tender.x, tender.y], [87, 96]);
   assert.equal(result.waypoints[0].fromConfig, false);
   assert.deepEqual(result.waypoints[0].tag, defaultVAInterface.tags.find(tag => tag.id === 'neutral'));
+  assert.deepEqual(result.waypoints[1].tag, defaultVAInterface.tags.find(tag => tag.id === 'sorrow'));
 });
 
 test('curves stay inside the plot and progress remains finite for edge and coincident custom points', () => {
