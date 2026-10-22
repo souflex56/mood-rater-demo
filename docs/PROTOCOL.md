@@ -129,6 +129,6 @@ The original study’s time-stamped click collection and 1 Hz step-resampling an
 
 ## 8. Spatial guidance and configuration / 空间引导与配置
 
-See [VA-CUSTOMIZATION.md](VA-CUSTOMIZATION.md) for all 97 supplied tags, original four-corner colors, square geometry, normalized radius 1/16 (diameter 1/8), at most five nearest labels and typed customization. New sessions retain `interfaceProfile`; old sessions without it remain readable without inventing their original interface. JSON retains each event’s `utcTimestamp`; CSV `source_event_utc_timestamp` references that original input, including held rows.
+See [VA-CUSTOMIZATION.md](VA-CUSTOMIZATION.md) for all 97 supplied tags, muted four-corner colors and the original-color preset, responsive square geometry, normalized radius 1/16 (diameter 1/8), at most five nearest labels and typed customization. New sessions retain `interfaceProfile`; old sessions without it remain readable without inventing their original interface. JSON retains each event’s `utcTimestamp`; CSV `source_event_utc_timestamp` references that original input, including held rows.
 
 具体词表、配色、正方形、直径 1/8 的筛选圆、最多 5 个邻近词及配置接口见上文链接。新会话保存 `interfaceProfile` 快照，旧会话不补造历史配置。JSON 保留事件 UTC，派生 CSV 的 UTC 列引用源输入，不为保持值生成新的观测时间。

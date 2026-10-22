@@ -1,8 +1,8 @@
 # VA interface configuration / VA 界面配置
 
-The square VA plane preserves the original Mood Rater's red, orange, blue and green background. Guided labels come from the exact 97-word list and Chinese translations supplied by the project owner. The old source comment says 95, but the array contains 97 distinct entries. No coordinates have been invented for words absent from that list, including the illustrative word “sweet” in the supplied thesis excerpt.
+The square VA plane preserves the original Mood Rater's red, orange, blue and green color families in a softer palette that fits the cream and sage interface. The original saturated palette remains available as a separate preset. Guided labels come from the exact 97-word list and Chinese translations supplied by the project owner. The old source comment says 95, but the array contains 97 distinct entries. No coordinates have been invented for words absent from that list, including the illustrative word “sweet” in the supplied thesis excerpt.
 
-正方形 VA 平面保留原版的红、橙、蓝、绿配色。引导词完整采用项目所有者提供的 97 个词、坐标和中文翻译；原代码注释写作 95，实际数组为 97 个不同词。论文描述中的 “sweet” 只是示例，不在所给词表中，因此未编造它的坐标。
+正方形 VA 平面保留原版红、橙、蓝、绿四类颜色，以较柔和的色调融入米白、鼠尾草绿界面；另存原版高饱和配色预设。引导词完整采用项目所有者提供的 97 个词、坐标和中文翻译；原代码注释写作 95，实际数组为 97 个不同词。论文描述中的 “sweet” 只是示例，不在所给词表中，因此未编造它的坐标。
 
 ## Files and extension points / 文件与接口
 
@@ -10,6 +10,7 @@ The square VA plane preserves the original Mood Rater's red, orange, blue and gr
 | --- | --- |
 | [`config/emotion-tags.json`](../config/emotion-tags.json) | Word IDs, English/Chinese labels, valence and arousal coordinates / 词 ID、中英文、效价与唤醒坐标 |
 | [`config/va-interface.json`](../config/va-interface.json) | Circle diameter ratio, maximum label count, four background colors, X/Y names and endpoint labels / 圆圈直径比例、标签数量上限、四角配色、X/Y 轴名称及端点文案 |
+| [`config/va-interface-original.json`](../config/va-interface-original.json) | Optional original palette preset, with the original profile ID and version / 原始配色可选预设，保留原配置 ID 与版本 |
 | [`lib/va-config.ts`](../lib/va-config.ts) | Typed configuration validation, proximity selection and original color interpolation / 类型、配置校验、邻近筛选与原版颜色插值 |
 | `Annotator` component's `interfaceProfile` prop | Supply another validated profile without modifying the interaction code / 传入其他配置，无需改交互实现 |
 
@@ -23,11 +24,11 @@ import { defaultVAInterface, parseVAInterfaceProfile } from '@/lib/va-config';
 
 const custom = structuredClone(defaultVAInterface);
 custom.config.id = 'my-study-va';
-custom.config.version = 2;
+custom.config.version = 1;
 custom.config.guide.diameterRatio = 1 / 8;
 custom.config.guide.maxTags = 5;
 custom.config.axes.x.name = { en: 'Valence', 'zh-CN': '效价' };
-custom.config.background.topLeft = [180, 0, 0];
+custom.config.background.topLeft = [190, 100, 102];
 // Modify custom.tags or its label/valence/arousal fields here.
 const profile = parseVAInterfaceProfile(custom);
 
@@ -46,13 +47,26 @@ For a selected point `(v, a)`, each tag's distance is `sqrt((v-tag.v)^2 + (a-tag
 
 以所选点为圆心，按二维欧氏距离筛选。默认**直径 = 平面宽度的 1/8**，所以归一化**半径 = 1/16 = 0.0625**。只选择圈内或边界上的词，按距离从近到远取最多 5 个；等距时按文件顺序。圈内没有词就不显示情绪词，不从圈外补选。
 
-The selection circle and tag anchors retain their true VA locations even near an edge. Labels are guidance, not a classification of the listener. A word preview before recording does not create a rating. While recording, pointer, keyboard and slider inputs retain their actual coordinates and times.
+The selection circle retains the selected VA location even near an edge. Nearby words appear in a vertical list below the plane, in nearest-first order; the plane does not show tag anchors or connecting lines. Their stored coordinates still determine eligibility and ranking. Labels are guidance, not a classification of the listener. A word preview before recording does not create a rating. While recording, pointer, keyboard and slider inputs retain their actual coordinates and times.
 
-圆圈和标签锚点保留真实 VA 位置，靠近边缘时也不移动数据坐标。词语用于引导，不是对聆听者的分类。录制前预览词语不会产生评分；录制时保存鼠标、键盘和滑块实际输入的坐标与时间。
+圆圈保留所选 VA 位置，靠近边缘时也不移动数据坐标。附近词语在平面下方纵向排列，按距离从近到远排序；平面内不显示词语锚点或连线，词语的保存坐标仍用于筛选和排序。词语用于引导，不是对聆听者的分类。录制前预览词语不会产生评分；录制时保存鼠标、键盘和滑块实际输入的坐标与时间。
 
-The default palette matches the original code: top-left `[180,0,0]`, top-right `[220,120,0]`, bottom-left `[0,40,120]`, bottom-right `[120,180,60]`. Its two-stage interpolation and channel rounding reproduce the original background, rather than four translucent pastel overlays.
+The default `mood-rater-soft-va` version 2 uses top-left muted red `[190,100,102]`, top-right warm orange `[219,174,101]`, bottom-left blue `[91,134,173]`, and bottom-right sage green `[147,177,125]`. It keeps the original two-stage interpolation and channel rounding. The optional `mood-rater-original-va` version 1 preset retains the original RGB values: `[180,0,0]`, `[220,120,0]`, `[0,40,120]`, and `[120,180,60]`, in the same corner order. Existing saved sessions continue to use their exact saved palette.
 
-默认四角 RGB 与原代码一致：左上深红 `[180,0,0]`，右上橙色 `[220,120,0]`，左下深蓝 `[0,40,120]`，右下绿色 `[120,180,60]`。沿用原版的两阶段插值及通道取整。
+默认 `mood-rater-soft-va` 第 2 版采用左上柔红 `[190,100,102]`、右上暖橙 `[219,174,101]`、左下蓝色 `[91,134,173]`、右下鼠尾草绿 `[147,177,125]`，沿用原版的两阶段插值及通道取整。可选的 `mood-rater-original-va` 第 1 版预设按同样顺序保留原 RGB：`[180,0,0]`、`[220,120,0]`、`[0,40,120]`、`[120,180,60]`。已有会话继续使用其保存的原始配色快照。
+
+To choose the original preset for new sessions, replace the `profile` in the component example above with:
+
+如需为新会话选用原始配色，将上方组件示例中的 `profile` 替换为：
+
+```tsx
+import originalConfig from '@/config/va-interface-original.json';
+
+const profile = parseVAInterfaceProfile({
+  ...structuredClone(defaultVAInterface),
+  config: originalConfig,
+});
+```
 
 The thesis excerpt supplied by the owner describes editorial ILM tags mapped to ANEW mean VA coordinates. This repository preserves the owner's supplied mapping; it does not assert independent verification of every word against an external ANEW database. The original standalone demo's radius 0.15 / three-word rule is left unchanged in `/legacy/`; the upgraded interface follows the supplied thesis rule above.
 

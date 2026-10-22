@@ -14,7 +14,7 @@ The upgrade is developed on `codex/mood-rater-v2` in a separate Git worktree. Th
 - **Use the controls that suit you:** mouse/touch dragging, arrow keys, and separate sliders. Interface language follows the browser initially and can be changed at any time.
 - **Learn with a short practice:** the 20-second synthetic example is separate from drafts and submissions. It is an interaction demo, not a validated research stimulus.
 
-The square VA plane restores the original red/orange/blue/green gradient and all 97 supplied guide tags. A circle of diameter 1/8 of the plane width selects up to five nearby labels; empty regions show no tags. Tag positions, circle size, colors and bilingual axis labels are independently configurable. New inputs record UTC alongside audio time. See [customization](docs/VA-CUSTOMIZATION.md).
+The compact square VA plane preserves the red/orange/blue/green hue families in a muted palette and all 97 supplied guide tags, displayed in one column below the plane. The exact original palette remains available as a preset. A circle of diameter 1/8 of the plane width selects up to five nearby labels; empty regions show no tags. Tag positions, circle size, colors and bilingual axis labels are independently configurable. New inputs record UTC alongside audio time. See [customization](docs/VA-CUSTOMIZATION.md).
 
 ## Start annotating
 

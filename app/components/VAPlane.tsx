@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef } from 'react';
 import { backgroundColorAt, findNearbyTags, type EmotionTag, type LocalizedLabel, type VAInterfaceProfile } from '@/lib/va-config';
 import type { Locale, RatingEvent } from '@/lib/types';
 import styles from './VAPlane.module.css';
@@ -19,7 +19,6 @@ export default function VAPlane({ profile, locale, rating, touched, recording, l
   const plane = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const pointerId = useRef<number | null>(null);
-  const [width, setWidth] = useState(400);
   const helpId = useId();
   const label = (value: LocalizedLabel) => value[locale];
   const tagLabel = (tag: EmotionTag) => locale === 'zh-CN' && tag.label.en !== tag.label['zh-CN'] ? `${tag.label.en} · ${tag.label['zh-CN']}` : tag.label.en;
@@ -30,11 +29,13 @@ export default function VAPlane({ profile, locale, rating, touched, recording, l
   useEffect(() => {
     const element = plane.current, surface = canvas.current;
     if (!element || !surface) return;
+    let renderedPixels = 0;
     const observer = new ResizeObserver(() => {
       const side = element.getBoundingClientRect().width;
       if (side <= 0) return;
-      setWidth(side);
       const pixels = Math.max(2, Math.min(1536, Math.round(side * window.devicePixelRatio)));
+      if (pixels === renderedPixels) return;
+      renderedPixels = pixels;
       surface.width = pixels; surface.height = pixels;
       const context = surface.getContext('2d', { alpha: false });
       if (!context) return;
@@ -57,15 +58,6 @@ export default function VAPlane({ profile, locale, rating, touched, recording, l
     const rect = plane.current?.getBoundingClientRect();
     if (rect) onChange((clientX - rect.left) / rect.width, 1 - (clientY - rect.top) / rect.height, 'pointer', force);
   }
-
-  const right = rating[0] <= .5;
-  const chipWidth = Math.min(190, width * .43);
-  const chipHeight = 24;
-  const chipSpacing = 29;
-  const firstTop = Math.max(8, Math.min(width - tags.length * chipSpacing - 4, (1 - rating[1]) * width - (tags.length - 1) * chipSpacing / 2 - chipHeight / 2));
-  const chipLeft = right
-    ? Math.min(width - chipWidth - 8, rating[0] * width + guide.diameterRatio * width / 2 + 15)
-    : Math.max(8, rating[0] * width - guide.diameterRatio * width / 2 - 15 - chipWidth);
 
   return <div className={styles.container}>
     <div className={styles.endpointTop}><span>{label(axes.y.high)}</span><small>1</small></div>
@@ -97,13 +89,6 @@ export default function VAPlane({ profile, locale, rating, touched, recording, l
         <span className={styles.xAxisName}>X · {label(axes.x.name)}</span><span className={styles.yAxisName}>Y · {label(axes.y.name)}</span>
         {touched && <>
           <div className={styles.guideCircle} data-guide-diameter={guide.diameterRatio} aria-hidden="true" style={{ left: `${rating[0] * 100}%`, top: `${(1 - rating[1]) * 100}%`, width: `${guide.diameterRatio * 100}%`, height: `${guide.diameterRatio * 100}%` }}/>
-          <svg className={styles.leaders} viewBox={`0 0 ${width} ${width}`} aria-hidden="true">
-            {tags.map((tag, index) => <g key={tag.id} data-tag-id={tag.id} data-valence={tag.valence} data-arousal={tag.arousal}>
-              <line x1={tag.valence * width} y1={(1 - tag.arousal) * width} x2={right ? chipLeft : chipLeft + chipWidth} y2={firstTop + index * chipSpacing + chipHeight / 2} stroke="white" strokeWidth="1.2" strokeOpacity=".9"/>
-              <circle cx={tag.valence * width} cy={(1 - tag.arousal) * width} r="3" fill="#26382e" stroke="white" strokeWidth="1.5"/>
-            </g>)}
-          </svg>
-          {tags.map((tag, index) => <span key={tag.id} className={styles.tagCallout} data-guidance-tag={tag.id} title={`${tagLabel(tag)} · ${tag.valence.toFixed(2)}, ${tag.arousal.toFixed(2)}`} style={{ left: chipLeft, top: firstTop + index * chipSpacing, width: chipWidth }}><b>{index + 1}</b><span>{tagLabel(tag)}</span></span>)}
           <span className={styles.currentPoint} style={{ left: `${rating[0] * 100}%`, top: `${(1 - rating[1]) * 100}%` }} aria-hidden="true"/>
         </>}
       </div>
@@ -111,11 +96,8 @@ export default function VAPlane({ profile, locale, rating, touched, recording, l
     </div>
     <div className={styles.endpointBottom}><span>{label(axes.y.low)}</span><small>0</small></div>
     <div className={styles.guideFeedback} id={helpId}>
-      {tags.length ? <>
-        <p>{t('Words in your circle · nearest first', '圆内参考词 · 按距离从近到远')}</p>
-        <ol aria-label={t('Nearby emotion words', '附近的情绪参考词')}>{tags.map(tag => <li key={tag.id}>{tagLabel(tag)}</li>)}</ol>
-      </> : <p>{touched ? t('No reference words in this circle.', '当前圆内没有情绪参考词。') : t('Click or tap the plane to explore nearby emotion words.', '点击平面，查看附近的情绪参考词。')}</p>}
-      <small>{t(`Circle diameter: ${guide.diameterRatio * 100}% of the plane · up to ${guide.maxTags} words inside the circle.`, `圆直径为平面宽度的 ${guide.diameterRatio * 100}% · 仅显示圆内最多 ${guide.maxTags} 个词。`)}</small>
+      {tags.length ? <ol aria-label={t('Reference words inside the circle, nearest first', '圆内情绪参考词，按距离从近到远')}>{tags.map(tag => <li key={tag.id} data-guidance-tag={tag.id}>{tagLabel(tag)}</li>)}</ol>
+        : <p>{touched ? t('No reference words within this circle.', '当前圆内没有情绪参考词。') : t('Select a point to view reference words.', '选择一个点，查看情绪参考词。')}</p>}
     </div>
   </div>;
 }

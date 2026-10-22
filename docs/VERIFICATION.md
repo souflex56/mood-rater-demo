@@ -50,3 +50,13 @@ Verified locally on 2026-10-22:
 - Restored sessions retain their saved interface profile. Newly created sessions use the current configured profile, avoiding accidental inheritance of an older restored profile.
 
 These checks used local synthetic data. The square's responsive CSS is implemented, but this revision was not separately tested on a physical mobile device.
+
+## Compact guidance revision / 紧凑引导界面修订
+
+Verified on 2026-10-22 after the guided VA revision above:
+
+- Reference words now form a single vertical list directly below the square. On-plane labels, anchor dots and leader lines are removed. The selection circle, distance filter and maximum of five words are unchanged.
+- Same-origin browser previews at 390 × 844 and 320 × 568 displayed the entire square and five bilingual guide words together. A 1366 × 768 laptop preview and a normal 1280 × 720 browser were also inspected. The normal browser reported zero horizontal document overflow; the five list rows shared one left edge and were spaced 22 pixels apart. These are browser viewport checks, not physical iPhone/Android device certification.
+- The desktop square was 272 × 272 pixels at a 720-pixel viewport height; phone previews used 280- and 228-pixel squares. The square and guide panel share the same responsive width, capped by both available width and viewport height.
+- Muted red/orange/blue/green defaults use profile `mood-rater-soft-va` version 2. The exact original preset remains available in `config/va-interface-original.json`; existing saved profile snapshots keep their colors.
+- Practice playback, two actual keyboard inputs and stopping the recording worked in the browser. All 35 Node tests and TypeScript passed. No recording/data protocol changes were made in this presentation revision.

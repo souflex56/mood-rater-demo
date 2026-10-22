@@ -1,15 +1,15 @@
 {
-  "id": "mood-rater-original-va",
-  "version": 1,
+  "id": "mood-rater-soft-va",
+  "version": 2,
   "guide": {
     "diameterRatio": 0.125,
     "maxTags": 5
   },
   "background": {
-    "topLeft": [180, 0, 0],
-    "topRight": [220, 120, 0],
-    "bottomLeft": [0, 40, 120],
-    "bottomRight": [120, 180, 60]
+    "topLeft": [190, 100, 102],
+    "topRight": [219, 174, 101],
+    "bottomLeft": [91, 134, 173],
+    "bottomRight": [147, 177, 125]
   },
   "axes": {
     "x": {

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { backgroundColorAt, defaultVAInterface, findNearbyTags, parseVAInterfaceProfile } from '../lib/va-config.ts';
 import type { EmotionTag, VAInterfaceProfile } from '../lib/va-config.ts';
+import originalConfig from '../config/va-interface-original.json' with { type: 'json' };
 
 const copy = (): VAInterfaceProfile => structuredClone(defaultVAInterface);
 const tag = (id: string, valence: number, arousal: number): EmotionTag => ({ id, label: { en: id, 'zh-CN': id }, valence, arousal });
@@ -41,8 +42,11 @@ test('guide selects at most five nearest tags, preserving source order for equal
   assert.deepEqual(findNearbyTags(0.29, 0.21).slice(0, 2).map(t => t.id), ['fatigued', 'tired']);
 });
 
-test('background exactly matches original corner colors and vertical-first floored interpolation', () => {
-  const background = defaultVAInterface.config.background;
+test('original preset retains exact corner colors and vertical-first floored interpolation', () => {
+  const originalProfile = parseVAInterfaceProfile({ ...copy(), config: originalConfig });
+  assert.equal(originalProfile.config.id, 'mood-rater-original-va');
+  assert.equal(originalProfile.config.version, 1);
+  const background = originalProfile.config.background;
   assert.deepEqual(backgroundColorAt(0, 1, background), [180, 0, 0]);
   assert.deepEqual(backgroundColorAt(1, 1, background), [220, 120, 0]);
   assert.deepEqual(backgroundColorAt(0, 0, background), [0, 40, 120]);
@@ -61,14 +65,27 @@ test('background exactly matches original corner colors and vertical-first floor
   assert.throws(() => backgroundColorAt(0.5, 2, background));
 });
 
+test('new default uses the soft four-color palette with unchanged guide and axes', () => {
+  const { config } = defaultVAInterface;
+  assert.equal(config.id, 'mood-rater-soft-va');
+  assert.equal(config.version, 2);
+  assert.deepEqual(config.guide, originalConfig.guide);
+  assert.deepEqual(config.axes, originalConfig.axes);
+  assert.deepEqual(backgroundColorAt(0, 1, config.background), [190, 100, 102]);
+  assert.deepEqual(backgroundColorAt(1, 1, config.background), [219, 174, 101]);
+  assert.deepEqual(backgroundColorAt(0, 0, config.background), [91, 134, 173]);
+  assert.deepEqual(backgroundColorAt(1, 0, config.background), [147, 177, 125]);
+});
+
 test('profile parser clones valid editable configurations and rejects malformed or unbounded data', () => {
   const original = copy();
+  const originalTopLeft = [...original.config.background.topLeft];
   const parsed = parseVAInterfaceProfile(original);
   assert.deepEqual(parsed, original);
   parsed.tags[0].label.en = 'changed';
   parsed.config.background.topLeft[0] = 3;
   assert.notEqual(parsed.tags[0].label.en, original.tags[0].label.en);
-  assert.equal(original.config.background.topLeft[0], 180);
+  assert.deepEqual(original.config.background.topLeft, originalTopLeft);
 
   const invalid = [
     (p: VAInterfaceProfile) => { p.config.guide.diameterRatio = 0; },
