@@ -1,7 +1,7 @@
 'use client';
 
 import { useId, useState, type CSSProperties } from 'react';
-import { AudioLines, MoveUpRight, Pause, Play } from 'lucide-react';
+import { AudioLines, Pause, Play } from 'lucide-react';
 import { defaultVAInterface } from '@/lib/va-config';
 import { useLanguage } from './LanguageProvider';
 import { buildHeroTrajectory, HERO_DURATION_SECONDS, HERO_FADE_END_SECONDS, HERO_FADE_IN_SECONDS, HERO_FADE_START_SECONDS, HERO_WAYPOINT_HOLD_SECONDS } from './hero-trajectory-data';
@@ -53,15 +53,15 @@ export default function HeroTrajectory() {
   const start = trajectory.waypoints[0], end = trajectory.waypoints.at(-1)!;
 
   return <div className={`hero-art ${styles.art}`} data-motion-paused={paused} style={motionStyle}
-    aria-label={t('Illustration of a valence–arousal trajectory', '效价—唤醒情绪轨迹示意')}>
+    aria-label={t('Illustration of a valence–arousal trajectory', '愉悦度—唤醒度情绪轨迹示意')}>
     <div className="art-top"><span><span className="status-dot"/>{t('AN EMOTIONAL LANDSCAPE', '一段情绪的旅程')}</span><AudioLines size={18}/></div>
     <div className="illustration-plane">
-      <span className="plane-axis-top">{t('ENERGETIC', '高唤醒')}</span>
-      <span className="plane-axis-bottom">{t('CALM', '低唤醒')}</span>
-      <span className="plane-axis-left">{t('NEGATIVE', '负向')}</span>
-      <span className="plane-axis-right">{t('POSITIVE', '正向')}</span>
+      <span className="plane-axis-top">{t('ENERGETIC', '兴奋 ↑')}</span>
+      <span className="plane-axis-bottom">{t('CALM', '↓ 平静')}</span>
+      <span className={`plane-axis-left ${locale === 'zh-CN' ? styles.uprightAxis : ''}`}>{t('NEGATIVE', '消极')}</span>
+      <span className={`plane-axis-right ${locale === 'zh-CN' ? styles.uprightAxis : ''}`}>{t('POSITIVE', '积极')}</span>
       <svg viewBox="0 0 360 300" role="img" aria-label={t('Example trajectory, not collected data', '轨迹示意，并非实际采集数据')} aria-describedby={descriptionId}>
-        <desc id={descriptionId}>{t('An illustrative journey through neutral, peaceful, tender, cheerful, enthusiastic, aggressive and anger, following their configured valence and arousal coordinates. This is an animation, not live ratings or a recording.', '轨迹依次经过中性、平和、温柔、欢快、热烈、激昂、暴怒，位置来自对应词的效价和唤醒坐标。这是示意动画，不是实时评分或录音数据。')}</desc>
+        <desc id={descriptionId}>{t('An illustrative journey through neutral, peaceful, tender, cheerful, enthusiastic, aggressive and anger, following their configured valence and arousal coordinates. This is an animation, not live ratings or a recording.', '轨迹依次经过中性、平和、温柔、欢快、热烈、激昂、暴怒，位置来自对应词的愉悦度和唤醒度坐标。这是示意动画，不是实时评分或录音数据。')}</desc>
         <style>{animationRules(animationPrefix)}</style>
         <defs><linearGradient id={gradientId} x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stopColor="#c8a17b"/><stop offset="100%" stopColor="#24594e"/></linearGradient></defs>
         <g stroke="#cbd5cd" strokeWidth="1" strokeDasharray="3 5"><path d="M180 15V285M25 150H335"/></g>
@@ -90,11 +90,10 @@ export default function HeroTrajectory() {
         </g>;})}
         </g>
       </svg>
-      <span className={`trajectory-note ${styles.note}`}>{t('A feeling in motion', '感受正在变化')}<MoveUpRight size={14}/></span>
     </div>
     <div className={`art-bottom ${styles.bottom}`}>
-      <span>{t('Valence × Arousal', '效价 × 唤醒')}</span>
-      <span className={styles.caption}>{t('Illustrative trajectory', '示意轨迹')}</span>
+      <span>{t('Valence × Arousal', '愉悦度 × 唤醒度')}</span>
+      <span className={styles.caption} data-hero-note="true">{t('A feeling in motion', '感受正在变化')}</span>
       <button type="button" className={styles.motionButton} onClick={() => setPaused(value => !value)} aria-pressed={paused}
         aria-label={t(paused ? 'Resume illustration animation' : 'Pause illustration animation', paused ? '继续示意动画' : '暂停示意动画')}>
         {paused ? <Play size={12}/> : <Pause size={12}/>}<span>{t(paused ? 'Resume' : 'Pause', paused ? '继续' : '暂停')}</span>

@@ -5,7 +5,7 @@
 .staticPoint{display:none}
 .word{opacity:1;animation-duration:var(--motion-duration);animation-timing-function:ease-in-out;animation-iteration-count:infinite}
 .word text{font-family:Inter,"Helvetica Neue","PingFang SC","Microsoft YaHei",Arial,sans-serif;font-size:12px;fill:#45604c;letter-spacing:.1px}
-.note{pointer-events:none}
+.art .uprightAxis{writing-mode:horizontal-tb;transform:translateY(-50%);letter-spacing:0;font-size:10px}
 .art[data-motion-paused=true] .trail,.art[data-motion-paused=true] .drawnTrace,.art[data-motion-paused=true] .traveller,.art[data-motion-paused=true] .word{animation-play-state:paused}
 .bottom{gap:10px;flex-wrap:wrap}
 .caption{margin-left:auto}

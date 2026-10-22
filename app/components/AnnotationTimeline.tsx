@@ -32,7 +32,7 @@ export default function AnnotationTimeline({ samples, passes, duration, currentT
 }) {
   const hasData = samples.some(sample => sample.valence !== null);
   return <div className={styles.timeline}>
-    <svg viewBox="0 0 680 148" role="img" aria-label={t('Valence and arousal over audio time. Blank areas have no annotation.', '效价与唤醒度随音频时间的变化。空白表示缺失标注。')}>
+    <svg viewBox="0 0 680 148" role="img" aria-label={t('Valence and arousal over audio time. Blank areas have no annotation.', '愉悦度与唤醒度随音频时间的变化。空白表示缺失标注。')}>
       {[0, .5, 1].map(value => <g key={value}>
         <line x1="36" x2="644" y1={112 - value * 94} y2={112 - value * 94} stroke="#e5e8e2" />
         <text x="22" y={116 - value * 94} textAnchor="end" className={styles.graphLabel}>{value}</text>

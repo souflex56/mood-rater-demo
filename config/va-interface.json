@@ -1,6 +1,6 @@
 {
   "id": "mood-rater-soft-va",
-  "version": 2,
+  "version": 3,
   "guide": {
     "diameterRatio": 0.125,
     "maxTags": 5
@@ -13,14 +13,14 @@
   },
   "axes": {
     "x": {
-      "name": { "en": "Valence", "zh-CN": "效价" },
+      "name": { "en": "Valence", "zh-CN": "愉悦度" },
       "low": { "en": "Negative", "zh-CN": "消极" },
       "high": { "en": "Positive", "zh-CN": "积极" }
     },
     "y": {
       "name": { "en": "Arousal", "zh-CN": "唤醒度" },
-      "low": { "en": "Low arousal", "zh-CN": "低唤醒" },
-      "high": { "en": "High arousal", "zh-CN": "高唤醒" }
+      "low": { "en": "Low arousal", "zh-CN": "平静" },
+      "high": { "en": "High arousal", "zh-CN": "兴奋" }
     }
   }
 }

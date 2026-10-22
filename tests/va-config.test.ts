@@ -65,12 +65,16 @@ test('original preset retains exact corner colors and vertical-first floored int
   assert.throws(() => backgroundColorAt(0.5, 2, background));
 });
 
-test('new default uses the soft four-color palette with unchanged guide and axes', () => {
+test('new default keeps the soft palette and guide with clear Chinese axis labels', () => {
   const { config } = defaultVAInterface;
   assert.equal(config.id, 'mood-rater-soft-va');
-  assert.equal(config.version, 2);
+  assert.equal(config.version, 3);
   assert.deepEqual(config.guide, originalConfig.guide);
-  assert.deepEqual(config.axes, originalConfig.axes);
+  for (const axis of ['x', 'y'] as const) {
+    for (const field of ['name', 'low', 'high'] as const) assert.equal(config.axes[axis][field].en, originalConfig.axes[axis][field].en);
+  }
+  assert.deepEqual(['name', 'low', 'high'].map(field => config.axes.x[field as keyof typeof config.axes.x]['zh-CN']), ['愉悦度', '消极', '积极']);
+  assert.deepEqual(['name', 'low', 'high'].map(field => config.axes.y[field as keyof typeof config.axes.y]['zh-CN']), ['唤醒度', '平静', '兴奋']);
   assert.deepEqual(backgroundColorAt(0, 1, config.background), [190, 100, 102]);
   assert.deepEqual(backgroundColorAt(1, 1, config.background), [219, 174, 101]);
   assert.deepEqual(backgroundColorAt(0, 0, config.background), [91, 134, 173]);

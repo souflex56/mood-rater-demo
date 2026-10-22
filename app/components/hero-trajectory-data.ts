@@ -72,9 +72,7 @@ export function buildHeroTrajectory(tags: readonly EmotionTag[]): { path: string
     if (index > 0) traversed += segments[index - 1].length;
     const labelWidth = LABEL_WIDTHS[index];
     const labelX = bound(point.x > 180 ? point.x - labelWidth - 14 : point.x + 12, 20, 340 - labelWidth);
-    let labelY = bound(point.y + 12, 20, 270);
-    // Leave the existing upper-right "A feeling in motion" note unobstructed.
-    if (labelX + labelWidth > 248 && labelY < 78) labelY = 82;
+    const labelY = bound(point.y + 12, 20, 270);
     return { ...point, progress: totalLength > 0 ? traversed / totalLength : 0, arrivalSeconds: index * HERO_STEP_SECONDS,
       labelX, labelY, labelWidth, staticLabelX: STATIC_LABELS[index][0], staticLabelY: STATIC_LABELS[index][1] };
   });

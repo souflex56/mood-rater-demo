@@ -66,9 +66,9 @@ Files in `public/` are public on a hosted deployment. Add only material you can 
 | [`config/va-interface.json`](../config/va-interface.json) | Circle size, maximum tags, corner colors, axis names and endpoints / 圆圈、标签数、四角颜色、轴名与端点 |
 | [`config/va-interface-original.json`](../config/va-interface-original.json) | Original-color preset / 原版配色预设 |
 
-The default guide circle has diameter `0.125` of the square width, hence radius `0.0625`. Only up to five tags inside the circle are selected, nearest first. Tags appear inline below the plane, separated by commas and wrapping naturally on narrow screens. All captions sit outside the square: the X name with a right arrow below it, the Y name with an up arrow on the far left, and four quadrant captions above/below its corners. Quadrant captions combine the configured X/Y endpoint names; they are orientation labels, not additional emotion tags. Editing the endpoints updates these captions too.
+The default guide circle has diameter `0.125` of the square width, hence radius `0.0625`. Only up to five tags inside the circle are selected, nearest first. Tags appear inline below the plane, separated by commas and wrapping naturally on narrow screens. All axis captions sit outside the square. The bottom row shows ← X low, X name, X high →; the far-left gutter places Y high ↑ at the top, Y name in the middle and ↓ Y low at the bottom. Labels remain upright and come directly from the active configuration, without repeating quadrant combinations.
 
-默认引导圆直径为正方形宽度的 `0.125`，半径为 `0.0625`。按距离取圈内最多五个词，在平面下方用逗号分隔并列显示，窄屏自然换行。所有说明文字均在正方形外：X 轴名及向右箭头在底部，Y 轴名及向上箭头在最左侧，四象限说明位于四角的上方或下方。四象限文案由配置中的 X/Y 端点名组合生成，用于说明方向，不是新增的情绪标签；修改端点时也会同步变化。
+默认引导圆直径为正方形宽度的 `0.125`，半径为 `0.0625`。按距离取圈内最多五个词，在平面下方用逗号分隔并列显示，窄屏自然换行。所有坐标文字均在正方形外：底部为「← 消极　愉悦度　积极 →」；最左侧从上至下为「兴奋 ↑」「唤醒度」「↓ 平静」。文字正向显示，直接来自当前配置，不再重复显示四象限组合。
 
 Use a new interface ID/version when changing a study’s guidance. New sessions snapshot the full interface and tag list; old sessions retain their saved configuration. Axis-name changes affect labels only, not the 0–1 scale or exported field names. See [VA-CUSTOMIZATION.md](VA-CUSTOMIZATION.md) for the schema, validation limits, original-color preset and interpolation rules.
 

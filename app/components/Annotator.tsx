@@ -580,7 +580,7 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
     </div>
 
     <section className={styles.reviewCard} aria-label={t('Review and export', '回顾与导出')}>
-      <div className={styles.sectionHeading}><h2><span className={styles.sectionNumber}>03</span>{t('Your emotion trace', '你的情绪轨迹')}</h2><div className={styles.legend}><span><i className={styles.valenceKey}/>{t('Valence', '效价')}</span><span><i className={styles.arousalKey}/>{t('Arousal', '唤醒度')}</span><button className={styles.textButton} onClick={() => setShowTimeline(value => !value)}>{showTimeline ? t('Hide', '收起') : t('Show', '展开')}</button></div></div>
+      <div className={styles.sectionHeading}><h2><span className={styles.sectionNumber}>03</span>{t('Your emotion trace', '你的情绪轨迹')}</h2><div className={styles.legend}><span><i className={styles.valenceKey}/>{t('Valence', '愉悦度')}</span><span><i className={styles.arousalKey}/>{t('Arousal', '唤醒度')}</span><button className={styles.textButton} onClick={() => setShowTimeline(value => !value)}>{showTimeline ? t('Hide', '收起') : t('Show', '展开')}</button></div></div>
       {showTimeline && <AnnotationTimeline samples={samples} passes={preview?.passes ?? []} duration={duration} currentTime={currentTime} onSeek={seek} t={t}/>}
       <div className={styles.reviewMeta}><span><strong>{Math.round(stats.coverage * 100)}%</strong> {t('coverage', '有效覆盖')}</span><span><strong>{stats.eventCount.toLocaleString(locale)}</strong> {t('inputs', '次输入')}</span><span><strong>{stats.passCount}</strong> {t('passes', '轮标注')}</span><span className={styles.gapNote}>{t('Gaps are missing data. Shaded areas show recording passes.', '空白为缺失数据，底色表示标注区间。')}</span></div>
       <div className={styles.reviewBottom}>

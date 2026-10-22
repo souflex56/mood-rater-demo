@@ -2,6 +2,15 @@
 
 Local verification: 2026-10-22. This record describes observed checks, not a guarantee of production capacity.
 
+## Chinese axis wording and unobstructed hero / 中文坐标文案与首页无遮挡轨迹
+
+Verified locally on 2026-10-22:
+
+- The new default profile is version 3: Chinese X labels are 愉悦度 / 消极 / 积极, and Y labels are 唤醒度 / 平静 / 兴奋. The original preset and saved interface snapshots remain intact. Nine focused configuration/trajectory tests and TypeScript checking passed.
+- All six axis-name/endpoint elements measured outside the 272 × 272 desktop square. Every Chinese axis word uses horizontal writing with no rotation. The bottom row is ← 消极 / 愉悦度 / 积极 →; the left gutter places 兴奋 ↑ above 唤醒度 above ↓ 平静. Repeated quadrant captions are removed.
+- At the 320 × 568 browser viewport, the square, outside axes and inline guide text fit in both languages. The 390 × 844 homepage preview shows the complete card and footer without overflow.
+- The homepage caption reads 愉悦度 × 唤醒度. 感受正在变化 is now in the card footer: DOM inspection confirmed it is outside the plot and below the plot boundary. The old fixed overlay and its positioning styles were removed. The 13-second seven-point animation remains active, and homepage Chinese side labels are upright.
+
 ## External axis labels and seven-point trajectory / 外置坐标文字与七点轨迹
 
 Verified locally on 2026-10-22 after the motion revision below:
