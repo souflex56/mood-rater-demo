@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐情感标注系统 - Mood Rater</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            min-height: calc(100vh - 40px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header h2 {
+            font-size: 1.2rem;
+            color: #764ba2;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .instructions li {
+            color: #374151;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .instructions li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .main-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .player-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .player-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .va-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .va-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .va-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .va-y-labels {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 400px;
+            text-align: right;
+            padding-right: 10px;
+        }
+
+        .y-label-fixed {
+            font-weight: bold;
+            font-size: 14px;
+            color: #2c3e50;
+            user-select: none;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+
+        .va-canvas-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .x-axis-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 400px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .x-label {
+            user-select: none;
+        }
+
+        .va-canvas {
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            cursor: crosshair;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: block;
+            width: 400px;
+            height: 400px;
+        }
+
+        .current-emotion-display {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+            margin-top: 15px;
+            width: 400px;
+            min-height: 80px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .current-emotion-display #currentEmotion {
+            font-weight: bold;
+            font-size: 16px;
+            color: #667eea;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .current-emotion-display #coordinates {
+            font-size: 14px;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .history-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .history-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-audio-time {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .history-emotion {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .history-coords {
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .history-local-time {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .control-btn {
+            padding: 12px 16px;
+            margin: 0;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            font-size: 14px;
+            min-height: 45px;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .va-labels {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #374151;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        audio {
+            width: 100%;
+            margin: 15px 0;
+            border-radius: 10px;
+        }
+
+        .controls-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 音乐情感标注系统</h1>
+            <h2>Music Emotion Annotation System</h2>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 使用说明</h3>
+            <ul>
+                <li>请播放下面的音乐片段并报告您感知的情感变化</li>
+                <li>每当感知到情感变化时，请及时在VA空间中进行新的标注</li>
+                <li>点击VA空间后会显示相关的情感标签作为参考</li>
+                <li>每个音乐片段至少需要5次标注，最多可达30次或更多</li>
+                <li>您必须完整聆听音乐片段并在整个过程中提供情感评分</li>
+            </ul>
+        </div>
+
+        <div class="main-section">
+            <div class="player-section">
+                <h3>🎼 音乐播放器</h3>
+                <audio id="audioPlayer" controls>
+                    <source src="https://www.soundjay.com/free-music/destination-01.mp3" type="audio/mpeg">
+                    您的浏览器不支持音频播放。
+                </audio>
+                <input type="file" id="localMusicInput" accept="audio/*" style="display: none;" onchange="handleLocalMusicSelect(event)">
+                <div class="controls-wrapper">
+                    <button class="control-btn" onclick="loadSampleMusic()">🎵 加载示例音乐</button>
+                    <button class="control-btn" onclick="loadLocalMusic()">📁 选择本地音乐</button>
+                    <button class="control-btn" onclick="clearHistory()">🗑️ 清除历史</button>
+                    <button class="control-btn" onclick="exportData()">📥 导出数据</button>
+                </div>
+            </div>
+
+            <div class="va-section">
+                <h3>🎯 VA 情感空间标注</h3>
+                <div class="va-container">
+                    <div class="va-y-labels">
+                        <div class="y-label-fixed">高能量<br>High Arousal</div>
+                        <div class="y-label-fixed">唤醒度<br>Arousal</div>
+                        <div class="y-label-fixed">低能量<br>Low Arousal</div>
+                    </div>
+
+                    <div class="va-canvas-wrapper">
+                        <div class="x-axis-labels">
+                            <div class="x-label">消极<br>Negative</div>
+                            <div class="x-label">效价 Valence</div>
+                            <div class="x-label">积极<br>Positive</div>
+                        </div>
+                        
+                        <canvas id="vaCanvas" class="va-canvas" width="400" height="400"></canvas>
+                        
+                        <div class="current-emotion-display">
+                            <div id="currentEmotion">请点击 VA 空间进行标注</div>
+                            <div id="coordinates"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="va-labels">
+            <strong>四个象限说明：</strong>
+            左上(愤怒/紧张) | 右上(兴奋/快乐) | 左下(悲伤/疲惫) | 右下(平静/放松)
+        </div>
+
+        <div class="history-section">
+            <h3>📊 标注历史</h3>
+            <div id="historyList">
+                <div class="history-item">
+                    <span>暂无标注记录，请开始标注</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 95个情感标签数据 - 基于AMG和ANEW数据集
+        const emotionTags = [
+            ['angry', 0.23, 0.77], ['bright', 0.81, 0.55], ['weary', 0.35, 0.35],
+            ['tense', 0.32, 0.69], ['aggressive', 0.51, 0.60], ['romantic', 0.92, 0.82],
+            ['hopeful', 0.76, 0.60], ['cold', 0.38, 0.52], ['ambitious', 0.83, 0.70],
+            ['thoughtful', 0.83, 0.59], ['confident', 0.87, 0.65], ['cheerful', 0.89, 0.67],
+            ['smooth', 0.70, 0.49], ['detached', 0.36, 0.41], ['elegant', 0.80, 0.44],
+            ['bored', 0.24, 0.23], ['disappointment', 0.17, 0.45], ['discomfort', 0.15, 0.40],
+            ['discouraged', 0.25, 0.44], ['sad', 0.08, 0.39], ['shamed', 0.19, 0.49],
+            ['sorrow', 0.16, 0.44], ['anxiety', 0.22, 0.72], ['bad', 0.20, 0.57],
+            ['harsh', 0.24, 0.58], ['anger', 0.17, 0.83], ['attack', 0.21, 0.75],
+            ['danger', 0.24, 0.79], ['furious', 0.12, 0.83], ['horror', 0.22, 0.78],
+            ['rage', 0.18, 0.90], ['stress', 0.14, 0.81], ['terrified', 0.09, 0.86],
+            ['fatigued', 0.29, 0.21], ['tired', 0.29, 0.21], ['doubtful', 0.30, 0.41],
+            ['indifferent', 0.45, 0.27], ['nonchalant', 0.47, 0.27], ['obstinate', 0.45, 0.37],
+            ['preoccupied', 0.38, 0.49], ['skeptical', 0.44, 0.49], ['solemn', 0.42, 0.32],
+            ['awkward', 0.28, 0.59], ['confused', 0.28, 0.63], ['envy', 0.30, 0.56],
+            ['forceful', 0.36, 0.59], ['fright', 0.27, 0.60], ['haunt', 0.31, 0.70],
+            ['obsessed', 0.33, 0.66], ['scary', 0.28, 0.71], ['suspicious', 0.35, 0.66],
+            ['fight', 0.35, 0.77], ['panic', 0.27, 0.75], ['shock', 0.38, 0.81],
+            ['quiet', 0.57, 0.23], ['decency', 0.60, 0.44], ['reverent', 0.54, 0.38],
+            ['serious', 0.51, 0.38], ['challenge', 0.68, 0.68], ['complex', 0.53, 0.58],
+            ['conquer', 0.73, 0.72], ['curious', 0.64, 0.60], ['eagerness', 0.65, 0.66],
+            ['peaceful', 0.85, 0.23], ['relax', 0.86, 0.18], ['carefree', 0.82, 0.40],
+            ['dignified', 0.76, 0.39], ['gentle', 0.79, 0.28], ['grateful', 0.80, 0.45],
+            ['kindness', 0.85, 0.41], ['respectful', 0.78, 0.45], ['safe', 0.76, 0.36],
+            ['secure', 0.82, 0.27], ['soft', 0.77, 0.45], ['wise', 0.82, 0.36],
+            ['admire', 0.83, 0.65], ['amaze', 0.82, 0.74], ['care', 0.82, 0.63],
+            ['competent', 0.76, 0.54], ['enjoy', 0.90, 0.67], ['funny', 0.95, 0.75],
+            ['lust', 0.77, 0.74], ['strength', 0.80, 0.60], ['talent', 0.82, 0.66],
+            ['desire', 0.84, 0.79], ['enthusiastic', 0.90, 0.80], ['excitement', 0.81, 0.83],
+            ['joy', 0.95, 0.78], ['surprise', 0.84, 0.76], ['thrill', 0.88, 0.88],
+            ['reserved', 0.49, 0.28], ['neutral', 0.50, 0.50], ['warm', 0.69, 0.52],
+            ['tender', 0.74, 0.49], ['power', 0.69, 0.71], ['calm', 0.72, 0.33],
+            ['positive', 0.88, 0.57]
+        ];
+
+        // 中英文情感标签对照表
+        const emotionTranslations = {
+            'angry': '愤怒', 'bright': '明亮', 'weary': '疲惫',
+            'tense': '紧张', 'aggressive': '激昂', 'romantic': '浪漫',
+            'hopeful': '希望', 'cold': '冰冷', 'ambitious': '雄心',
+            'thoughtful': '沉思', 'confident': '自信', 'cheerful': '欢快',
+            'smooth': '流畅', 'detached': '超然', 'elegant': '优雅',
+            'bored': '厌倦', 'disappointment': '失望', 'discomfort': '不安',
+            'discouraged': '沮丧', 'sad': '悲伤', 'shamed': '羞愧',
+            'sorrow': '哀伤', 'anxiety': '焦虑', 'bad': '阴郁',
+            'harsh': '刺耳', 'anger': '暴怒', 'attack': '冲击',
+            'danger': '危险', 'furious': '狂怒', 'horror': '惊骇',
+            'rage': '暴戾', 'stress': '压抑', 'terrified': '恐惧',
+            'fatigued': '倦怠', 'tired': '疲乏', 'doubtful': '疑虑',
+            'indifferent': '淡漠', 'nonchalant': '漠然', 'obstinate': '固执',
+            'preoccupied': '忧思', 'skeptical': '怀疑', 'solemn': '肃穆',
+            'awkward': '局促', 'confused': '困惑', 'envy': '妒忌',
+            'forceful': '强韧', 'fright': '惊惶', 'haunt': '萦绕',
+            'obsessed': '痴迷', 'scary': '骇人', 'suspicious': '猜疑',
+            'fight': '抗争', 'panic': '恐慌', 'shock': '震撼',
+            'quiet': '静谧', 'decency': '庄重', 'reverent': '敬畏',
+            'serious': '严肃', 'challenge': '挑战', 'complex': '繁复',
+            'conquer': '征服', 'curious': '好奇', 'eagerness': '渴望',
+            'peaceful': '平和', 'relax': '舒缓', 'carefree': '无忧',
+            'dignified': '雍容', 'gentle': '轻柔', 'grateful': '感恩',
+            'kindness': '温情', 'respectful': '谦恭', 'safe': '安稳',
+            'secure': '安心', 'soft': '柔软', 'wise': '睿智',
+            'admire': '倾慕', 'amaze': '惊叹', 'care': '关切',
+            'competent': '干练', 'enjoy': '愉悦', 'funny': '诙谐',
+            'lust': '炽热', 'strength': '力量', 'talent': '才华',
+            'desire': '渴望', 'enthusiastic': '热烈', 'excitement': '激动',
+            'joy': '欢欣', 'surprise': '惊奇', 'thrill': '震颤',
+            'reserved': '含蓄', 'neutral': '中性', 'warm': '温暖',
+            'tender': '温柔', 'power': '权力', 'calm': '沉静',
+            'positive': '积极'
+        };
+
+        let canvas, ctx;
+        let ratingHistory = [];
+        let audioPlayer;
+        let cleanCanvasImageData = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始初始化...');
+            initCanvas();
+            initAudioPlayer();
+            initEventListeners();
+        });
+
+        // 初始化画布
+        function initCanvas() {
+            console.log('初始化画布...');
+            canvas = document.getElementById('vaCanvas');
+            if (!canvas) {
+                console.error('找不到canvas元素');
+                return;
+            }
+            ctx = canvas.getContext('2d');
+            drawVASpace();
+            setTimeout(() => {
+                cleanCanvasImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                console.log('画布初始化完成');
+            }, 100);
+        }
+
+        // 绘制 VA 空间背景
+        function drawVASpaceBackground() {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 使用更清晰的颜色配置
+            const tl = {r: 180, g: 0, b: 0};      // 左上 - 深红色
+            const tr = {r: 220, g: 120, b: 0};    // 右上 - 橙红色
+            const bl = {r: 0, g: 40, b: 120};     // 左下 - 深蓝色
+            const br = {r: 120, g: 180, b: 60};   // 右下 - 绿色
+            
+            // 逐像素绘制渐变背景
+            for (let y = 0; y < height; y += 1) {
+                const left = interpolateColor(tl, bl, y / height);
+                const right = interpolateColor(tr, br, y / height);
+                
+                for (let x = 0; x < width; x += 1) {
+                    const color = interpolateColor(left, right, x / width);
+                    ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            
+            // X轴 (Valence)
+            ctx.beginPath();
+            ctx.moveTo(0, height/2);
+            ctx.lineTo(width, height/2);
+            ctx.stroke();
+            
+            // Y轴 (Arousal)
+            ctx.beginPath();
+            ctx.moveTo(width/2, 0);
+            ctx.lineTo(width/2, height);
+            ctx.stroke();
+            
+            // 绘制中心点
+            ctx.fillStyle = '#333';
+            ctx.beginPath();
+            ctx.arc(width/2, height/2, 4, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        // 绘制坐标轴文字标签
+        function drawVASpaceLabels() {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            
+            // 四个象限的说明
+            ctx.fillText('愤怒/紧张', width * 0.25, 30);
+            ctx.fillText('兴奋/快乐', width * 0.75, 30);
+            ctx.fillText('悲伤/疲惫', width * 0.25, height - 15);
+            ctx.fillText('平静/放松', width * 0.75, height - 15);
+            
+            // 中心点标签
+            ctx.fillText('中性', width/2, height/2 - 10);
+        }
+
+        // 绘制完整的 VA 空间
+        function drawVASpace() {
+            if (!ctx) return;
+            drawVASpaceBackground();
+            drawVASpaceLabels();
+        }
+
+        // 颜色插值函数
+        function interpolateColor(a, b, x) {
+            return {
+                r: Math.floor(a.r + (b.r - a.r) * x),
+                g: Math.floor(a.g + (b.g - a.g) * x),
+                b: Math.floor(a.b + (b.b - a.b) * x)
+            };
+        }
+
+        // 初始化音频播放器
+        function initAudioPlayer() {
+            console.log('初始化音频播放器...');
+            audioPlayer = document.getElementById('audioPlayer');
+            if (!audioPlayer) {
+                console.error('找不到音频播放器元素');
+                return;
+            }
+            console.log('音频播放器初始化完成');
+        }
+
+        // 获取音频当前时间
+        function getVideoCurrentTime() {
+            return audioPlayer ? audioPlayer.currentTime || 0 : 0;
+        }
+
+        // 格式化时间显示
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // 初始化事件监听器
+        function initEventListeners() {
+            console.log('初始化事件监听器...');
+            if (canvas) {
+                canvas.addEventListener('click', handleCanvasClick);
+                console.log('画布点击事件监听器已添加');
+            }
+        }
+
+        // 处理画布点击
+        function handleCanvasClick(event) {
+            console.log('画布被点击');
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // 转换为 VA 坐标 (0-1)
+            const valence = x / canvas.width;
+            const arousal = 1 - (y / canvas.height);
+            
+            console.log(`点击坐标: V=${valence.toFixed(3)}, A=${arousal.toFixed(3)}`);
+            
+            // 找到附近的情感标签
+            const nearbyEmotions = findNearbyEmotions(valence, arousal);
+            addRating(valence, arousal, nearbyEmotions);
+        }
+
+        // 找到附近的情感标签
+        function findNearbyEmotions(valence, arousal) {
+            const circleRadius = 0.15; // 15% of VA space
+            const nearbyEmotions = [];
+            
+            emotionTags.forEach(tag => {
+                const [name, tagValence, tagArousal] = tag;
+                const distance = Math.sqrt(
+                    Math.pow(valence - tagValence, 2) + 
+                    Math.pow(arousal - tagArousal, 2)
+                );
+                
+                if (distance <= circleRadius) {
+                    nearbyEmotions.push({
+                        name: name,
+                        distance: distance
+                    });
+                }
+            });
+            
+            // 按距离排序，最多返回3个
+            nearbyEmotions.sort((a, b) => a.distance - b.distance);
+            return nearbyEmotions.slice(0, 3);
+        }
+
+        // 添加标注
+        function addRating(valence, arousal, nearbyEmotions) {
+            const timestamp = getVideoCurrentTime();
+            const utcTimestamp = new Date().toISOString();
+            
+            const rating = {
+                valence: valence,
+                arousal: arousal,
+                emotions: nearbyEmotions.map(e => e.name),
+                timestamp: timestamp,
+                utcTimestamp: utcTimestamp,
+                time: new Date().toLocaleTimeString()
+            };
+            
+            ratingHistory.push(rating);
+            console.log('添加新标注:', rating);
+            
+            updateDisplay(rating);
+            updateHistory();
+            drawRatingPoint(valence, arousal);
+        }
+
+        // 更新显示
+        function updateDisplay(rating) {
+            const emotionElement = document.getElementById('currentEmotion');
+            const coordsElement = document.getElementById('coordinates');
+            
+            if (!emotionElement || !coordsElement) return;
+            
+            if (rating.emotions.length > 0) {
+                const englishText = rating.emotions.join(', ');
+                const chineseText = rating.emotions.map(emotion => 
+                    emotionTranslations[emotion] || emotion
+                ).join('、');
+                
+                emotionElement.innerHTML = `${englishText} (Guide Only)<br><small style="color: #764ba2;">${chineseText}（仅供参考）</small>`;
+            } else {
+                emotionElement.innerHTML = '无匹配标签<br><small style="color: #764ba2;">No matching tags</small>';
+            }
+            
+            coordsElement.textContent = `V: ${rating.valence.toFixed(3)}, A: ${rating.arousal.toFixed(3)}`;
+        }
+
+        // 绘制标注点
+        function drawRatingPoint(valence, arousal) {
+            if (cleanCanvasImageData) {
+                ctx.putImageData(cleanCanvasImageData, 0, 0);
+            } else {
+                drawVASpace();
+            }
+            
+            const x = valence * canvas.width;
+            const y = (1 - arousal) * canvas.height;
+
+            // 绘制标注点
+            ctx.fillStyle = '#667eea';
+            ctx.beginPath();
+            ctx.arc(x, y, 8, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // 添加白色边框
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // 更新历史记录
+        function updateHistory() {
+            const historyList = document.getElementById('historyList');
+            if (!historyList) return;
+            
+            if (ratingHistory.length === 0) {
+                historyList.innerHTML = '<div class="history-item"><span>暂无标注记录，请开始标注</span></div>';
+                return;
+            }
+            
+            historyList.innerHTML = ratingHistory.slice(-10).reverse().map((rating, index) => {
+                let emotionDisplay;
+                if (rating.emotions.length > 0) {
+                    const englishText = rating.emotions.join(', ');
+                    const chineseText = rating.emotions.map(emotion => 
+                        emotionTranslations[emotion] || emotion
+                    ).join('、');
+                    emotionDisplay = `${englishText} (Guide Only)<br><small style="color: #764ba2;">${chineseText}（仅供参考）</small>`;
+                } else {
+                    emotionDisplay = '无匹配标签<br><small style="color: #764ba2;">No matching tags</small>';
+                }
+                
+                return `
+                <div class="history-item">
+                    <div style="display: flex; align-items: center; flex: 1;">
+                        <span class="history-audio-time">🎵 ${formatTime(rating.timestamp)}</span>
+                        <div>
+                            <div class="history-emotion">${emotionDisplay}</div>
+                            <div class="history-coords">V: ${rating.valence.toFixed(2)}, A: ${rating.arousal.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    <div class="history-local-time">
+                        ${rating.time}
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // 加载示例音乐
+        function loadSampleMusic() {
+            const sampleMusic = 'https://www.soundjay.com/free-music/destination-01.mp3';
+            
+            if (audioPlayer) {
+                audioPlayer.src = sampleMusic;
+                audioPlayer.load();
+                console.log('加载音乐:', sampleMusic);
+            }
+        }
+
+        // 加载本地音乐
+        function loadLocalMusic() {
+            const fileInput = document.getElementById('localMusicInput');
+            if (fileInput) {
+                fileInput.click();
+            }
+        }
+
+        // 处理本地音乐文件选择
+        function handleLocalMusicSelect(event) {
+            const file = event.target.files[0];
+            if (file && audioPlayer) {
+                const url = URL.createObjectURL(file);
+                audioPlayer.src = url;
+                audioPlayer.load();
+                console.log('加载本地音乐:', file.name);
+                
+                // 清理URL对象（在音频加载完成后）
+                audioPlayer.onloadeddata = function() {
+                    URL.revokeObjectURL(url);
+                };
+            }
+        }
+
+        // 清除历史
+        function clearHistory() {
+            if (confirm('确定要清除所有标注历史吗？')) {
+                ratingHistory = [];
+                updateHistory();
+                document.getElementById('currentEmotion').innerHTML = '请点击 VA 空间进行标注';
+                document.getElementById('coordinates').textContent = '';
+                
+                if (cleanCanvasImageData) {
+                    ctx.putImageData(cleanCanvasImageData, 0, 0);
+                } else {
+                    drawVASpace();
+                }
+                console.log('历史记录已清除');
+            }
+        }
+
+        // 导出数据
+        function exportData() {
+            if (ratingHistory.length === 0) {
+                alert('暂无数据可导出');
+                return;
+            }
+            
+            const data = {
+                timestamp: new Date().toISOString(),
+                totalRatings: ratingHistory.length,
+                ratings: ratingHistory
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mood-rating-${new Date().toISOString().slice(0, 19)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            console.log('数据已导出');
+        }
+
+        // 添加调试信息
+        window.addEventListener('load', function() {
+            console.log('窗口加载完成');
+            console.log('Canvas元素:', document.getElementById('vaCanvas'));
+            console.log('Audio元素:', document.getElementById('audioPlayer'));
+        });
+    </script>
+</body>
+</html>

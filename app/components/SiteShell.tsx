@@ -1,0 +1,11 @@
+"use client";
+import { AudioLines, ArrowUpRight, Globe2, Menu, X } from 'lucide-react';
+import { useState, type ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { useLanguage } from './LanguageProvider';
+export default function SiteShell({children}:{children:ReactNode}) {
+  const {locale,setLocale,t}=useLanguage();const path=usePathname();const [open,setOpen]=useState(false);
+  const links=[['/annotate',t('Annotate','开始标注')],['/research',t('Research','参与研究')],['/about',t('The research','研究背景')]];
+  return <><a className="skip-link" href="#main">{t('Skip to content','跳至内容')}</a><header className="site-header"><Link href="/" className="brand" aria-label="Mood Rater home"><span className="brand-mark"><AudioLines size={22}/></span><span>Mood Rater<span className="brand-sub">AUDIO EMOTION LAB</span></span></Link><nav className={open?'nav-links is-open':'nav-links'} aria-label={t('Main navigation','主导航')}>{links.map(([href,label])=><a key={href} href={href} aria-current={path===href?'page':undefined} onClick={()=>setOpen(false)}>{label}</a>)}<a className="nav-legacy" href="/legacy/" target="_blank" rel="noreferrer">{t('Original demo','原版对比')}<ArrowUpRight size={13}/></a></nav><div className="header-actions"><button className="language-toggle" onClick={()=>setLocale(locale==='en'?'zh-CN':'en')} aria-label={t('Switch to Chinese','切换为英文')}><Globe2 size={16}/><span>{locale==='en'?'中文':'EN'}</span></button><button className="mobile-menu icon-button" aria-label={t('Toggle menu','展开菜单')} aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X size={20}/>:<Menu size={20}/>}</button></div></header><main id="main">{children}</main><footer className="site-footer"><div><Link href="/" className="footer-brand">Mood Rater</Link><p>{t('A little more understanding, one moment at a time.','在每一个瞬间，多理解一点情绪。')}</p></div><div className="footer-links"><a href="/about">{t('Research & citation','研究与引用')}</a><a href="/about#data">{t('Your data','数据说明')}</a><a href="/admin">{t('Researcher dashboard','研究后台')}</a><a href="https://github.com/souflex56/mood-rater-demo" target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={12}/></a></div><p className="footer-note">{t('Based on doctoral research by Simin Yang · Designed for human annotation.','基于杨思敏的博士研究 · 为人的主观标注而设计。')}</p></footer></>;
+}

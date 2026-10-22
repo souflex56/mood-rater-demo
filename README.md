@@ -1,162 +1,86 @@
-# 音乐情感标注系统 (Mood Rater)
+# Mood Rater · Audio emotion annotation
 
-一个基于 Valence-Arousal 模型的音乐情感实时标注系统，用于研究音乐情感随音乐时间变化的差异。这是一个独立的音乐情感标注工具，已将所有必要功能集成到单个HTML文件中，无需额外的服务器或依赖项即可运行。
-## 🎨 界面设计
+[简体中文](README.zh-CN.md) · [Annotation protocol](docs/PROTOCOL.md) · [Deployment](docs/DEPLOYMENT.md) · [Research API](docs/API.md)
 
-![应用界面](interface.png.jpg)
+Mood Rater records how perceived or felt emotion changes while someone listens to audio. This edition extends Simin Yang’s doctoral research implementation with an English/Chinese interface, continuous valence–arousal annotation, local drafts, interval re-recording, and an invitation-based research workflow.
 
+The upgrade is developed on `codex/mood-rater-v2` in a separate Git worktree. The original `main` baseline is preserved. The expected public address is [mood-rater-audio.baysky.chatgpt.site](https://mood-rater-audio.baysky.chatgpt.site); that address is a deployment target, not evidence that publication or production acceptance has completed.
 
-## 🎵 功能特性
+## What you can do
 
-### 核心功能
-- **音乐播放器**: 支持多种音频格式，内置示例音乐
-- **VA 空间标注**: 基于 Valence-Arousal 二维情感模型的实时标注
-- **情感标签**: 97个预定义情感标签，覆盖广泛的情感状态
-- **实时标注**: 支持音乐播放过程中的实时情感标注
-- **历史记录**: 完整的标注历史记录和查看
-- **数据导出**: JSON格式的数据导出功能
+- **Annotate freely:** load local audio, choose perceived or felt emotion, listen, record, revisit a section, and export JSON or CSV. Free-mode audio and annotations are not uploaded to the research API.
+- **Participate in research:** follow an invitation, read the information and consent, annotate the assigned audio, and explicitly submit. Participants do not need accounts.
+- **Manage a study:** the designated owner signs in with ChatGPT to configure bilingual instructions, upload and order audio, publish invitations, create new study versions, and export results.
+- **Use the controls that suit you:** mouse/touch dragging, arrow keys, and separate sliders. Interface language follows the browser initially and can be changed at any time.
+- **Learn with a short practice:** the 20-second synthetic example is separate from drafts and submissions. It is an interaction demo, not a validated research stimulus.
 
-### 技术特性
-- **响应式设计**: 适配不同屏幕尺寸
-- **现代化UI**: 美观的渐变背景和交互效果
-- **Canvas绘图**: 高性能的VA空间可视化
-- **实时交互**: 流畅的用户交互体验
+## Start annotating
 
-## 🚀 快速开始
+1. Open `/annotate`, or use `/annotate?demo=1` for practice.
+2. Choose an audio file and decide what to rate: **emotion expressed by the audio** or **emotion you feel while listening**. The question is fixed once recording begins; studies set it for everyone.
+3. Press **Start recording** and move the point. Valence runs from unpleasant to pleasant, left to right; arousal runs from low to high, bottom to top. Both use **0–1**.
+4. Pause and seek to review. Press **Record from here** to replace a section, or **Undo** to revoke the latest recording pass.
+5. Review gaps and coverage, then export. A research participant can choose **Submit annotation**; only the server’s confirmation means the result has been received.
 
-### 1. 打开应用
-直接在浏览器中打开 `mood-rater-final.html` 文件即可开始使用。无需安装任何依赖或运行服务器。
+Listening without recording does not edit data. Before the first input in each pass, values are missing. After an input, its value is held until the next input or the end of that pass. A newer pass also replaces old values with missing data where the newer pass has no input. See the [full protocol](docs/PROTOCOL.md).
 
-### 2. 基本使用流程
-1. **加载音乐**: 点击"加载示例音乐"按钮或使用自己的音频文件
-2. **开始播放**: 使用音频播放器控制播放
-3. **情感标注**: 在VA空间中点击来标注当前感知的情感
-4. **查看历史**: 在标注历史区域查看所有标注记录
-5. **导出数据**: 完成标注后导出JSON格式的数据
+## Local development
 
-## 📊 VA 空间说明
+Use Node.js **22.13 or newer** and npm. Install the locked dependencies:
 
-### Valence (效价)
-- **X轴**: 从负向情感(左)到正向情感(右)
-- **范围**: 0.0 - 1.0
-- **含义**: 情感的正负性，积极vs消极
-
-### Arousal (唤醒)
-- **Y轴**: 从低能量(下)到高能量(上)
-- **范围**: 0.0 - 1.0
-- **含义**: 情感的激活程度，平静vs兴奋
-
-### 情感区域分布
-- **右上角**: 高唤醒正效价 (如: 兴奋、快乐)
-- **左上角**: 高唤醒负效价 (如: 愤怒、焦虑)
-- **右下角**: 低唤醒正效价 (如: 平静、放松)
-- **左下角**: 低唤醒负效价 (如: 悲伤、疲惫)
-- **中心**: 中性情感
-
-## 🏷️ 情感标签系统
-
-系统包含97个预定义情感标签，基于AMG和ANEW数据集：
-
-### 主要情感类别
-- **积极情感**: 快乐、兴奋、温暖、希望、自信等
-- **消极情感**: 悲伤、愤怒、焦虑、恐惧、失望等
-- **中性情感**: 平静、放松、中性、严肃等
-- **复杂情感**: 好奇、困惑、怀疑、敬畏等
-
-### 标签使用
-- 点击情感标签可快速定位到对应VA区域
-- 标签作为参考指南，不限制用户的自定义标注
-- 系统会自动识别最近的情感标签
-
-## 📈 数据格式
-
-### 标注数据结构
-```json
-{
-  "timestamp": "2024-01-01T12:00:00.000Z",
-  "totalRatings": 5,
-  "ratings": [
-    {
-      "valence": 0.8,
-      "arousal": 0.7,
-      "emotion": "happy",
-      "timestamp": 15.5,
-      "time": "12:00:15"
-    }
-  ]
-}
+```sh
+npm run install:ci
 ```
 
-### 字段说明
-- `valence`: 效价值 (0.0-1.0)
-- `arousal`: 唤醒值 (0.0-1.0)
-- `emotion`: 识别的情感标签
-- `timestamp`: 音乐播放时间戳
-- `time`: 标注时间
+For a fresh checkout, follow [local database initialization](docs/DEPLOYMENT.md#local-development--本地开发), then run:
 
-## 🎯 使用建议
-
-### 标注指导
-1. **完整聆听**: 确保完整聆听音乐片段
-2. **及时标注**: 感知到情感变化时及时标注
-3. **最少标注**: 每个片段至少5次标注
-4. **真实感受**: 标注个人真实的情感体验
-
-### 最佳实践
-- 在安静环境中进行标注
-- 使用耳机获得更好的音频体验
-- 保持专注，避免干扰
-- 定期保存和导出数据
-
-## 🔧 技术实现
-
-### 前端技术
-- **HTML5**: 页面结构和语义化
-- **CSS3**: 样式和动画效果
-- **JavaScript**: 交互逻辑和数据处理
-- **Canvas API**: VA空间绘制和交互
-
-### 核心算法
-- **坐标转换**: 鼠标坐标到VA值的映射
-- **最近邻算法**: 情感标签匹配
-- **数据序列化**: JSON格式数据导出
-
-## 📁 项目结构
-
-```
-mood-rater/
-├── mood-rater-final.html    # 主应用文件（独立运行）
-├── README.md               # 项目说明文档
-├── .gitignore              # Git忽略文件配置
-└── .git/                   # Git版本控制目录
+```sh
+npm run dev
 ```
 
-### 文件说明
-- **mood-rater-final.html**: 完整的音乐情感标注应用，包含所有必要的HTML、CSS和JavaScript代码
-- **README.md**: 项目说明和使用指南
-- **其他文件**: Git版本控制相关文件
+The portable local profile defaults to [localhost:5173](http://127.0.0.1:5173). Use the URL printed by the server if its configuration differs. The v2 application needs a server; the preserved original HTML remains standalone.
 
-### 独立运行特性
-✅ **零依赖**: 无需Node.js、服务器或其他运行时环境  
-✅ **即开即用**: 双击HTML文件即可在浏览器中运行  
-✅ **完全离线**: 所有功能都可以在离线环境下正常工作  
-✅ **跨平台**: 支持Windows、macOS、Linux等所有主流操作系统  
-✅ **轻量级**: 单文件包含所有功能，便于分享和部署
+```sh
+npm test
+npm run typecheck
+npm run lint
+npm run build
+```
 
+The stack is React, TypeScript and Vinext, with Cloudflare Workers/D1/R2 through Sites. IndexedDB stores browser drafts and research participation credentials; raw annotation samples are not placed in D1 rows.
 
-### 设计理念
-- **简洁明了**: 清晰的界面布局和操作流程
-- **视觉引导**: 色彩渐变和图标辅助理解
-- **响应式**: 适配不同设备和屏幕尺寸
-- **用户友好**: 直观的操作和反馈
+## Data, limits and recovery
 
-### 色彩方案
-- **主色调**: 蓝紫色渐变 (#667eea → #764ba2)
-- **背景色**: 白色和浅灰色
-- **强调色**: 蓝色系 (#667eea)
-- **状态色**: 绿色(成功)、红色(警告)
+| Item | Current implementation |
+| --- | --- |
+| Audio | Up to 30 minutes and 100 MiB per file; browser-supported audio formats |
+| Research materials | Up to 100 audio assets per study |
+| Input capture | Pointer moves are throttled to 30 Hz; pointer down/up and explicit keyboard/slider inputs can add events |
+| Derived series | 10 Hz, zero-order hold; missing values remain missing |
+| Research submission | Up to 32 MiB of compact JSON and 150,000 total raw events |
+| JSON import | Up to 100 MiB in the interface; validated before restoration |
+| Local persistence | Browser IndexedDB; storage availability and quota depend on the browser |
+| Result export | Single JSON/CSV, or filtered bulk JSONL/CSV; earlier submitted revisions retained |
 
+Re-select the original local audio after refreshing; its SHA-256 fingerprint is checked. Audio files themselves are not saved in IndexedDB. Research participation credentials remain on the same browser/device so saved research drafts can be resumed after a tab is closed. Clearing site storage removes both drafts and credentials. Export important work.
 
----
+Imported free sessions receive a new local session ID, with source-session provenance, so importing an older export does not silently overwrite newer work. Legacy JSON retains the original point observations and source payload; unknown audio identity, duration and annotation target remain unknown. Selecting new audio does not retroactively assign it to legacy observations.
 
-**注意**: 这是一个研究工具，标注结果仅代表个人主观感受，不具有绝对客观性。
+Research audio is available to people who possess its invitation URL. Results are restricted to the designated research owner. The researcher should provide appropriate information, retention arrangements and contact details for each study. The tool has no automatic emotion recognition, diagnostic scoring, server transcoding or built-in paper-analysis pipeline.
+
+## Research reference
+
+Simin Yang, Courtney N. Reed, Elaine Chew, and Mathieu Barthet. **“Examining Emotion Perception Agreement in Live Music Performance.”** *IEEE Transactions on Affective Computing*, **14**(2), 1442–1460, 2023. DOI: [10.1109/TAFFC.2021.3093787](https://doi.org/10.1109/TAFFC.2021.3093787). First published online in 2021.
+
+[IEEE record](https://ieeexplore.ieee.org/document/9468946) · [Author preprint](https://siminyang6.wordpress.com/wp-content/uploads/2021/07/journalpaper_tac_preprint_0628.pdf) · [BibTeX](public/citation.bib)
+
+The original work used time-stamped clicks and, in part of its analysis, 1 Hz step resampling. Continuous dragging, general audio, interval editing and 10 Hz exports are engineering extensions. They do not reproduce the full experimental protocol or establish the reliability claims of the paper. Optional emotion words and their Chinese translations are orientation aids, not independently validated scales.
+
+## Compare with the original
+
+- Open `/legacy/` for the preserved original interface; its example audio may depend on a third-party URL.
+- Keep using `mood-rater-final.html` as the original standalone file.
+- Read the [original Chinese README](public/legacy/README.zh-CN.md) and [baseline record](docs/BASELINE.md).
+- Compare committed upgrade changes with `git diff 8e7ac2ffd99af7494a62193b25f434e36226d35d...HEAD`; use `git status --short` to identify work not yet committed.
+
+The repository includes focused protocol/validation tests and local backend smoke, recovery and capacity fixtures. The capacity fixture exercises one 30-minute, 108,000-event session and 1,000 small submissions in batches of 10. This is a local functional capacity check, **not certification of 1,000 concurrent users or production availability**. See [validation and release checks](docs/DEPLOYMENT.md#validation-and-release--验证与上线核对).
