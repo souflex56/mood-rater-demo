@@ -1,46 +1,33 @@
 # Mood Rater · Audio emotion annotation
 
-[简体中文](README.zh-CN.md) · [VA configuration](docs/VA-CUSTOMIZATION.md) · [Annotation protocol](docs/PROTOCOL.md) · [Deployment](docs/DEPLOYMENT.md) · [Research API](docs/API.md)
+**[Public homepage](https://mood-rater-audio.baysky.chatgpt.site) · [Open the demo](https://mood-rater-audio.baysky.chatgpt.site/annotate) · [Customization guide](docs/CUSTOMIZATION.md) · [简体中文](README.zh-CN.md)**
 
-Mood Rater records how perceived or felt emotion changes while someone listens to audio. This edition extends Simin Yang’s doctoral research implementation with an English/Chinese interface, continuous valence–arousal annotation, local drafts, interval re-recording, and an invitation-based research workflow.
+Mood Rater is a bilingual browser demo for tracing how emotion changes while listening to audio. It builds on Simin Yang’s doctoral research and provides a reusable starting point for audio annotation. **No account, database setup or researcher activation is needed to use the public demo or run the default local app.**
 
-The upgrade is developed on `codex/mood-rater-v2` in a separate Git worktree. The original `main` baseline is preserved. Public site: [mood-rater-audio.baysky.chatgpt.site](https://mood-rater-audio.baysky.chatgpt.site). Public routes and annotation were verified on 2026-10-22; the owner must complete the first ChatGPT sign-in and dashboard activation before collecting research data.
+The upgrade lives on `codex/mood-rater-v2` in a separate Git worktree. The original `main` baseline and [original interface](https://mood-rater-audio.baysky.chatgpt.site/legacy/) remain available for comparison.
 
-## What you can do
+## Try it
 
-- **Annotate freely:** load local audio, choose perceived or felt emotion, listen, record, revisit a section, and export JSON or CSV. Free-mode audio and annotations are not uploaded to the research API.
-- **Participate in research:** follow an invitation, read the information and consent, annotate the assigned audio, and explicitly submit. Participants do not need accounts.
-- **Manage a study:** the designated owner signs in with ChatGPT to configure bilingual instructions, upload and order audio, publish invitations, create new study versions, and export results.
-- **Use the controls that suit you:** mouse/touch dragging, arrow keys, and separate sliders. Interface language follows the browser initially and can be changed at any time.
-- **Learn with a short practice:** the 20-second synthetic example is separate from drafts and submissions. It is an interaction demo, not a validated research stimulus.
+1. Open the [demo](https://mood-rater-audio.baysky.chatgpt.site/annotate). Choose a bundled example or load local audio. You can keep multiple clips in the picker, with a separate session for each.
+2. Choose what to rate: **emotion expressed by the audio** or **emotion you feel while listening**. The question is fixed once recording begins.
+3. Press **Start recording**, then move the point as the emotion changes. Valence runs left to right; arousal runs bottom to top. Both use **0–1**.
+4. Pause and seek to review. **Record from here** replaces a section; **Undo** revokes the latest recording pass.
+5. Export **JSON** for raw inputs, editing history and interface settings, or **CSV** for the derived time series.
 
-The compact square VA plane preserves the red/orange/blue/green hue families in a muted palette and all 97 supplied guide tags, displayed in one column below the plane. The exact original palette remains available as a preset. A circle of diameter 1/8 of the plane width selects up to five nearby labels; empty regions show no tags. Tag positions, circle size, colors and bilingual axis labels are independently configurable. New inputs record UTC alongside audio time. See [customization](docs/VA-CUSTOMIZATION.md).
+Mouse/touch, arrow keys and separate sliders are supported. Switch English/Chinese at any time. Listening without recording does not change data. Each new pass is blank until its first input; later values hold until the next input or pass end. Gaps remain missing. See the [annotation protocol](docs/PROTOCOL.md).
 
-## Start annotating
+The square VA plane uses muted red, orange, blue and green, with an exact original-color preset available. All **97 guide words** retain their supplied coordinates and translations. A circle with **diameter = plane width / 8** selects at most five words inside it, listed below the plane nearest-first. An empty circle shows no words. New inputs include audio time and device-clock UTC.
 
-1. Open `/annotate`, or use `/annotate?demo=1` for practice.
-2. Choose an audio file and decide what to rate: **emotion expressed by the audio** or **emotion you feel while listening**. The question is fixed once recording begins; studies set it for everyone.
-3. Press **Start recording** and move the point. Valence runs from unpleasant to pleasant, left to right; arousal runs from low to high, bottom to top. Both use **0–1**.
-4. Pause and seek to review. Press **Record from here** to replace a section, or **Undo** to revoke the latest recording pass.
-5. Review gaps and coverage, then export. A research participant can choose **Submit annotation**; only the server’s confirmation means the result has been received.
+## Run locally
 
-Listening without recording does not edit data. Before the first input in each pass, values are missing. After an input, its value is held until the next input or the end of that pass. A newer pass also replaces old values with missing data where the newer pass has no input. See the [full protocol](docs/PROTOCOL.md).
-
-## Local development
-
-Use Node.js **22.13 or newer** and npm. Install the locked dependencies:
+Use Node.js **22.13 or newer** and npm:
 
 ```sh
 npm run install:ci
-```
-
-For a fresh checkout, follow [local database initialization](docs/DEPLOYMENT.md#local-development--本地开发), then run:
-
-```sh
 npm run dev
 ```
 
-The portable local profile defaults to [localhost:5173](http://127.0.0.1:5173). Use the URL printed by the server if its configuration differs. The v2 application needs a server; the preserved original HTML remains standalone.
+Open the server’s printed URL, normally [localhost:5173](http://127.0.0.1:5173). The default demo does not require an environment file, login or D1 initialization. The v2 app uses a development server; `mood-rater-final.html` remains the original standalone file.
 
 ```sh
 npm test
@@ -49,26 +36,44 @@ npm run lint
 npm run build
 ```
 
-The stack is React, TypeScript and Vinext, with Cloudflare Workers/D1/R2 through Sites. IndexedDB stores browser drafts and research participation credentials; raw annotation samples are not placed in D1 rows.
+The stack is React, TypeScript and Vinext. Browser IndexedDB stores drafts; the default workflow does not send audio or results to the research API.
 
-## Data, limits and recovery
+## Customize for your project
 
-| Item | Current implementation |
+Start with the [full customization guide](docs/CUSTOMIZATION.md) or the [public overview](https://mood-rater-audio.baysky.chatgpt.site/customize).
+
+| File | Purpose |
 | --- | --- |
-| Audio | Up to 30 minutes and 100 MiB per file; browser-supported audio formats |
-| Research materials | Up to 100 audio assets per study |
-| Input capture | Pointer moves are throttled to 30 Hz; pointer down/up and explicit keyboard/slider inputs can add events |
-| Derived series | 10 Hz, zero-order hold; missing values remain missing |
-| Research submission | Up to 32 MiB of compact JSON and 150,000 total raw events |
-| JSON import | Up to 100 MiB in the interface; validated before restoration |
-| Local persistence | Browser IndexedDB; storage availability and quota depend on the browser |
-| Result export | Single JSON/CSV, or filtered bulk JSONL/CSV; earlier submitted revisions retained |
+| [`config/audio-library.json`](config/audio-library.json) | Audio collection, clip identities and bilingual labels |
+| [`config/emotion-tags.json`](config/emotion-tags.json) | Guide words, translations and VA positions |
+| [`config/va-interface.json`](config/va-interface.json) | Circle diameter, label count, four colors, X/Y names and endpoints |
+| [`config/va-interface-original.json`](config/va-interface-original.json) | Exact original palette preset |
+| [`config/project.json`](config/project.json) | Optional research collection flag, off by default |
 
-Re-select the original local audio after refreshing; its SHA-256 fingerprint is checked. Audio files themselves are not saved in IndexedDB. Research participation credentials remain on the same browser/device so saved research drafts can be resumed after a tab is closed. Clearing site storage removes both drafts and credentials. Export important work.
+Audio and interface configuration are separate from the annotation engine. New sessions retain their interface snapshot; changing defaults does not change saved sessions’ guidance. Axis names are display text: they do not swap axes or rename exported `valence`/`arousal` fields. See [VA configuration](docs/VA-CUSTOMIZATION.md).
 
-Imported free sessions receive a new local session ID, with source-session provenance, so importing an older export does not silently overwrite newer work. Legacy JSON retains the original point observations and source payload; unknown audio identity, duration and annotation target remain unknown. Selecting new audio does not retroactively assign it to legacy observations.
+## Data and recovery
 
-Research audio is available to people who possess its invitation URL. Results are restricted to the designated research owner. The researcher should provide appropriate information, retention arrangements and contact details for each study. The tool has no automatic emotion recognition, diagnostic scoring, server transcoding or built-in paper-analysis pipeline.
+| Item | Default demo behavior |
+| --- | --- |
+| Bundled library | Three synthetic examples; configurable list of up to 50 clips |
+| Local collection | Up to 20 unique local files in the current tab |
+| Audio | Up to 30 minutes and 100 MiB per file; browser-supported formats |
+| Input capture | Pointer movement up to 30 Hz; down/up and explicit keyboard/slider actions can add events |
+| Derived series | 10 Hz zero-order hold; missing values remain missing |
+| Drafts | Browser IndexedDB; available space depends on the browser |
+| Export | Per-session JSON with raw inputs/configuration; CSV with derived samples |
+| JSON import | Up to 100 MiB in the interface, validated before restoration |
+
+Local audio files are not saved in IndexedDB. Re-select the original file after refreshing; its saved SHA-256 fingerprint is checked. Clearing site storage removes drafts, so export important work. Bundled synthetic examples teach the controls; they are not validated research stimuli or normative emotion examples.
+
+Imported free sessions receive a new local ID and source-session provenance, avoiding overwrite of newer work. Legacy JSON preserves original observations and unknown metadata. Choosing new audio does not retroactively identify legacy audio. The tool does not perform automatic emotion recognition, diagnostic scoring or the paper’s statistical analysis.
+
+## Optional research collection
+
+The invitation, participant submission and owner dashboard implementation remains available for advanced deployments. It is **disabled by default** through `config/project.json` (`researchEnabled: false`) and is not part of the normal demo flow.
+
+To operate a collection service, enable the flag in your own deployment and follow [deployment and owner configuration](docs/DEPLOYMENT.md) and the [research API](docs/API.md). That optional workflow requires D1/R2 and authorized owner setup. Local smoke, recovery and capacity fixtures do not certify production availability or 1,000 concurrent users.
 
 ## Research reference
 
@@ -76,13 +81,11 @@ Simin Yang, Courtney N. Reed, Elaine Chew, and Mathieu Barthet. **“Examining E
 
 [IEEE record](https://ieeexplore.ieee.org/document/9468946) · [Author preprint](https://siminyang6.wordpress.com/wp-content/uploads/2021/07/journalpaper_tac_preprint_0628.pdf) · [BibTeX](public/citation.bib)
 
-The original work used time-stamped clicks and, in part of its analysis, 1 Hz step resampling. Continuous dragging, general audio, interval editing and 10 Hz exports are engineering extensions. They do not reproduce the full experimental protocol or establish the reliability claims of the paper. The supplied emotion tags guide selection at their mapped VA positions; the software does not infer a listener’s emotion from these words.
+The original work used time-stamped clicks and, in part of its analysis, 1 Hz step resampling. Continuous dragging, general audio, interval editing and 10 Hz exports are engineering extensions. They do not reproduce the full experimental protocol or establish the paper’s reliability claims. The tags guide selection at their supplied VA positions; the software does not infer a listener’s emotion from these words.
 
 ## Compare with the original
 
-- Open `/legacy/` for the preserved original interface; its example audio may depend on a third-party URL.
-- Keep using `mood-rater-final.html` as the original standalone file.
+- Open [`/legacy/`](https://mood-rater-audio.baysky.chatgpt.site/legacy/); its example audio may depend on a third-party URL.
+- `mood-rater-final.html` remains the original standalone file.
 - Read the [original Chinese README](public/legacy/README.zh-CN.md) and [baseline record](docs/BASELINE.md).
-- Compare committed upgrade changes with `git diff 8e7ac2ffd99af7494a62193b25f434e36226d35d...HEAD`; use `git status --short` to identify work not yet committed.
-
-The repository includes focused protocol/validation tests and local backend smoke, recovery and capacity fixtures. The capacity fixture exercises one 30-minute, 108,000-event session and 1,000 small submissions in batches of 10. This is a local functional capacity check, **not certification of 1,000 concurrent users or production availability**. See [validation and release checks](docs/DEPLOYMENT.md#validation-and-release--验证与上线核对).
+- Compare committed changes with `git diff 8e7ac2ffd99af7494a62193b25f434e36226d35d...HEAD`; `git status --short` identifies uncommitted work.

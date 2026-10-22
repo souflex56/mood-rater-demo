@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "clips": [
+    {
+      "id": "tone-steps",
+      "title": { "en": "Tone steps", "zh-CN": "阶梯音" },
+      "url": "/audio/tone-steps.wav",
+      "mimeType": "audio/wav",
+      "demoOnly": true
+    },
+    {
+      "id": "soft-pulses",
+      "title": { "en": "Soft pulses", "zh-CN": "轻柔脉冲" },
+      "url": "/audio/soft-pulses.wav",
+      "mimeType": "audio/wav",
+      "demoOnly": true
+    },
+    {
+      "id": "layered-tones",
+      "title": { "en": "Layered tones", "zh-CN": "叠层音" },
+      "url": "/audio/layered-tones.wav",
+      "mimeType": "audio/wav",
+      "demoOnly": true
+    }
+  ]
+}

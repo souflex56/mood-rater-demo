@@ -1,4 +1,5 @@
 import { ZodError } from 'zod';
+import project from '@/config/project.json';
 import { ApiError, bootstrap, identity, requireAdmin, sameOrigin } from '@/lib/server/core';
 import { audioUploadStatus, changeStudy, completeAudio, createStudy, listStudies, participate, publicStudy, putAudioChunk, removeAudio, startAudioUpload, streamAudio, studyView } from '@/lib/server/studies';
 import { completeSubmission, exportAll, exportSubmission, initializeSubmission, listSubmissions, putSubmissionChunk, submissionStatus } from '@/lib/server/submissions';
@@ -6,6 +7,10 @@ import { completeSubmission, exportAll, exportSubmission, initializeSubmission, 
 export const dynamic = 'force-dynamic';
 async function route(request:Request):Promise<Response> {
   const url=new URL(request.url);const path=url.pathname.replace(/^\/api\/?/,'').split('/').filter(Boolean);const method=request.method;
+  if(!project.researchEnabled) {
+    if(path.length===1&&path[0]==='identity'&&method==='GET')return Response.json({user:null,isAdmin:false,canBootstrap:false,researchEnabled:false});
+    throw new ApiError(404,'Research services are disabled in this demo.');
+  }
   if(!['GET','HEAD'].includes(method))sameOrigin(request);
   if(path[0]==='identity'&&method==='GET')return Response.json(await identity(request));
   if(path[0]==='admin') {

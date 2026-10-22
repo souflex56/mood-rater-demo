@@ -1,5 +1,9 @@
 # Research API (v2)
 
+The public demo defaults to `researchEnabled: false` in `config/project.json`. In this mode all research routes return 404; `GET /api/identity` returns `{user:null,isAdmin:false,canBootstrap:false,researchEnabled:false}` without accessing identity or storage. The API below applies only after explicitly enabling and configuring the optional research backend. Local audio annotation and export require none of these endpoints.
+
+公开演示默认关闭研究服务。下列接口仅适用于明确启用并配置后的可选后台；本地音频标注与导出无需调用这些接口。
+
 All routes are same-origin JSON unless stated otherwise. Errors are `{error, details?}` and meaningful 4xx/503 status codes. Browser mutations reject foreign `Origin` / `Sec-Fetch-Site: cross-site`. Responses are private/non-cacheable except private audio. No participant results are publicly enumerable.
 
 ## Owner identity

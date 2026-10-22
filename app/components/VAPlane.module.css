@@ -8,14 +8,12 @@
 .horizontalAxis,.verticalAxis{position:absolute;background:#ffffff75;pointer-events:none}
 .horizontalAxis{left:0;right:0;top:50%;height:1px}
 .verticalAxis{top:0;bottom:0;left:50%;width:1px}
-.xAxisName,.yAxisName{position:absolute;padding:3px 5px;background:#ffffffdf;border-radius:3px;color:#2d3b2f;font-size:12px;line-height:1.4;pointer-events:none;max-width:44%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.xAxisName{right:6px;top:calc(50% + 6px)}
-.yAxisName{top:6px;left:calc(50% + 6px)}
-.endpointTop,.endpointBottom{display:flex;align-items:center;justify-content:center;gap:6px;color:#58664f;font-size:12px;line-height:18px;min-height:18px;text-align:center}
-.endpointTop{margin-bottom:3px}.endpointBottom{margin-top:3px}
-.endpointTop small,.endpointBottom small,.endpointLeft small,.endpointRight small{font-size:12px;color:#7c8774}
-.endpointLeft,.endpointRight{position:absolute;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;font-size:12px;color:#58664f;line-height:18px;writing-mode:vertical-rl;max-height:80%;text-align:center}
-.endpointLeft{left:-23px;transform:translateY(-50%) rotate(180deg)}.endpointRight{right:-23px}
+.axisCaptionTop,.axisCaptionBottom{display:flex;align-items:center;justify-content:center;gap:5px;color:#46553f;font-size:12px;line-height:18px;min-height:18px;text-align:center;overflow-wrap:anywhere}
+.axisCaptionTop{margin-bottom:4px}.axisCaptionBottom{margin-top:4px}
+.axisCaptionTop>span:first-child,.axisCaptionBottom>span:last-child{font-size:14px;color:#6d7c64}
+.quadrantLabel{position:absolute;max-width:44%;box-sizing:border-box;padding:3px 5px;border-radius:4px;background:#ffffffd9;color:#34412f;font-size:11px;line-height:1.4;pointer-events:none;overflow-wrap:anywhere}
+.topLeft{top:7px;left:7px}.topRight{top:7px;right:7px;text-align:right}
+.bottomLeft{bottom:7px;left:7px}.bottomRight{bottom:7px;right:7px;text-align:right}
 .guideCircle{position:absolute;transform:translate(-50%,-50%);border:2px solid white;box-shadow:0 0 0 1px #23302580,inset 0 0 0 1px #23302580;border-radius:50%;pointer-events:none;box-sizing:border-box}
 .currentPoint{position:absolute;width:10px;height:10px;border:2px solid #fff;box-shadow:0 0 0 1px #203025;background:#26372b;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
 .guideFeedback{width:var(--va-side);box-sizing:border-box;margin:8px auto 0;padding:5px 12px;color:#48583f;background:#f7f8f4;border:1px solid #e2e7db;border-radius:6px;font-size:13px;line-height:22px}

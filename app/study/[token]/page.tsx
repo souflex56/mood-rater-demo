@@ -1,2 +1,4 @@
 import StudyClient from '../../components/StudyClient';
-export default async function StudyPage({params}:{params:Promise<{token:string}>}){const {token}=await params;return <StudyClient token={token}/>;}
+import project from '@/config/project.json';
+import ResearchUnavailable from '../../components/ResearchUnavailable';
+export default async function StudyPage({params}:{params:Promise<{token:string}>}){if(!project.researchEnabled)return <ResearchUnavailable/>;const {token}=await params;return <StudyClient token={token}/>;}

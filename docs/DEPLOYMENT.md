@@ -8,7 +8,22 @@ This is the configured release target. A source commit, a successful build, a de
 
 这是预期发布目标。源码提交、构建通过、发起部署和线上验收分别是不同状态。请根据部署结果与真实线上证据确认当前状态；本文本身不宣称发布已经成功。
 
-## Architecture / 架构
+## Demo first / 默认公开演示
+
+`config/project.json` ships with `researchEnabled: false`. The homepage, multi-audio demo, local drafts, JSON/CSV export and customization guide work without owner activation or database initialization. Start with:
+
+默认关闭实验后台。首页、多音频标注、本地草稿、导出与自定义指南均无需账号激活或数据库初始化：
+
+```sh
+npm run install:ci
+npm run dev
+```
+
+Open `http://127.0.0.1:5173/`. Research/admin/invitation pages show a demo notice; research API routes return 404, and `/api/identity` returns an anonymous, disabled identity. Existing server code and storage are retained for optional future use. Enabling the flag is a deliberate source configuration change; the advanced setup below is only needed then.
+
+打开上述首页即可。研究、管理与邀请页面显示演示入口，研究 API 返回 404；身份接口返回匿名且后台关闭。原有服务端代码与存储保留供未来使用。只有明确启用后台配置后，才需要下面的高级设置。
+
+## Optional research architecture / 可选研究架构
 
 | Layer / 层 | Responsibility / 职责 |
 | --- | --- |
@@ -23,9 +38,9 @@ The binding names and Sites project association are declared in `.openai/hosting
 
 绑定名称与 Sites 项目关联保存在 `.openai/hosting.json`。`vite.config.ts` 的占位数据库、存储桶配置用于本地模拟；生产资源由 Sites 部署流程注入，占位 D1 ID 不是生产数据库。
 
-## Local development / 本地开发
+## Optional backend development / 可选后台开发
 
-Use Node.js 22.13+ and npm. From the upgrade checkout / 使用 Node.js 22.13+ 和 npm，在升级 checkout 中执行：
+For the optional backend, first set `researchEnabled: true` in `config/project.json`. Use Node.js 22.13+ and npm. / 如需启用可选后台，先将该配置设为 `true`；使用 Node.js 22.13+ 和 npm：
 
 ```sh
 npm run install:ci
@@ -72,9 +87,9 @@ Never use `local_seedy` as a production owner. `.env.example` documents the real
 
 1. **Prepare reviewed source.** Record the commit, run checks, and package source with the lockfile, app, worker, scripts, migrations and `.openai/hosting.json`. Exclude `.git`, `node_modules`, `.dev.vars`, local environment files, `.wrangler`, output archives and local execution state. / **准备已审阅源码。** 记录提交并执行检查，打包应用、Worker、脚本、锁文件、迁移与托管配置，排除凭据、Git 元数据、依赖、缓存和本地数据库。
 2. **Deploy through the Sites workflow.** Use the existing project association rather than creating an unrelated site. The workflow installs/builds the source, allocates `DB` and `BUCKET`, applies packaged migrations, and provides the deployment outcome. Confirm the platform reports those resources and migrations ready. / **通过 Sites 发布。** 沿用已有项目关联；由平台安装构建、配置 D1/R2 并应用迁移。核对平台实际返回的资源与迁移结果。
-3. **Configure the real owner before collecting research data.** Set either `ADMIN_USER_ID` to the verified site-scoped ChatGPT user ID, or `ADMIN_BOOTSTRAP_EMAIL` to the designated owner’s verified login email. These are server settings, not public client variables. / **采集研究数据前配置真实所有者。** 设置经过确认的网站用户 ID，或指定所有者的已验证登录邮箱；两者均属于服务端配置。
-4. **Bind administration.** With the bootstrap-email route, the matching signed-in user opens `/admin` and selects “Activate my dashboard.” `POST /api/admin/bootstrap` atomically stores `settings.admin_user_id`; arbitrary first visitors cannot claim ownership. An explicitly configured `ADMIN_USER_ID` overrides the stored setting. Remove bootstrap configuration after binding if it is no longer needed. / **绑定后台。** 使用指定邮箱方式时，由匹配账号登录并激活；数据库原子写入唯一所有者，不能由任意首位访客认领。显式用户 ID 优先于数据库设置。
-5. **Complete public acceptance.** Open a clean browser session, load the actual public assets, verify free annotation, and run a small researcher→participant→submission→export loop. Record the deployed source identity and URLs used. / **完成真实线上验收。** 使用干净浏览器核对资源及自由标注，再验证研究创建到参与、提交、后台导出的完整闭环，并记录线上源码身份与地址。
+3. **Optional backend only: configure the real owner before collecting research data.** Set either `ADMIN_USER_ID` to the verified site-scoped ChatGPT user ID, or `ADMIN_BOOTSTRAP_EMAIL` to the designated owner’s verified login email. These are server settings, not public client variables. / **采集研究数据前配置真实所有者。** 设置经过确认的网站用户 ID，或指定所有者的已验证登录邮箱；两者均属于服务端配置。
+4. **Optional backend only: bind administration.** With the bootstrap-email route, the matching signed-in user opens `/admin` and selects “Activate my dashboard.” `POST /api/admin/bootstrap` atomically stores `settings.admin_user_id`; arbitrary first visitors cannot claim ownership. An explicitly configured `ADMIN_USER_ID` overrides the stored setting. Remove bootstrap configuration after binding if it is no longer needed. / **绑定后台。** 使用指定邮箱方式时，由匹配账号登录并激活；数据库原子写入唯一所有者，不能由任意首位访客认领。显式用户 ID 优先于数据库设置。
+5. **Complete public acceptance.** Open a clean browser session, load the actual public assets, verify free annotation, and verify audio switching and isolated drafts. Only when the backend is intentionally enabled, also run a researcher→participant→submission→export loop. Record the deployed source identity and URLs used. / **完成真实线上验收。** 使用干净浏览器核对资源及自由标注，再验证多音频切换和草稿隔离；仅在明确启用后台时验证研究创建、参与、提交、后台导出的闭环，并记录线上源码身份与地址。
 
 Production identity relies on the Sites gateway stripping untrusted forwarded identity headers and supplying authenticated ones. Do not expose the origin Worker as a separate public administration endpoint that trusts arbitrary incoming identity headers. Production secrets must not appear in the archive or repository.
 
@@ -86,9 +101,9 @@ This repository has no separate automatic GitHub-to-Sites release pipeline. Push
 
 ## Custom domain redirect / 自有域名跳转
 
-The user’s domain has not been provided in this implementation. Once provided, configure its HTTPS redirect to the verified Sites address and preserve the **path and query string**. Test a direct study invitation, not only the homepage; `/study/<token>` must reach that same study after redirection. Keep research invitation credentials out of unrelated logs or analytics.
+The user’s domain has not been provided in this implementation. Once provided, configure its HTTPS redirect to the verified Sites address and preserve the **path and query string**. Test the homepage and `/annotate?demo=1`. If the optional backend is enabled later, also test study invitation paths. Keep research invitation credentials out of unrelated logs or analytics.
 
-本次实现尚未提供自有域名。获得域名后，将其 HTTPS 跳转指向已验证的 Sites 地址，并保留**路径和查询参数**。除了首页，还应测试完整研究邀请，确保 `/study/<token>` 跳转后仍进入对应研究。避免将邀请凭据写入无关日志或分析服务。
+本次实现尚未提供自有域名。获得域名后，将其 HTTPS 跳转指向已验证的 Sites 地址，并保留**路径和查询参数**。测试首页和 `/annotate?demo=1`；若以后启用后台，再测试完整研究邀请路径。避免将邀请凭据写入无关日志或分析服务。
 
 ## Validation and release / 验证与上线核对
 
@@ -101,9 +116,9 @@ npm run lint
 npm run build
 ```
 
-With local migrations and the development owner configured, the following scripts **create fixtures in the local D1/R2 emulator**. They explicitly require localhost; do not redirect them at a production environment:
+With `researchEnabled: true`, local migrations and the development owner configured, the following scripts **create fixtures in the local D1/R2 emulator**. They explicitly require localhost; do not redirect them at a production environment:
 
-配置本地迁移和开发所有者后，可执行以下脚本。它们会**在本地 D1/R2 模拟器创建测试数据**，并明确要求 localhost，不应改为指向生产环境：
+启用后台并配置本地迁移和开发所有者后，可执行以下脚本。它们会**在本地 D1/R2 模拟器创建测试数据**，并明确要求 localhost，不应改为指向生产环境：
 
 ```sh
 MOOD_API_BASE=http://127.0.0.1:5173 node tests/backend-smoke.mjs

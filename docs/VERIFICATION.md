@@ -2,6 +2,21 @@
 
 Local verification: 2026-10-22. This record describes observed checks, not a guarantee of production capacity.
 
+## Current demo-first revision / 当前演示版修订
+
+Verified locally on 2026-10-22 after the revisions recorded below:
+
+- The homepage hero and right-hand trajectory illustration remain byte-identical to the preceding version. Navigation now has an explicit Home entry and a customization guide, with no public study-participation or administration entry.
+- `researchEnabled: false` disables research collection by default. Cookie-free local checks returned the anonymous disabled identity, 404 for `/api/admin/studies`, and a demo notice for `/admin`, `/research` and `/study/demo`.
+- All 42 Node tests and TypeScript checking passed. The seven added tests cover manifest validation, URL and size limits, independent hosted identities, local fingerprint matching, draft isolation, and the three distinct generated WAV assets. The modified component/module files passed focused ESLint.
+- Browser selection measured the three actual sample durations as 12, 15 and 18 seconds. The third sample played normally. Recording two keyboard inputs on Tone steps, switching to Soft pulses, and returning restored exactly two inputs/one pass; Soft pulses remained empty. The JSON export identified `library-tone-steps`, its SHA-256 and both original input UTC/audio-time values.
+- A real multiple-file chooser loaded two local WAVs. Both remained playable after switching between them. Files stayed local; this did not create participant submissions.
+- The four quadrant captions use upright horizontal text derived from the configured endpoints. In a 1280 × 720 browser, the square measured 272 × 272 pixels and document horizontal overflow was zero. Fine adjustment was collapsed by default.
+- Browser previews at 390 × 844 and 320 × 568 showed the complete square and five bilingual reference words together below it. These are viewport checks, not physical-device certification.
+- The original standalone HTML and `/legacy/` source remain byte-identical. The original main baseline remains isolated from the upgrade branch.
+
+公开网站当前以演示和自定义为目标，后台默认关闭；下文后台、上线和旧版布局记录是先前阶段的历史验收，不代表当前开启研究收集。当前发布的确切版本以 Sites 部署结果和线上核验为准。
+
 ## Automated checks / 自动检查
 
 - TypeScript type checking, ESLint (zero warnings/errors) and production Vinext build passed.

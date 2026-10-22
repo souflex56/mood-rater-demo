@@ -7,12 +7,14 @@ import { importSession, sessionToCsv, sessionToJson } from '@/lib/export';
 import { deleteSession, loadSession, loadSessions, saveSession } from '@/lib/persistence';
 import type { AnnotationSessionV2, AudioAsset, EmotionTarget, RatingEvent, RecordingPass, ResearchContext } from '@/lib/types';
 import { defaultVAInterface, type VAInterfaceProfile } from '@/lib/va-config';
+import { defaultAudioLibrary, findAudioDraft, MAX_AUDIO_BYTES, MAX_LOCAL_AUDIO_FILES, parseAudioLibrary, type AudioLibrary, type AudioLibraryClip } from '@/lib/audio-library';
 import { useLanguage } from './LanguageProvider';
 import AnnotationTimeline, { formatTime } from './AnnotationTimeline';
 import VAPlane from './VAPlane';
 import styles from './Annotator.module.css';
 
-const MAX_BYTES = 100 * 1024 * 1024;
+const MAX_BYTES = MAX_AUDIO_BYTES;
+type PreparedAudio = { key: string; asset: AudioAsset; source: string; title: { en: string; 'zh-CN': string }; demoOnly: boolean };
 const DEMO: AudioAsset = { id: 'mood-rater-practice-v1', name: 'Sound study · 20 seconds', size: 0, mimeType: 'audio/wav', duration: 20, url: '/demo.wav' };
 const clamp = (number: number) => Math.max(0, Math.min(1, number));
 const activePass = (session: AnnotationSessionV2 | null) => session?.passes.findLast(pass => !pass.revoked && pass.end === null);
@@ -23,7 +25,7 @@ async function digest(bytes: ArrayBuffer) {
   const hash = await crypto.subtle.digest('SHA-256', bytes);
   return Array.from(new Uint8Array(hash)).map(value => value.toString(16).padStart(2, '0')).join('');
 }
-async function readAudio(file: File, url: string) {
+async function readAudio(file: Blob, url: string) {
   const duration = await new Promise<number>((resolve, reject) => {
     const media = new Audio();
     const timeout = window.setTimeout(() => finish(new Error('AUDIO_METADATA_TIMEOUT')), 15000);
@@ -41,6 +43,25 @@ async function readAudio(file: File, url: string) {
   });
   return { duration, sha256: await digest(await file.arrayBuffer()) };
 }
+async function fetchAudio(url: string): Promise<Blob> {
+  const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
+  if (!response.ok || !response.body) throw new Error('AUDIO_DOWNLOAD_FAILED');
+  if (Number(response.headers.get('Content-Length')) > MAX_BYTES) throw new Error('AUDIO_TOO_LARGE');
+  const reader = response.body.getReader();
+  const chunks: ArrayBuffer[] = [];
+  let size = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > MAX_BYTES) throw new Error('AUDIO_TOO_LARGE');
+      chunks.push(new Uint8Array(value).buffer);
+    }
+  } catch (error) { await reader.cancel().catch(() => {}); throw error; }
+  finally { reader.releaseLock(); }
+  return new Blob(chunks, { type: response.headers.get('Content-Type') ?? 'audio/wav' });
+}
 function download(text: string, name: string, type: string) {
   const url = URL.createObjectURL(new Blob([text], { type }));
   const link = document.createElement('a'); link.href = url; link.download = name; link.click();
@@ -52,7 +73,7 @@ async function responseJson<T>(response: Response): Promise<T> {
   return payload as T;
 }
 
-export default function Annotator({ research, onSubmitted, interfaceProfile }: { research?: ResearchContext; onSubmitted?: (assetId: string) => void; interfaceProfile?: VAInterfaceProfile }) {
+export default function Annotator({ research, onSubmitted, interfaceProfile, audioLibrary }: { research?: ResearchContext; onSubmitted?: (assetId: string) => void; interfaceProfile?: VAInterfaceProfile; audioLibrary?: AudioLibrary }) {
   const { locale, t } = useLanguage();
   const [session, setSession] = useState<AnnotationSessionV2 | null>(null);
   const sessionRef = useRef<AnnotationSessionV2 | null>(null);
@@ -60,6 +81,12 @@ export default function Annotator({ research, onSubmitted, interfaceProfile }: {
   const [source, setSource] = useState('');
   const sourceRef = useRef('');
   const objectUrls = useRef(new Set<string>());
+  const library = useMemo(() => parseAudioLibrary(audioLibrary ?? defaultAudioLibrary), [audioLibrary]);
+  const preparedAudio = useRef(new Map<string, PreparedAudio>());
+  const [libraryClips, setLibraryClips] = useState<PreparedAudio[]>([]);
+  const [localClips, setLocalClips] = useState<PreparedAudio[]>([]);
+  const audioOperation = useRef(false);
+  const mounted = useRef(true);
   const mediaRef = useRef<HTMLAudioElement>(null);
   const localFileRef = useRef<HTMLInputElement>(null);
   const importRef = useRef<HTMLInputElement>(null);
@@ -103,10 +130,8 @@ export default function Annotator({ research, onSubmitted, interfaceProfile }: {
     if (!activePass(next)) setPreview(next);
   }, []);
   const changeSource = useCallback((value: string) => {
-    const previous = sourceRef.current;
-    if (previous !== value && previous.startsWith('blob:') && previous !== practiceBackup.current?.source) {
-      URL.revokeObjectURL(previous); objectUrls.current.delete(previous);
-    }
+    // Queued local clips and the practice backup may still need this URL.
+    // URLs are released on failed preparation or when this annotator unmounts.
     sourceRef.current = value; setSource(value);
   }, []);
   const stop = useCallback((reason: RecordingPass['endReason'] = 'stop', time?: number) => {
@@ -150,6 +175,7 @@ export default function Annotator({ research, onSubmitted, interfaceProfile }: {
     return () => window.clearTimeout(timeout);
   }, [session, recording, persist]);
   useEffect(() => {
+    mounted.current = true;
     const interval = window.setInterval(() => {
       const value = sessionRef.current;
       if (value && activePass(value)) setPreview(closePass(value, lastReliable.current, 'stop'));
@@ -159,7 +185,8 @@ export default function Annotator({ research, onSubmitted, interfaceProfile }: {
     };
     document.addEventListener('visibilitychange', visibility);
     const urls = objectUrls.current;
-    return () => { stop('interrupted', lastReliable.current); void persist(); window.clearInterval(interval); document.removeEventListener('visibilitychange', visibility); urls.forEach(url => URL.revokeObjectURL(url)); };
+    const sequence = requestSequence.current;
+    return () => { mounted.current = false; requestSequence.current = sequence + 1; stop('interrupted', lastReliable.current); void persist(); window.clearInterval(interval); document.removeEventListener('visibilitychange', visibility); urls.forEach(url => URL.revokeObjectURL(url)); };
   }, [stop, persist]);
   useEffect(() => {
     if (!recording) return;
@@ -205,35 +232,112 @@ export default function Annotator({ research, onSubmitted, interfaceProfile }: {
   const samples = useMemo(() => preview ? deriveSamples(preview) : [], [preview]);
   const stats = useMemo(() => preview ? sessionStats(preview) : { coverage: 0, eventCount: 0, passCount: 0 }, [preview]);
 
-  async function loadLocal(file?: File) {
-    if (!file || submissionInFlight.current) return;
-    if (file.size > MAX_BYTES) { setError(t('Choose an audio file smaller than 100 MB.', '请选择小于 100 MB 的音频文件。')); return; }
-    const request = ++requestSequence.current;
-    setBusy(true); setError('');
+  function audioError(error: unknown) {
+    const message = errorText(error);
+    if (message === 'AUDIO_FORMAT_UNSUPPORTED') return t('This audio format is not supported by your browser. Try MP3 or WAV.', '此浏览器不支持该音频格式，请尝试 MP3 或 WAV。');
+    if (message === 'AUDIO_METADATA_TIMEOUT') return t('Audio metadata could not be read. Try another file.', '无法读取音频信息，请尝试其他文件。');
+    if (message === 'AUDIO_TOO_LARGE') return t('Each audio file must be smaller than 100 MB.', '每个音频文件需小于 100 MB。');
+    if (message === 'AUDIO_DOWNLOAD_FAILED') return t('The selected audio could not be downloaded. Please try again.', '无法下载所选音频，请重试。');
+    return message;
+  }
+  function validateDuration(duration: number) {
+    if (!Number.isFinite(duration) || duration <= 0 || duration > 1800) throw new Error(t('Audio must be between 0 and 30 minutes long.', '音频时长需大于 0，且不超过 30 分钟。'));
+  }
+  async function saveBeforeSwitch() {
+    stop(); mediaRef.current?.pause();
+    if (!await persist()) throw new Error(t('Your current session could not be saved. It is still open here. Export a JSON backup before leaving this session.', '当前会话无法保存，内容仍保留在此页面。请先导出 JSON 备份，再离开此会话。'));
+  }
+  async function prepareLibraryClip(clip: AudioLibraryClip): Promise<PreparedAudio> {
+    if (!mounted.current) throw new Error('AUDIO_LOAD_CANCELLED');
+    const key = `library:${clip.id}`;
+    const cached = preparedAudio.current.get(key);
+    if (cached && cached.asset.url === clip.url) return cached;
+    const request = requestSequence.current;
+    const file = await fetchAudio(clip.url);
+    if (!mounted.current || request !== requestSequence.current) throw new Error('AUDIO_LOAD_CANCELLED');
     const url = URL.createObjectURL(file); objectUrls.current.add(url);
     try {
       const metadata = await readAudio(file, url);
-      if (request !== requestSequence.current) { URL.revokeObjectURL(url); objectUrls.current.delete(url); return; }
-      if (!Number.isFinite(metadata.duration) || metadata.duration <= 0 || metadata.duration > 1800) throw new Error(t('Audio must be between 0 and 30 minutes long.', '音频时长需大于 0，且不超过 30 分钟。'));
-      const current = sessionRef.current;
-      if (current && !sourceRef.current && current.mode !== 'legacy' && current.asset.sha256) {
-        if (current.asset.sha256 && current.asset.sha256 !== metadata.sha256) throw new Error(t('This is a different audio file. Select the original file to restore this draft.', '这不是原音频。请选择与草稿对应的原文件。'));
-        if (!current.asset.sha256 && current.asset.duration > 0 && Math.abs(current.asset.duration - metadata.duration) > .5) throw new Error(t('The audio duration does not match this draft.', '音频时长与此草稿不符。'));
-        replace({ ...current, asset: { ...current.asset, name: file.name, size: file.size, mimeType: file.type, ...metadata }, revision: current.revision + 1, updatedAt: new Date().toISOString() });
-        setNotice(t('Audio reconnected. Your annotations are restored.', '音频已重新关联，标注已恢复。'));
-      } else {
-        stop(); mediaRef.current?.pause();
-        if (!await persist()) throw new Error(t('Your current session could not be saved. It is still open here. Export a JSON backup before leaving this session.', '当前会话无法保存，内容仍保留在此页面。请先导出 JSON 备份，再离开此会话。'));
-        replace(createForAsset({ id: crypto.randomUUID(), name: file.name, size: file.size, mimeType: file.type, ...metadata }));
-        setNotice(t('Ready. Listen first, then press Record when you want to annotate.', '音频已就绪。可以先试听，准备好后点击「开始标注」。'));
-      }
-      pendingSeek.current = 0; changeSource(url); setCurrentTime(0); lastReliable.current = 0; setHasInput(false); setSubmission('idle'); setSubmittedSnapshot(null);
-    } catch (error) {
-      URL.revokeObjectURL(url); objectUrls.current.delete(url);
-      const message = errorText(error);
-      setError(message === 'AUDIO_FORMAT_UNSUPPORTED' ? t('This audio format is not supported by your browser. Try MP3 or WAV.', '此浏览器不支持该音频格式，请尝试 MP3 或 WAV。') : message === 'AUDIO_METADATA_TIMEOUT' ? t('Audio metadata could not be read. Try another file.', '无法读取音频信息，请尝试其他文件。') : message);
+      if (!mounted.current || request !== requestSequence.current) throw new Error('AUDIO_LOAD_CANCELLED');
+      validateDuration(metadata.duration);
+      const item: PreparedAudio = { key, title: clip.title, demoOnly: clip.demoOnly, source: url, asset: { id: `library-${clip.id}`, name: clip.title.en, url: clip.url, size: file.size, mimeType: clip.mimeType, ...metadata } };
+      preparedAudio.current.set(key, item);
+      setLibraryClips([...preparedAudio.current.values()].filter(item => Boolean(item.asset.url)));
+      return item;
+    } catch (error) { URL.revokeObjectURL(url); objectUrls.current.delete(url); throw error; }
+  }
+  async function activateAudio(item: PreparedAudio, reconnect?: AnnotationSessionV2) {
+    const request = requestSequence.current;
+    await saveBeforeSwitch();
+    if (!mounted.current || request !== requestSequence.current) return;
+    const current = sessionRef.current;
+    const values: AnnotationSessionV2[] = await loadSessions().catch(() => { setSaveState('error'); return []; });
+    if (!mounted.current || request !== requestSequence.current) return;
+    if (current && !values.some(value => value.id === current.id && value.revision >= current.revision)) values.push(current);
+    let candidate = findAudioDraft(values, item.asset);
+    // Reconnecting the draft currently on screen must preserve that specific draft,
+    // including an imported copy, instead of silently choosing a different revision.
+    if (current?.mode === 'free' && current.asset.sha256 === item.asset.sha256 && (reconnect?.id === current.id || current.asset.id === item.asset.id || !current.asset.url && !item.asset.url)) {
+      candidate = values.filter(value => value.id === current.id).sort((a, b) => b.revision - a.revision)[0] ?? current;
     }
-    finally { if (request === requestSequence.current) setBusy(false); if (localFileRef.current) localFileRef.current.value = ''; }
+    const open = activePass(candidate ?? null);
+    if (candidate && open) candidate = closePass(candidate, open.events.at(-1)?.mediaTime ?? open.start, 'interrupted');
+    const next = candidate ? { ...candidate, asset: { ...candidate.asset, duration: item.asset.duration, size: item.asset.size, mimeType: item.asset.mimeType }, revision: candidate.revision + 1, updatedAt: new Date().toISOString() } : createForAsset(item.asset);
+    replace(next); changeSource(item.source); pendingSeek.current = 0; setCurrentTime(0); lastReliable.current = 0;
+    setTarget(next.emotionTarget === 'felt' ? 'felt' : 'perceived'); setHasInput(false); setSubmission('idle'); setSubmittedSnapshot(null); setShowDrafts(false);
+    setNotice(candidate ? t('Audio reconnected. This clip’s annotations are restored.', '音频已重新关联，此音频的标注已恢复。') : t('Ready. This clip has its own annotation and export.', '音频已就绪。每段音频分别记录和导出标注。'));
+  }
+  async function selectClip(key: string) {
+    if (!key || audioOperation.current || submissionInFlight.current || practiceRef.current) return;
+    audioOperation.current = true; setBusy(true); setError('');
+    const request = requestSequence.current;
+    try {
+      await saveBeforeSwitch();
+      if (!mounted.current || request !== requestSequence.current) return;
+      const clip = library.clips.find(clip => `library:${clip.id}` === key);
+      const item = clip ? await prepareLibraryClip(clip) : preparedAudio.current.get(key);
+      if (item) await activateAudio(item);
+    } catch (error) { if (errorText(error) !== 'AUDIO_LOAD_CANCELLED') setError(audioError(error)); }
+    finally { audioOperation.current = false; if (mounted.current) setBusy(false); }
+  }
+  async function loadLocal(files: File[]) {
+    if (!files.length || audioOperation.current || submissionInFlight.current || practiceRef.current) return;
+    audioOperation.current = true; setBusy(true); setError('');
+    const request = requestSequence.current;
+    const added: PreparedAudio[] = [], failures: string[] = [];
+    try {
+      await saveBeforeSwitch();
+      if (!mounted.current || request !== requestSequence.current) return;
+      for (const file of files.slice(0, MAX_LOCAL_AUDIO_FILES)) {
+        if (!mounted.current || request !== requestSequence.current) return;
+        if (file.size > MAX_BYTES) { failures.push(`${file.name}: ${audioError(new Error('AUDIO_TOO_LARGE'))}`); continue; }
+        const url = URL.createObjectURL(file); objectUrls.current.add(url);
+        try {
+          const metadata = await readAudio(file, url);
+          if (!mounted.current || request !== requestSequence.current) throw new Error('AUDIO_LOAD_CANCELLED');
+          validateDuration(metadata.duration);
+          const key = `local:${metadata.sha256}`;
+          const existing = preparedAudio.current.get(key);
+          if (existing) { URL.revokeObjectURL(url); objectUrls.current.delete(url); added.push(existing); continue; }
+          if ([...preparedAudio.current.values()].filter(item => !item.asset.url).length >= MAX_LOCAL_AUDIO_FILES) throw new Error(t('The local playlist is limited to 20 files per tab.', '每个页面最多添加 20 个本地音频。'));
+          const item: PreparedAudio = { key, asset: { id: `local-${metadata.sha256}`, name: file.name, size: file.size, mimeType: file.type || 'audio/unknown', ...metadata }, source: url, title: { en: file.name, 'zh-CN': file.name }, demoOnly: false };
+          preparedAudio.current.set(key, item); added.push(item);
+        } catch (error) {
+          URL.revokeObjectURL(url); objectUrls.current.delete(url);
+          if (!mounted.current || request !== requestSequence.current || errorText(error) === 'AUDIO_LOAD_CANCELLED') return;
+          failures.push(`${file.name}: ${audioError(error)}`);
+        }
+      }
+      if (files.length > MAX_LOCAL_AUDIO_FILES) failures.push(t('Only the first 20 selected files were considered.', '本次仅处理前 20 个所选文件。'));
+      setLocalClips([...preparedAudio.current.values()].filter(item => !item.asset.url));
+      const current = sessionRef.current;
+      const reconnect = current?.mode === 'free' && current.asset.sha256 && !sourceRef.current;
+      const selected = reconnect ? added.find(item => item.asset.sha256 === current.asset.sha256) : added[0];
+      if (selected) await activateAudio(selected, reconnect ? current : undefined);
+      else if (reconnect && added.length) failures.push(t('The draft is still open. Select its original audio file to reconnect, or choose another clip in the playlist.', '草稿仍保留在此处。请选择原音频重新关联，或从列表中切换到其他音频。'));
+      if (failures.length) setError(failures.slice(0, 3).join(' · '));
+    } catch (error) { setError(audioError(error)); }
+    finally { audioOperation.current = false; if (request === requestSequence.current) setBusy(false); if (localFileRef.current) localFileRef.current.value = ''; }
   }
 
   async function togglePlayback() {
@@ -278,7 +382,7 @@ export default function Annotator({ research, onSubmitted, interfaceProfile }: {
     practiceRef.current = true; setPractice(true);
     pendingSeek.current = 0; replace(createSession(DEMO, locale, target, 'free', configuredProfile)); changeSource(DEMO.url!); setCurrentTime(0); lastReliable.current = 0;
     setError(''); setNotice(''); setHasInput(false);
-  }, [stop, persist, locale, target, replace, changeSource, configuredProfile]);
+  }, [stop, persist, locale, target, replace, changeSource, configuredProfile, setCurrentTime, setError, setNotice]);
   useEffect(() => {
     const timer = window.setTimeout(() => {
       if (demoInitialized.current) return;
@@ -296,20 +400,35 @@ export default function Annotator({ research, onSubmitted, interfaceProfile }: {
     setCurrentTime(pendingSeek.current); lastReliable.current = pendingSeek.current; setHasInput(false); setNotice('');
   }
   async function restoreDraft(value: AnnotationSessionV2): Promise<boolean> {
-    if (submissionInFlight.current) return false;
+    if (submissionInFlight.current || audioOperation.current) return false;
+    const request = requestSequence.current;
     setBusy(true); stop(); mediaRef.current?.pause();
     if (!await persist()) { setBusy(false); setError(t('Your current session could not be saved. It is still open here. Export a JSON backup before leaving this session.', '当前会话无法保存，内容仍保留在此页面。请先导出 JSON 备份，再离开此会话。')); return false; }
     // A draft list may predate edits or another tab's save. Restore the newest known revision.
     const current = sessionRef.current;
     let candidate = current?.id === value.id && current.revision > value.revision ? current : value;
     const stored = await loadSession(value.id).catch(() => undefined);
+    if (!mounted.current || request !== requestSequence.current) return false;
     if (stored && stored.revision > candidate.revision) candidate = stored;
     const open = activePass(candidate);
     const next = open ? closePass(candidate, open.events.at(-1)?.mediaTime ?? open.start, 'interrupted') : candidate;
-    pendingSeek.current = 0; replace(next); changeSource(next.asset.url ?? (research ? `/api/study/${research.study.token}/audio/${next.asset.id}` : ''));
+    let draftSource = research ? next.asset.url ?? `/api/study/${research.study.token}/audio/${next.asset.id}` : '';
+    if (!research && next.mode === 'free' && next.asset.sha256) {
+      const cached = [...preparedAudio.current.values()].find(item => item.asset.sha256 === next.asset.sha256 && (item.asset.id === next.asset.id || !item.asset.url && !next.asset.url));
+      if (cached) draftSource = cached.source;
+      else {
+        const clip = library.clips.find(clip => `library-${clip.id}` === next.asset.id && clip.url === next.asset.url);
+        if (clip) {
+          try { const item = await prepareLibraryClip(clip); if (item.asset.sha256 === next.asset.sha256) draftSource = item.source; }
+          catch { /* Keep the saved annotation available even when its audio is offline. */ }
+        }
+      }
+    }
+    if (!mounted.current || request !== requestSequence.current) return false;
+    pendingSeek.current = 0; replace(next); changeSource(draftSource);
     setCurrentTime(0); lastReliable.current = 0; setTarget(next.emotionTarget === 'felt' ? 'felt' : 'perceived');
     setShowDrafts(false); setError(''); setHasInput(false); setSubmission('idle'); setSubmittedSnapshot(null); setBusy(false);
-    setNotice(next.mode === 'legacy' || !next.asset.sha256 && !research ? t('Historical inputs are available for export. Their original audio cannot be verified; choosing an audio file starts a new session.', '历史输入可导出保留。原音频身份无法验证，选择音频将建立新会话。') : next.asset.url || research ? t('Draft restored.', '草稿已恢复。') : t('Draft restored. Select the original audio file to continue; its fingerprint will be checked.', '草稿已恢复。重新选择原音频后即可继续，系统会校验文件指纹。'));
+    setNotice(next.mode === 'legacy' || !next.asset.sha256 && !research ? t('Historical inputs are available for export. Their original audio cannot be verified; choosing an audio file starts a new session.', '历史输入可导出保留。原音频身份无法验证，选择音频将建立新会话。') : draftSource ? t('Draft restored.', '草稿已恢复。') : t('Draft restored. Select the original audio file to continue; its fingerprint will be checked.', '草稿已恢复。重新选择原音频后即可继续，系统会校验文件指纹。'));
     return true;
   }
   async function removeDraft(draft: AnnotationSessionV2) {
@@ -322,6 +441,8 @@ export default function Annotator({ research, onSubmitted, interfaceProfile }: {
   }
   async function importFile(file?: File) {
     if (!file) return;
+    if (busy || audioOperation.current || submissionInFlight.current) { if (importRef.current) importRef.current.value = ''; return; }
+    setBusy(true);
     try {
       if (file.size > 100 * 1024 * 1024) throw new Error(t('Session files must be smaller than 100 MB.', '会话文件不能超过 100 MB。'));
       const parsed = importSession(await file.text());
@@ -330,7 +451,7 @@ export default function Annotator({ research, onSubmitted, interfaceProfile }: {
       if (!await restoreDraft(imported)) return;
       if (imported.mode !== 'legacy' && imported.asset.sha256) setNotice(t('Session imported. Reconnect the matching audio to continue.', '会话已导入，关联对应音频后可继续。'));
     } catch (error) { setError(`${t('This session could not be imported.', '无法导入此会话。')} ${errorText(error)}`); }
-    if (importRef.current) importRef.current.value = '';
+    finally { if (mounted.current) setBusy(false); if (importRef.current) importRef.current.value = ''; }
   }
   function exportFile(format: 'json' | 'csv') {
     const current = sessionRef.current; if (!current || activePass(current)) return;
@@ -369,6 +490,7 @@ export default function Annotator({ research, onSubmitted, interfaceProfile }: {
   const isSubmitted = submission === 'ready' && submittedSnapshot?.sessionId === session?.id && submittedSnapshot?.revision === session?.revision;
   const closedPasses = session?.passes.filter(pass => !pass.revoked && pass.end !== null).length ?? 0;
   const selectedTarget = session?.emotionTarget ?? target;
+  const currentAudio = [...libraryClips, ...localClips].find(item => item.source === source && item.asset.sha256 === session?.asset.sha256);
   const axisLabel = (axis: 'x' | 'y', field: 'name' | 'low' | 'high') => activeProfile.config.axes[axis][field][locale];
   return <div className={styles.workspace}>
     <div className={styles.workspaceTop}>
@@ -401,14 +523,24 @@ export default function Annotator({ research, onSubmitted, interfaceProfile }: {
         <div className={styles.sectionHeading}><h2><span className={styles.sectionNumber}>01</span>{t('The audio', '聆听音频')}</h2><Volume2 size={19} strokeWidth={1.5}/></div>
         {research && !practice && <div className={styles.assetList}>{research.study.assets.map((asset, index) => <button key={asset.id} className={`${styles.assetButton} ${session?.asset.id === asset.id ? styles.assetSelected : ''}`} disabled={locked || recording} onClick={() => void selectAsset(asset)}><span>{String(index + 1).padStart(2, '0')}</span><span>{asset.name}<small>{formatTime(asset.duration)}</small></span>{session?.asset.id === asset.id && <Check size={16}/>}</button>)}</div>}
         {!research && !practice && <>
-          <input ref={localFileRef} type="file" accept="audio/*,.mp3,.wav,.m4a,.ogg,.flac,.aac,.webm" className={styles.hiddenInput} onChange={event => void loadLocal(event.target.files?.[0])}/>
-          <button className={`${styles.uploadZone} ${session ? styles.uploadCompact : ''}`} disabled={locked || recording} onClick={() => localFileRef.current?.click()} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); if (!locked && !recording) void loadLocal(event.dataTransfer.files[0]); }}>
+          <div className={styles.clipPicker}>
+            <label className={styles.fieldLabel} htmlFor="audio-clip">{t('Choose an audio clip', '选择一段音频')}</label>
+            <select id="audio-clip" value={currentAudio?.key ?? ''} disabled={locked} onChange={event => void selectClip(event.target.value)}>
+              <option value="" disabled>{t('Select a sample or add local files', '选择示例，或添加本地文件')}</option>
+              {library.clips.length > 0 && <optgroup label={t('Audio library', '音频库')}>{library.clips.map(clip => <option key={clip.id} value={`library:${clip.id}`}>{clip.title[locale]}{clip.demoOnly ? t(' · demo', ' · 演示') : ''}</option>)}</optgroup>}
+              {localClips.length > 0 && <optgroup label={t('Your local files', '你的本地文件')}>{localClips.map(clip => <option key={clip.key} value={clip.key}>{clip.title[locale]}</option>)}</optgroup>}
+            </select>
+            <p className={styles.helper}>{t('Each clip keeps its own annotations. Switching stops and saves the current recording.', '每段音频分别保存标注。切换时会停止并保存当前标注。')}</p>
+            {currentAudio?.demoOnly && <p className={styles.demoAudioNote}>{t('Synthesized demo audio · no ground-truth emotion ratings.', '合成演示音频 · 无标准情绪答案。')}</p>}
+          </div>
+          <input ref={localFileRef} type="file" multiple accept="audio/*,.mp3,.wav,.m4a,.ogg,.flac,.aac,.webm" className={styles.hiddenInput} onChange={event => void loadLocal(Array.from(event.target.files ?? []))}/>
+          <button className={`${styles.uploadZone} ${styles.uploadCompact}`} disabled={locked} onClick={() => localFileRef.current?.click()} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); if (!locked) void loadLocal(Array.from(event.dataTransfer.files)); }}>
             <span className={styles.uploadIcon}>{busy ? <LoaderCircle className={styles.spinner}/> : <Upload size={22}/>}</span>
-            <strong>{session ? (source ? t('Choose another audio', '选择其他音频') : t('Reconnect original audio', '重新关联原音频')) : t('Bring your own audio', '放入你的音频')}</strong>
-            <span>{t('Choose a file or drop it here', '选择文件，或拖放到这里')}</span><small>{t('MP3, WAV & more · up to 30 min / 100 MB', 'MP3、WAV 等 · 最长 30 分钟 / 100 MB')}</small>
+            <strong>{session && !source ? t('Reconnect original audio', '重新关联原音频') : t('Add your audio files', '添加你的音频文件')}</strong>
+            <span>{t('Choose or drop multiple files · up to 20', '可多选或拖放文件 · 最多 20 个')}</span><small>{t('Each file: up to 30 min / 100 MB', '每个文件：最长 30 分钟 / 100 MB')}</small>
           </button>
         </>}
-        {session && <div className={styles.audioIdentity}><span className={styles.audioFileIcon}><FileAudio size={22} strokeWidth={1.5}/></span><div><strong title={session.asset.name}>{practice ? t('Sound study', '声音练习') : session.asset.name}</strong><span>{formatTime(duration)} · {practice ? t('SYNTHESIZED AUDIO', '合成音频') : t('ORIGINAL SPEED · 1×', '原速播放 · 1×')}</span></div></div>}
+        {session && <div className={styles.audioIdentity}><span className={styles.audioFileIcon}><FileAudio size={22} strokeWidth={1.5}/></span><div><strong title={session.asset.name}>{practice ? t('Sound study', '声音练习') : currentAudio?.title[locale] ?? session.asset.name}</strong><span>{formatTime(duration)} · {practice ? t('SYNTHESIZED AUDIO', '合成音频') : t('ORIGINAL SPEED · 1×', '原速播放 · 1×')}</span></div></div>}
         <audio ref={mediaRef} src={source || undefined} preload="metadata" onPlay={() => setPlaying(true)} onPause={() => { setPlaying(false); stop('pause'); }}
           onLoadedMetadata={event => { if (pendingSeek.current > 0) { event.currentTarget.currentTime = Math.min(pendingSeek.current, event.currentTarget.duration); pendingSeek.current = 0; } }}
           onTimeUpdate={event => { setCurrentTime(event.currentTarget.currentTime); if (!activePass(sessionRef.current)) lastReliable.current = event.currentTarget.currentTime; }}
@@ -439,11 +571,11 @@ export default function Annotator({ research, onSubmitted, interfaceProfile }: {
         <VAPlane profile={activeProfile} locale={locale} rating={rating} touched={touched} recording={recording} locked={locked} onChange={capture}/>
         <p className={styles.planeHint} id="plane-help">{recording ? (hasInput ? t('Move as emotion changes. Releasing holds your last rating.', '随情绪变化移动，松手后保持最近评分。') : t('Move the point to begin your trace. No rating has been recorded yet.', '移动圆点开始绘制轨迹。目前尚未记录评分。')) : t('Explore the plane, then press Record to save your movements.', '先熟悉平面，点击「开始标注」后才会记录移动。')}</p>
         {session && !session.interfaceProfile && <p className={styles.helper}>{t('This older session did not record its interface settings. The displayed guidance uses the current interface; the historical data stays unchanged.', '此旧会话未记录界面配置。当前参考提示使用现行界面，历史数据保持不变。')}</p>}
-        <div className={styles.ratingSliders}>
+        <div className={styles.recordActions}><button className={`${styles.recordButton} ${recording ? styles.stopButton : ''}`} disabled={!source || locked} onClick={() => void toggleRecording()}>{recording ? <Square size={15} fill="currentColor"/> : <Circle size={15} fill="currentColor"/>}{recording ? t('Stop recording', '停止标注') : closedPasses ? t('Record from here', '从此处重新标注') : t('Start recording', '开始标注')}</button><button className={styles.undoButton} disabled={!closedPasses || recording || locked} onClick={() => { if (sessionRef.current) { replace(undoPass(sessionRef.current)); setNotice(t('Last recording undone. The previous trace is restored.', '已撤销最近一次标注，恢复此前的轨迹。')); } }}><RotateCcw size={16}/>{t('Undo', '撤销')}</button></div>
+        <details className={styles.fineAdjustment}><summary>{t('Fine adjustment (optional)', '精细调整（可选）')}</summary><div className={styles.ratingSliders}>
           <label><span><i className={styles.valenceKey}/>{axisLabel('x', 'name')}<strong>{touched ? rating[0].toFixed(2) : '—'}</strong></span><input aria-label={`${axisLabel('x', 'name')}: ${axisLabel('x', 'low')}–${axisLabel('x', 'high')}`} type="range" min="0" max="1" step="0.01" value={rating[0]} disabled={locked} onChange={event => capture(Number(event.target.value), ratingRef.current[1], 'slider', true)}/></label>
           <label><span><i className={styles.arousalKey}/>{axisLabel('y', 'name')}<strong>{touched ? rating[1].toFixed(2) : '—'}</strong></span><input aria-label={`${axisLabel('y', 'name')}: ${axisLabel('y', 'low')}–${axisLabel('y', 'high')}`} type="range" min="0" max="1" step="0.01" value={rating[1]} disabled={locked} onChange={event => capture(ratingRef.current[0], Number(event.target.value), 'slider', true)}/></label>
-        </div>
-        <div className={styles.recordActions}><button className={`${styles.recordButton} ${recording ? styles.stopButton : ''}`} disabled={!source || locked} onClick={() => void toggleRecording()}>{recording ? <Square size={15} fill="currentColor"/> : <Circle size={15} fill="currentColor"/>}{recording ? t('Stop recording', '停止标注') : closedPasses ? t('Record from here', '从此处重新标注') : t('Start recording', '开始标注')}</button><button className={styles.undoButton} disabled={!closedPasses || recording || locked} onClick={() => { if (sessionRef.current) { replace(undoPass(sessionRef.current)); setNotice(t('Last recording undone. The previous trace is restored.', '已撤销最近一次标注，恢复此前的轨迹。')); } }}><RotateCcw size={16}/>{t('Undo', '撤销')}</button></div>
+        </div></details>
       </section>
     </div>
 

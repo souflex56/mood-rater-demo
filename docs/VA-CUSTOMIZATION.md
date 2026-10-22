@@ -1,5 +1,7 @@
 # VA interface configuration / VA 界面配置
 
+[Audio and project customization / 音频与项目配置](CUSTOMIZATION.md) · [Public demo / 公开演示](https://mood-rater-audio.baysky.chatgpt.site/annotate)
+
 The square VA plane preserves the original Mood Rater's red, orange, blue and green color families in a softer palette that fits the cream and sage interface. The original saturated palette remains available as a separate preset. Guided labels come from the exact 97-word list and Chinese translations supplied by the project owner. The old source comment says 95, but the array contains 97 distinct entries. No coordinates have been invented for words absent from that list, including the illustrative word “sweet” in the supplied thesis excerpt.
 
 正方形 VA 平面保留原版红、橙、蓝、绿四类颜色，以较柔和的色调融入米白、鼠尾草绿界面；另存原版高饱和配色预设。引导词完整采用项目所有者提供的 97 个词、坐标和中文翻译；原代码注释写作 95，实际数组为 97 个不同词。论文描述中的 “sweet” 只是示例，不在所给词表中，因此未编造它的坐标。
@@ -40,6 +42,10 @@ export default function CustomAnnotationPage() {
 Axis names are presentation labels: changing their text does not swap axes, alter the 0–1 coordinates, or rename the exported `valence`/`arousal` fields. Colors use RGB channels from 0 to 255. Values and labels are validated as data, not executed as HTML or CSS. Use a new profile ID/version when changing a research interface.
 
 轴名称只改变展示文案，不交换横纵轴、不改变 0–1 坐标，也不更名导出的 `valence`／`arousal` 字段。RGB 通道范围为 0–255。配置作为数据校验，不执行其中的 HTML 或 CSS。研究界面发生变更时，应更新配置 ID／版本。
+
+Quadrant captions are derived from the configured endpoint labels: X low / Y high, X high / Y high, X low / Y low, and X high / Y low. They describe directions and are separate from the emotion tag list; changing endpoint labels updates the quadrant captions.
+
+四象限文案由配置中的端点标签组合：X 低／Y 高、X 高／Y 高、X 低／Y 低、X 高／Y 低。它们说明方向，与情绪词表分开；修改端点文案会同步更新象限说明。
 
 ## Spatial guidance / 空间引导
 
