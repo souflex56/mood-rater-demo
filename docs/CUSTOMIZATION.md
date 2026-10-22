@@ -66,9 +66,9 @@ Files in `public/` are public on a hosted deployment. Add only material you can 
 | [`config/va-interface.json`](../config/va-interface.json) | Circle size, maximum tags, corner colors, axis names and endpoints / 圆圈、标签数、四角颜色、轴名与端点 |
 | [`config/va-interface-original.json`](../config/va-interface-original.json) | Original-color preset / 原版配色预设 |
 
-The default guide circle has diameter `0.125` of the square width, hence radius `0.0625`. Only up to five tags inside the circle are selected, nearest first. Tags appear as a vertical list below the plane. Four quadrant captions combine the configured X/Y endpoint names; they are orientation labels, not additional emotion tags. Editing the endpoints updates these captions too.
+The default guide circle has diameter `0.125` of the square width, hence radius `0.0625`. Only up to five tags inside the circle are selected, nearest first. Tags appear as an unnumbered, comma-separated vertical list below the plane. Axis names sit on their corresponding horizontal and vertical centerlines. Four quadrant captions combine the configured X/Y endpoint names; they are orientation labels, not additional emotion tags. Editing the endpoints updates these captions too.
 
-默认引导圆直径为正方形宽度的 `0.125`，半径为 `0.0625`。按距离取圈内最多五个词，在平面下方竖排。四象限文案由配置中的 X/Y 端点名组合生成，用于说明方向，不是新增的情绪标签；修改端点时也会同步变化。
+默认引导圆直径为正方形宽度的 `0.125`，半径为 `0.0625`。按距离取圈内最多五个词，在平面下方竖排，以逗号分隔且无编号。轴名直接标在对应的横轴与纵轴线上。四象限文案由配置中的 X/Y 端点名组合生成，用于说明方向，不是新增的情绪标签；修改端点时也会同步变化。
 
 Use a new interface ID/version when changing a study’s guidance. New sessions snapshot the full interface and tag list; old sessions retain their saved configuration. Axis-name changes affect labels only, not the 0–1 scale or exported field names. See [VA-CUSTOMIZATION.md](VA-CUSTOMIZATION.md) for the schema, validation limits, original-color preset and interpolation rules.
 

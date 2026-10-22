@@ -45,7 +45,7 @@ Axis names are presentation labels: changing their text does not swap axes, alte
 
 Quadrant captions are derived from the configured endpoint labels: X low / Y high, X high / Y high, X low / Y low, and X high / Y low. They describe directions and are separate from the emotion tag list; changing endpoint labels updates the quadrant captions.
 
-四象限文案由配置中的端点标签组合：X 低／Y 高、X 高／Y 高、X 低／Y 低、X 高／Y 低。它们说明方向，与情绪词表分开；修改端点文案会同步更新象限说明。
+轴名分别标在横轴右侧和纵轴上部，文字正向显示；引导词在平面下方单列、无编号、以逗号分隔。四象限文案由配置中的端点标签组合：X 低／Y 高、X 高／Y 高、X 低／Y 低、X 高／Y 低。它们说明方向，与情绪词表分开；修改端点文案会同步更新象限说明。
 
 ## Spatial guidance / 空间引导
 
@@ -53,7 +53,7 @@ For a selected point `(v, a)`, each tag's distance is `sqrt((v-tag.v)^2 + (a-tag
 
 以所选点为圆心，按二维欧氏距离筛选。默认**直径 = 平面宽度的 1/8**，所以归一化**半径 = 1/16 = 0.0625**。只选择圈内或边界上的词，按距离从近到远取最多 5 个；等距时按文件顺序。圈内没有词就不显示情绪词，不从圈外补选。
 
-The selection circle retains the selected VA location even near an edge. Nearby words appear in a vertical list below the plane, in nearest-first order; the plane does not show tag anchors or connecting lines. Their stored coordinates still determine eligibility and ranking. Labels are guidance, not a classification of the listener. A word preview before recording does not create a rating. While recording, pointer, keyboard and slider inputs retain their actual coordinates and times.
+The selection circle retains the selected VA location even near an edge. Nearby words appear in a single vertical list below the plane, separated by commas without numbering, in nearest-first order; the plane does not show tag anchors or connecting lines. Their stored coordinates still determine eligibility and ranking. Labels are guidance, not a classification of the listener. A word preview before recording does not create a rating. While recording, pointer, keyboard and slider inputs retain their actual coordinates and times.
 
 圆圈保留所选 VA 位置，靠近边缘时也不移动数据坐标。附近词语在平面下方纵向排列，按距离从近到远排序；平面内不显示词语锚点或连线，词语的保存坐标仍用于筛选和排序。词语用于引导，不是对聆听者的分类。录制前预览词语不会产生评分；录制时保存鼠标、键盘和滑块实际输入的坐标与时间。
 

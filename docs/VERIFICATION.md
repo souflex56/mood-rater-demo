@@ -2,6 +2,16 @@
 
 Local verification: 2026-10-22. This record describes observed checks, not a guarantee of production capacity.
 
+## Axis and homepage motion revision / 坐标轴与首页动画修订
+
+Verified locally on 2026-10-22 after the demo-first revision:
+
+- The configured Y name is attached to the upper vertical centerline; the configured X name is on the right horizontal centerline. English and Chinese remain upright. At 320 × 568 the axis names and quadrant captions were readable without overlapping.
+- Nearby guidance retains its radius, limit and distance ordering. It renders as one unnumbered vertical list with commas between entries. Browser inspection found no generated counters or bullets; a five-word example included strength, thoughtful, care, hopeful and bright.
+- The homepage retains the original curve and composition, now with a 24-second drawing/moving-point loop and six sequential floating tags from the configured list. Chinese labels stayed within their cards in the browser; the hero fit the 390-pixel phone preview.
+- Two sampled animation frames showed point progress from 53.44% to 64.79% and a corresponding trace-dash change. Pausing set all eight animations to paused; later inspection retained exactly 65.2146% point progress and the same trace offset. Resume worked. Reduced-motion CSS provides a complete static path and endpoint; OS preference switching was not separately tested.
+- TypeScript and focused lint passed. This revision changes presentation only; audio data and annotation rules are unchanged.
+
 ## Current demo-first revision / 当前演示版修订
 
 Verified locally on 2026-10-22 after the revisions recorded below:
