@@ -2,6 +2,19 @@
 
 Local verification: 2026-10-22. This record describes observed checks, not a guarantee of production capacity.
 
+## External axis labels and seven-point trajectory / 外置坐标文字与七点轨迹
+
+Verified locally on 2026-10-22 after the motion revision below:
+
+- All six axis/quadrant caption elements are outside the interactive square, both structurally and by measured rectangles. The desktop square measured 272 × 272 pixels with zero document horizontal overflow. Arousal ↑ is on the far left; Valence → is below. English and Chinese captions remain upright.
+- Guidance is a paragraph of inline spans with comma separators, without a list. A click near VA (0.81, 0.31) rendered `gentle, secure, wise` on one line; the Chinese equivalents also shared a line on desktop. The radius, maximum count, ranking and recording protocol are unchanged.
+- Browser viewport previews at 390 × 844 and 320 × 568 showed the square, outside captions and inline guidance together. English quadrant captions wrap at 320 pixels; Chinese remains upright. These are browser viewport checks, not physical-device certification.
+- The homepage now visits neutral → peaceful → tender → cheerful → enthusiastic → aggressive → anger using their configured coordinates. Three focused tests passed for exact waypoint/curve endpoints, custom coordinates and missing-tag fallback, and bounded finite geometry including coincident points. TypeScript checking passed.
+- Browser inspection confirmed the seven coordinates and arrival times (0, 1.5, 3, 4.5, 6, 7.5, 9 seconds), the 13-second duration and moving trace. All trail elements share one fade group; its generated timing fades from 10.2 to 12.2 seconds before restart. The phone preview visibly showed the fading full trail. Pause froze the point at 22.4228% and the trace offset at 0.775772px across separate checks; resume worked.
+- The updated homepage card and bilingual floating tags fit the 390-pixel preview. Reduced-motion CSS retains a static path and labels; OS preference switching was not separately tested.
+
+The earlier sections below document previous layouts and release stages, not the current caption placement or animation timing.
+
 ## Axis and homepage motion revision / 坐标轴与首页动画修订
 
 Verified locally on 2026-10-22 after the demo-first revision:

@@ -1,6 +1,6 @@
-.container{--va-side:min(calc(100% - 48px),340px,max(180px,calc(100svh - 448px)));margin-top:12px;min-width:0}
-.planeRow{position:relative;width:var(--va-side);margin:0 auto}
-.square{position:relative;width:100%;aspect-ratio:1/1;height:auto;overflow:hidden;touch-action:none;user-select:none;cursor:crosshair;outline:1px solid #ccd5c7;background:#586b40;isolation:isolate}
+.container{margin-top:12px;min-width:0}
+.planeRow{display:grid;grid-template-columns:60px minmax(0,1fr);gap:6px 8px;align-items:center;width:min(100%,408px,max(248px,calc(100svh - 380px)));margin:0 auto}
+.square{grid-column:2;grid-row:2;position:relative;width:100%;aspect-ratio:1/1;height:auto;overflow:hidden;touch-action:none;user-select:none;cursor:crosshair;outline:1px solid #ccd5c7;background:#586b40;isolation:isolate}
 .square:focus-visible{outline:3px solid #244e35;outline-offset:4px}
 .square[aria-disabled=true]{cursor:not-allowed}
 .recording{box-shadow:0 0 0 4px #41644814}
@@ -8,19 +8,18 @@
 .horizontalAxis,.verticalAxis{position:absolute;background:#ffffff75;pointer-events:none}
 .horizontalAxis{left:0;right:0;top:50%;height:1px}
 .verticalAxis{top:0;bottom:0;left:50%;width:1px}
-.axisName{position:absolute;display:flex;align-items:center;justify-content:center;gap:4px;box-sizing:border-box;padding:3px 5px;border:1px solid #ffffffd9;border-radius:4px;background:#fffffff0;color:#34412f;font-size:12px;line-height:18px;white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px #34412f12}
-.axisName>span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.axisName{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:3px;min-width:0;color:#34412f;font-size:12px;line-height:18px;text-align:center;overflow-wrap:anywhere}
+.axisName>span{min-width:0}
 .axisName>span[aria-hidden]{flex-shrink:0;font-size:14px}
-.yAxisName{left:50%;top:max(58px,22%);transform:translate(-50%,-50%);max-width:46%}
-.xAxisName{right:7px;top:50%;transform:translateY(-50%);max-width:42%}
-.quadrantLabel{position:absolute;max-width:44%;box-sizing:border-box;padding:3px 5px;border-radius:4px;background:#ffffffd9;color:#34412f;font-size:11px;line-height:1.4;pointer-events:none;overflow-wrap:anywhere}
-.topLeft{top:7px;left:7px}.topRight{top:7px;right:7px;text-align:right}
-.bottomLeft{bottom:7px;left:7px}.bottomRight{bottom:7px;right:7px;text-align:right}
+.yAxisName{grid-column:1;grid-row:2}
+.xAxisName{grid-column:2;grid-row:4}
+.quadrantRow{grid-column:2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-width:0}
+.topQuadrants{grid-row:1;align-items:end}.bottomQuadrants{grid-row:3;align-items:start}
+.quadrantLabel{min-width:0;color:#52604a;font-size:12px;line-height:16px;overflow-wrap:anywhere}
+.quadrantLabel:last-child{text-align:right}
 .guideCircle{position:absolute;transform:translate(-50%,-50%);border:2px solid white;box-shadow:0 0 0 1px #23302580,inset 0 0 0 1px #23302580;border-radius:50%;pointer-events:none;box-sizing:border-box}
 .currentPoint{position:absolute;width:10px;height:10px;border:2px solid #fff;box-shadow:0 0 0 1px #203025;background:#26372b;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
-.guideFeedback{width:var(--va-side);box-sizing:border-box;margin:8px auto 0;padding:5px 12px;color:#48583f;background:#f7f8f4;border:1px solid #e2e7db;border-radius:6px;font-size:13px;line-height:22px}
-.guideFeedback p{margin:0;font-size:12px;line-height:20px;text-align:center}
-.guideFeedback ul{display:block;list-style:none;margin:0;padding:0}
-.guideFeedback li{display:block;min-height:22px;max-width:100%;overflow-wrap:anywhere}
-@media(max-width:700px){.container{--va-side:min(calc(100% - 48px),280px,calc(100svh - 340px))}.guideFeedback{font-size:12px}}
-@media(max-height:450px){.container{--va-side:min(calc(100% - 48px),220px,55svh)}}
+.guideFeedback{grid-column:1/-1;grid-row:5;min-width:0;box-sizing:border-box;margin-top:2px;padding:5px 12px;color:#48583f;background:#f7f8f4;border:1px solid #e2e7db;border-radius:6px}
+.guideFeedback p{margin:0;font-size:12px;line-height:20px;text-align:center;overflow-wrap:anywhere}
+@media(max-width:700px){.planeRow{width:min(100%,348px,calc(100svh - 272px))}}
+@media(max-height:450px){.planeRow{width:min(100%,288px,calc(55svh + 68px))}}

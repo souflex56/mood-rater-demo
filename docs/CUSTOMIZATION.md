@@ -66,13 +66,17 @@ Files in `public/` are public on a hosted deployment. Add only material you can 
 | [`config/va-interface.json`](../config/va-interface.json) | Circle size, maximum tags, corner colors, axis names and endpoints / 圆圈、标签数、四角颜色、轴名与端点 |
 | [`config/va-interface-original.json`](../config/va-interface-original.json) | Original-color preset / 原版配色预设 |
 
-The default guide circle has diameter `0.125` of the square width, hence radius `0.0625`. Only up to five tags inside the circle are selected, nearest first. Tags appear as an unnumbered, comma-separated vertical list below the plane. Axis names sit on their corresponding horizontal and vertical centerlines. Four quadrant captions combine the configured X/Y endpoint names; they are orientation labels, not additional emotion tags. Editing the endpoints updates these captions too.
+The default guide circle has diameter `0.125` of the square width, hence radius `0.0625`. Only up to five tags inside the circle are selected, nearest first. Tags appear inline below the plane, separated by commas and wrapping naturally on narrow screens. All captions sit outside the square: the X name with a right arrow below it, the Y name with an up arrow on the far left, and four quadrant captions above/below its corners. Quadrant captions combine the configured X/Y endpoint names; they are orientation labels, not additional emotion tags. Editing the endpoints updates these captions too.
 
-默认引导圆直径为正方形宽度的 `0.125`，半径为 `0.0625`。按距离取圈内最多五个词，在平面下方竖排，以逗号分隔且无编号。轴名直接标在对应的横轴与纵轴线上。四象限文案由配置中的 X/Y 端点名组合生成，用于说明方向，不是新增的情绪标签；修改端点时也会同步变化。
+默认引导圆直径为正方形宽度的 `0.125`，半径为 `0.0625`。按距离取圈内最多五个词，在平面下方用逗号分隔并列显示，窄屏自然换行。所有说明文字均在正方形外：X 轴名及向右箭头在底部，Y 轴名及向上箭头在最左侧，四象限说明位于四角的上方或下方。四象限文案由配置中的 X/Y 端点名组合生成，用于说明方向，不是新增的情绪标签；修改端点时也会同步变化。
 
 Use a new interface ID/version when changing a study’s guidance. New sessions snapshot the full interface and tag list; old sessions retain their saved configuration. Axis-name changes affect labels only, not the 0–1 scale or exported field names. See [VA-CUSTOMIZATION.md](VA-CUSTOMIZATION.md) for the schema, validation limits, original-color preset and interpolation rules.
 
 修改研究引导条件时应更新界面 ID／版本。新会话保存完整界面和词表快照，旧会话继续使用原配置。修改轴名只影响展示，不改变 0–1 量表或导出字段名。详细结构、校验、原版预设和插值规则见 [VA-CUSTOMIZATION.md](VA-CUSTOMIZATION.md)。
+
+The homepage illustration follows `neutral → peaceful → tender → cheerful → enthusiastic → aggressive → anger` at their configured VA positions. It repeats every 13 seconds and fades its entire trail before restarting. The sequence and timing live in [`hero-trajectory-data.ts`](../app/components/hero-trajectory-data.ts); labels and coordinates use matching IDs from `emotion-tags.json`. If one of these IDs is omitted from a custom list, the illustration uses that word's original supplied coordinates and label. This is a decorative demonstration, not recorded annotation data.
+
+首页示意动画按 `neutral → peaceful → tender → cheerful → enthusiastic → aggressive → anger` 的配置坐标移动，每 13 秒循环一次，重启前整条轨迹逐渐淡出。顺序和时间参数在 [`hero-trajectory-data.ts`](../app/components/hero-trajectory-data.ts)；文字和坐标优先采用 `emotion-tags.json` 中同 ID 的词。自定义词表缺少某个 ID 时，示意动画保留该词原始坐标与文案。它只用于演示，不是采集的标注数据。
 
 ## 4. Reuse the component / 复用组件
 

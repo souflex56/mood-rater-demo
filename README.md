@@ -16,7 +16,7 @@ The upgrade lives on `codex/mood-rater-v2` in a separate Git worktree. The origi
 
 Mouse/touch, arrow keys and separate sliders are supported. Switch English/Chinese at any time. Listening without recording does not change data. Each new pass is blank until its first input; later values hold until the next input or pass end. Gaps remain missing. See the [annotation protocol](docs/PROTOCOL.md).
 
-The square VA plane uses muted red, orange, blue and green, with an exact original-color preset available. All **97 guide words** retain their supplied coordinates and translations. A circle with **diameter = plane width / 8** selects at most five words inside it, listed below the plane nearest-first. An empty circle shows no words. New inputs include audio time and device-clock UTC.
+The square VA plane uses muted red, orange, blue and green, with an exact original-color preset available. All **97 guide words** retain their supplied coordinates and translations. A circle with **diameter = plane width / 8** selects at most five words inside it, shown inline below the plane, comma-separated and nearest-first. An empty circle shows no words. New inputs include audio time and device-clock UTC.
 
 ## Run locally
 

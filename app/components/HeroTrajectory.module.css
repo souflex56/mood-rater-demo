@@ -1,20 +1,18 @@
-.art{--motion-duration:24s}
-.drawnTrace{stroke-dasharray:1;stroke-dashoffset:0;animation:drawTrace var(--motion-duration) linear infinite}
-.traveller{offset-path:var(--trajectory-path);offset-distance:100%;offset-anchor:0px 0px;offset-rotate:0deg;transform-box:view-box;animation:travel var(--motion-duration) linear infinite}
+.art{--motion-duration:13s}
+.trail{opacity:1;animation-duration:var(--motion-duration);animation-timing-function:linear;animation-iteration-count:infinite}
+.drawnTrace{stroke-dasharray:1;stroke-dashoffset:0;animation-duration:var(--motion-duration);animation-timing-function:linear;animation-iteration-count:infinite}
+.traveller{offset-path:var(--trajectory-path);offset-distance:100%;offset-anchor:0px 0px;offset-rotate:0deg;transform-box:view-box;animation-duration:var(--motion-duration);animation-timing-function:linear;animation-iteration-count:infinite}
 .staticPoint{display:none}
-.word{opacity:0;animation:floatWord var(--motion-duration) ease-in-out infinite}
+.word{opacity:1;animation-duration:var(--motion-duration);animation-timing-function:ease-in-out;animation-iteration-count:infinite}
 .word text{font-family:Inter,"Helvetica Neue","PingFang SC","Microsoft YaHei",Arial,sans-serif;font-size:12px;fill:#45604c;letter-spacing:.1px}
 .note{pointer-events:none}
-.art[data-motion-paused=true] .drawnTrace,.art[data-motion-paused=true] .traveller,.art[data-motion-paused=true] .word{animation-play-state:paused}
+.art[data-motion-paused=true] .trail,.art[data-motion-paused=true] .drawnTrace,.art[data-motion-paused=true] .traveller,.art[data-motion-paused=true] .word{animation-play-state:paused}
 .bottom{gap:10px;flex-wrap:wrap}
 .caption{margin-left:auto}
 .motionButton{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:28px;padding:3px 7px;border:1px solid #cdd9c8;border-radius:6px;background:#f8faf5;color:#4d6856;font-size:10px;line-height:1.4;white-space:nowrap}
 .motionButton:hover{background:#e4ecde}
 .motionButton[aria-pressed=true]{background:#e4ecde;border-color:#aebfa7}
 .reducedLabel{display:none;font-size:9px;color:#788976}
-@keyframes drawTrace{0%{stroke-dashoffset:1;opacity:0}2%{opacity:1}82%,92%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:1;opacity:0}}
-@keyframes travel{0%{offset-distance:0%;opacity:0}2%{opacity:1}82%,92%{offset-distance:100%;opacity:1}98%{offset-distance:100%;opacity:0}100%{offset-distance:0%;opacity:0}}
-@keyframes floatWord{0%{opacity:0;transform:translateY(5px)}3%,10%{opacity:1;transform:translateY(0)}14%{opacity:0;transform:translateY(-4px)}100%{opacity:0;transform:translateY(-4px)}}
-@supports not (offset-path:path("M0 0L1 1")){.traveller{display:none}.staticPoint{display:inline}.drawnTrace{animation:none;stroke-dashoffset:0}}
+@supports not (offset-path:path("M0 0L1 1")){.traveller{display:none}.staticPoint{display:inline}.trail,.drawnTrace,.word{animation-name:none!important;opacity:1;stroke-dashoffset:0;transform:none}.wordPlacement{transform:translate(var(--static-label-x),var(--static-label-y))}}
 @media(max-width:420px){.bottom{gap:5px}.motionButton{padding:3px 5px}.caption{font-size:9px}}
-@media(prefers-reduced-motion:reduce){.drawnTrace{animation:none;stroke-dashoffset:0;opacity:1}.traveller{display:none}.staticPoint{display:inline}.word{animation:none;opacity:1;transform:none}.motionButton{display:none}.reducedLabel{display:inline}.caption{margin-left:auto}}
+@media(prefers-reduced-motion:reduce){.trail,.drawnTrace,.word{animation-name:none!important;stroke-dashoffset:0;opacity:1;transform:none}.traveller{display:none;animation-name:none!important}.staticPoint{display:inline}.wordPlacement{transform:translate(var(--static-label-x),var(--static-label-y))}.motionButton{display:none}.reducedLabel{display:inline}.caption{margin-left:auto}}

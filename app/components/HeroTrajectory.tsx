@@ -4,21 +4,30 @@ import { useId, useState, type CSSProperties } from 'react';
 import { AudioLines, MoveUpRight, Pause, Play } from 'lucide-react';
 import { defaultVAInterface } from '@/lib/va-config';
 import { useLanguage } from './LanguageProvider';
+import { buildHeroTrajectory, HERO_DURATION_SECONDS, HERO_FADE_END_SECONDS, HERO_FADE_IN_SECONDS, HERO_FADE_START_SECONDS, HERO_WAYPOINT_HOLD_SECONDS } from './hero-trajectory-data';
 import styles from './HeroTrajectory.module.css';
 
-// The original homepage illustration path, shared by the drawn line and travelling point.
-const TRAJECTORY = 'M82 224C126 237 159 201 137 178S86 155 122 132S181 183 215 154S230 115 249 104S302 105 279 67';
-const WORDS = [
-  { id: 'calm', x: 42, y: 245, width: 94 },
-  { id: 'tender', x: 153, y: 211, width: 108 },
-  { id: 'thoughtful', x: 28, y: 92, width: 140 },
-  { id: 'hopeful', x: 179, y: 170, width: 128 },
-  { id: 'bright', x: 220, y: 121, width: 116 },
-  { id: 'care', x: 55, y: 33, width: 102 },
-].flatMap((word, index) => {
-  const tag = defaultVAInterface.tags.find(tag => tag.id === word.id) ?? defaultVAInterface.tags[index];
-  return tag ? [{ ...word, tag }] : [];
-});
+const trajectory = buildHeroTrajectory(defaultVAInterface.tags);
+const percent = (seconds: number) => Number((seconds / HERO_DURATION_SECONDS * 100).toFixed(6));
+const rounded = (value: number) => Number(value.toFixed(8));
+
+/** The line and moving point share arc-distance keyframes, including a short hold at each tag. */
+function animationRules(prefix: string) {
+  const stops = trajectory.waypoints.flatMap(point => [
+    { time: point.arrivalSeconds, progress: point.progress },
+    { time: point.arrivalSeconds + HERO_WAYPOINT_HOLD_SECONDS, progress: point.progress },
+  ]);
+  stops.push({ time: HERO_FADE_START_SECONDS, progress: 1 }, { time: HERO_FADE_END_SECONDS, progress: 1 }, { time: HERO_DURATION_SECONDS, progress: 0 });
+  const line = stops.map(stop => `${percent(stop.time)}%{stroke-dashoffset:${rounded(1 - stop.progress)}}`).join('');
+  const point = stops.map(stop => `${percent(stop.time)}%{offset-distance:${rounded(stop.progress * 100)}%}`).join('');
+  const labels = trajectory.waypoints.map((waypoint, index) => {
+    const next = trajectory.waypoints[index + 1];
+    const out = next ? `${percent(next.arrivalSeconds - .35)}%{opacity:1;transform:translateY(0)}${percent(next.arrivalSeconds - .05)}%,100%{opacity:0;transform:translateY(-3px)}` : '100%{opacity:1;transform:translateY(0)}';
+    return `@keyframes ${prefix}-word-${index}{0%,${percent(waypoint.arrivalSeconds)}%{opacity:0;transform:translateY(4px)}${percent(waypoint.arrivalSeconds + .16)}%{opacity:1;transform:translateY(0)}${out}}`;
+  }).join('');
+  const fade = `0%{opacity:0}${percent(HERO_FADE_IN_SECONDS)}%,${percent(HERO_FADE_START_SECONDS)}%{opacity:1}${percent(HERO_FADE_END_SECONDS)}%,100%{opacity:0}`;
+  return `@keyframes ${prefix}-line{${line}}@keyframes ${prefix}-point{${point}}@keyframes ${prefix}-trail{${fade}}${labels}`;
+}
 
 function fitLabel(value: string, width: number) {
   const measure = (character: string) => /\s/.test(character) ? 3 : character === '·' ? 4.5 : character.codePointAt(0)! > 0x2e80 ? 12 : /[A-Z]/.test(character) ? 8 : 6.6;
@@ -36,10 +45,12 @@ function fitLabel(value: string, width: number) {
 export default function HeroTrajectory() {
   const { locale, t } = useLanguage();
   const [paused, setPaused] = useState(false);
-  const uniqueId = useId().replaceAll(':', '');
+  const uniqueId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const gradientId = `hero-trace-${uniqueId}`;
   const descriptionId = `hero-description-${uniqueId}`;
-  const motionStyle = { '--trajectory-path': `path('${TRAJECTORY}')` } as CSSProperties;
+  const animationPrefix = `hero-motion-${uniqueId}`;
+  const motionStyle = { '--trajectory-path': `path('${trajectory.path}')`, '--motion-duration': `${HERO_DURATION_SECONDS}s` } as CSSProperties;
+  const start = trajectory.waypoints[0], end = trajectory.waypoints.at(-1)!;
 
   return <div className={`hero-art ${styles.art}`} data-motion-paused={paused} style={motionStyle}
     aria-label={t('Illustration of a valence–arousal trajectory', '效价—唤醒情绪轨迹示意')}>
@@ -50,29 +61,34 @@ export default function HeroTrajectory() {
       <span className="plane-axis-left">{t('NEGATIVE', '负向')}</span>
       <span className="plane-axis-right">{t('POSITIVE', '正向')}</span>
       <svg viewBox="0 0 360 300" role="img" aria-label={t('Example trajectory, not collected data', '轨迹示意，并非实际采集数据')} aria-describedby={descriptionId}>
-        <desc id={descriptionId}>{t('An illustrative emotional journey with reference words from the supplied tag list. The line and words are an animation, not live ratings or a recording.', '示意性的情绪旅程，参考词来自所给词表。轨迹和词语属于动画，不是实时评分或录音数据。')}</desc>
+        <desc id={descriptionId}>{t('An illustrative journey through neutral, peaceful, tender, cheerful, enthusiastic, aggressive and anger, following their configured valence and arousal coordinates. This is an animation, not live ratings or a recording.', '轨迹依次经过中性、平和、温柔、欢快、热烈、激昂、暴怒，位置来自对应词的效价和唤醒坐标。这是示意动画，不是实时评分或录音数据。')}</desc>
+        <style>{animationRules(animationPrefix)}</style>
         <defs><linearGradient id={gradientId} x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stopColor="#c8a17b"/><stop offset="100%" stopColor="#24594e"/></linearGradient></defs>
         <g stroke="#cbd5cd" strokeWidth="1" strokeDasharray="3 5"><path d="M180 15V285M25 150H335"/></g>
         <g stroke="#dce2d9" fill="none"><circle cx="180" cy="150" r="60"/><circle cx="180" cy="150" r="112"/></g>
-        <path d={TRAJECTORY} stroke="#fff" strokeWidth="9" fill="none"/>
-        <path d={TRAJECTORY} stroke="#bdcdbb" strokeWidth="1.5" fill="none" opacity=".45"/>
-        <path d={TRAJECTORY} className={styles.drawnTrace} pathLength={1} stroke={`url(#${gradientId})`} strokeWidth="3" strokeLinecap="round" fill="none"/>
-        <circle cx="82" cy="224" r="5" fill="#b39370"/>
-        <g className={styles.staticPoint} aria-hidden="true"><circle cx="279" cy="67" r="15" fill="#24594e" fillOpacity=".12"/><circle cx="279" cy="67" r="6" fill="#24594e" stroke="white" strokeWidth="3"/></g>
-        <g className={styles.traveller} data-hero-traveller="true" aria-hidden="true">
+        <g className={styles.trail} style={{ animationName: `${animationPrefix}-trail` }} data-hero-trail="true">
+        <path d={trajectory.path} className={styles.drawnTrace} style={{ animationName: `${animationPrefix}-line` }} pathLength={1} stroke="#fff" strokeWidth="9" strokeLinecap="round" fill="none"/>
+        <path d={trajectory.path} className={styles.drawnTrace} style={{ animationName: `${animationPrefix}-line` }} data-hero-trace="true" pathLength={1} stroke={`url(#${gradientId})`} strokeWidth="3" strokeLinecap="round" fill="none"/>
+        <circle cx={start.x} cy={start.y} r="5" fill="#b39370"/>
+        <g className={styles.staticPoint} aria-hidden="true"><circle cx={end.x} cy={end.y} r="15" fill="#24594e" fillOpacity=".12"/><circle cx={end.x} cy={end.y} r="6" fill="#24594e" stroke="white" strokeWidth="3"/></g>
+        <g className={styles.traveller} style={{ animationName: `${animationPrefix}-point` }} data-hero-traveller="true" aria-hidden="true">
           <circle r="15" fill="#24594e" fillOpacity=".12"/>
           <circle r="6" fill="#24594e" stroke="white" strokeWidth="3"/>
         </g>
-        {WORDS.map(({ id, x, y, width, tag }, index) => {
+        {trajectory.waypoints.map(({ tag, x, y, labelX, labelY, labelWidth, staticLabelX, staticLabelY, progress, arrivalSeconds, fromConfig }, index) => {
           const wordLabel = locale === 'zh-CN' ? `${tag.label.en} · ${tag.label['zh-CN']}` : tag.label.en;
-          return <g key={id} transform={`translate(${x} ${y})`} aria-hidden="true">
-          <g className={styles.word} data-hero-emotion={tag.id} style={{ animationDelay: `${index * 3.3}s` }}>
+          const labelStyle = { '--static-label-x': `${staticLabelX}px`, '--static-label-y': `${staticLabelY}px` } as CSSProperties;
+          return <g key={tag.id} className={styles.wordPlacement} transform={`translate(${labelX} ${labelY})`} style={labelStyle} aria-hidden="true"
+            data-hero-waypoint={tag.id} data-valence={tag.valence} data-arousal={tag.arousal} data-point-x={x} data-point-y={y}
+            data-arc-progress={progress} data-arrival-seconds={arrivalSeconds} data-configured-tag={fromConfig}>
+          <g className={styles.word} data-hero-emotion={tag.id} style={{ animationName: `${animationPrefix}-word-${index}` }}>
             <title>{wordLabel}</title>
-            <rect width={width} height="27" rx="8" fill="#fffefa" stroke="#d8e2d4"/>
+            <rect width={labelWidth} height="27" rx="8" fill="#fffefa" stroke="#d8e2d4"/>
             <circle cx="11" cy="13.5" r="2.5" fill="#8ca18b"/>
-            <text x="21" y="17.2">{fitLabel(wordLabel, width)}</text>
+            <text x="21" y="17.2">{fitLabel(wordLabel, labelWidth)}</text>
           </g>
         </g>;})}
+        </g>
       </svg>
       <span className={`trajectory-note ${styles.note}`}>{t('A feeling in motion', '感受正在变化')}<MoveUpRight size={14}/></span>
     </div>

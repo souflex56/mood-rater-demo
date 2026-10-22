@@ -61,6 +61,11 @@ export default function VAPlane({ profile, locale, rating, touched, recording, l
 
   return <div className={styles.container}>
     <div className={styles.planeRow}>
+      <div className={`${styles.quadrantRow} ${styles.topQuadrants}`}>
+        <span className={styles.quadrantLabel} data-quadrant="top-left">{label(axes.x.low)} · {label(axes.y.high)}</span>
+        <span className={styles.quadrantLabel} data-quadrant="top-right">{label(axes.x.high)} · {label(axes.y.high)}</span>
+      </div>
+      <span className={`${styles.axisName} ${styles.yAxisName}`} data-axis="y"><span>{label(axes.y.name)}</span><span aria-hidden="true">↑</span></span>
       <div ref={plane} className={`${styles.square} ${recording ? styles.recording : ''}`} role="group" tabIndex={locked ? -1 : 0} aria-disabled={locked} aria-describedby={helpId}
         aria-label={`${t('Emotion plane', '情绪平面')}. X: ${label(axes.x.name)} (${label(axes.x.low)}–${label(axes.x.high)}). Y: ${label(axes.y.name)} (${label(axes.y.low)}–${label(axes.y.high)}). ${t('Use arrow keys to move.', '可使用方向键移动。')}`}
         onPointerDown={event => {
@@ -84,21 +89,20 @@ export default function VAPlane({ profile, locale, rating, touched, recording, l
         }}>
         <canvas ref={canvas} className={styles.background} aria-hidden="true"/>
         <div className={styles.horizontalAxis}/><div className={styles.verticalAxis}/>
-        <span className={`${styles.quadrantLabel} ${styles.topLeft}`} data-quadrant="top-left">{label(axes.x.low)} · {label(axes.y.high)}</span>
-        <span className={`${styles.quadrantLabel} ${styles.topRight}`} data-quadrant="top-right">{label(axes.x.high)} · {label(axes.y.high)}</span>
-        <span className={`${styles.quadrantLabel} ${styles.bottomLeft}`} data-quadrant="bottom-left">{label(axes.x.low)} · {label(axes.y.low)}</span>
-        <span className={`${styles.quadrantLabel} ${styles.bottomRight}`} data-quadrant="bottom-right">{label(axes.x.high)} · {label(axes.y.low)}</span>
-        <span className={`${styles.axisName} ${styles.yAxisName}`} data-axis="y" title={label(axes.y.name)}><span aria-hidden="true">↑</span><span>{label(axes.y.name)}</span></span>
-        <span className={`${styles.axisName} ${styles.xAxisName}`} data-axis="x" title={label(axes.x.name)}><span>{label(axes.x.name)}</span><span aria-hidden="true">→</span></span>
         {touched && <>
           <div className={styles.guideCircle} data-guide-diameter={guide.diameterRatio} aria-hidden="true" style={{ left: `${rating[0] * 100}%`, top: `${(1 - rating[1]) * 100}%`, width: `${guide.diameterRatio * 100}%`, height: `${guide.diameterRatio * 100}%` }}/>
           <span className={styles.currentPoint} style={{ left: `${rating[0] * 100}%`, top: `${(1 - rating[1]) * 100}%` }} aria-hidden="true"/>
         </>}
       </div>
-    </div>
-    <div className={styles.guideFeedback} id={helpId}>
-      {tags.length ? <ul role="list" aria-label={t('Reference words inside the circle, nearest first', '圆内情绪参考词，按距离从近到远')}>{tags.map((tag, index) => <li key={tag.id} data-guidance-tag={tag.id}>{tagLabel(tag)}{index < tags.length - 1 ? (locale === 'zh-CN' ? '，' : ',') : ''}</li>)}</ul>
-        : <p>{touched ? t('No reference words within this circle.', '当前圆内没有情绪参考词。') : t('Select a point to view reference words.', '选择一个点，查看情绪参考词。')}</p>}
+      <div className={`${styles.quadrantRow} ${styles.bottomQuadrants}`}>
+        <span className={styles.quadrantLabel} data-quadrant="bottom-left">{label(axes.x.low)} · {label(axes.y.low)}</span>
+        <span className={styles.quadrantLabel} data-quadrant="bottom-right">{label(axes.x.high)} · {label(axes.y.low)}</span>
+      </div>
+      <span className={`${styles.axisName} ${styles.xAxisName}`} data-axis="x"><span>{label(axes.x.name)}</span><span aria-hidden="true">→</span></span>
+      <div className={styles.guideFeedback} id={helpId}>
+        {tags.length ? <p aria-label={t('Reference words inside the circle, nearest first', '圆内情绪参考词，按距离从近到远')}>{tags.map((tag, index) => <span key={tag.id} data-guidance-tag={tag.id}>{tagLabel(tag)}{index < tags.length - 1 ? (locale === 'zh-CN' ? '，' : ', ') : ''}</span>)}</p>
+          : <p>{touched ? t('No reference words within this circle.', '当前圆内没有情绪参考词。') : t('Select a point to view reference words.', '选择一个点，查看情绪参考词。')}</p>}
+      </div>
     </div>
   </div>;
 }
