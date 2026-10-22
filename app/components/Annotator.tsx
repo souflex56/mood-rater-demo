@@ -277,8 +277,8 @@ export default function Annotator({ research, onSubmitted }: { research?: Resear
     practiceBackup.current = { session: sessionRef.current, source: sourceRef.current, time: mediaRef.current?.currentTime ?? 0 };
     practiceRef.current = true; setPractice(true);
     pendingSeek.current = 0; replace(createSession(DEMO, locale, target, 'free')); changeSource(DEMO.url!); setCurrentTime(0); lastReliable.current = 0;
-    setError(''); setNotice(t('Practice is separate from your annotations. Try moving around while recording.', '练习与正式标注分开保存。请开始标注并移动圆点，感受操作方式。')); setHasInput(false);
-  }, [stop, persist, locale, target, replace, changeSource, t]);
+    setError(''); setNotice(''); setHasInput(false);
+  }, [stop, persist, locale, target, replace, changeSource]);
   useEffect(() => {
     const timer = window.setTimeout(() => {
       if (demoInitialized.current) return;

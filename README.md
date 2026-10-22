@@ -4,7 +4,7 @@
 
 Mood Rater records how perceived or felt emotion changes while someone listens to audio. This edition extends Simin Yang’s doctoral research implementation with an English/Chinese interface, continuous valence–arousal annotation, local drafts, interval re-recording, and an invitation-based research workflow.
 
-The upgrade is developed on `codex/mood-rater-v2` in a separate Git worktree. The original `main` baseline is preserved. The expected public address is [mood-rater-audio.baysky.chatgpt.site](https://mood-rater-audio.baysky.chatgpt.site); that address is a deployment target, not evidence that publication or production acceptance has completed.
+The upgrade is developed on `codex/mood-rater-v2` in a separate Git worktree. The original `main` baseline is preserved. Public site: [mood-rater-audio.baysky.chatgpt.site](https://mood-rater-audio.baysky.chatgpt.site). Public routes and annotation were verified on 2026-10-22; the owner must complete the first ChatGPT sign-in and dashboard activation before collecting research data.
 
 ## What you can do
 

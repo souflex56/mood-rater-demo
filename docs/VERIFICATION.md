@@ -27,3 +27,13 @@ Browser actions used synthetic audio and local test data. No real participant re
 The original main checkout remained clean at `8e7ac2ffd99af7494a62193b25f434e36226d35d`. `public/legacy/index.html` is byte-identical to the original `mood-rater-final.html`.
 
 See [deployment guidance](DEPLOYMENT.md) for the production release process. Publication status must be checked against the hosting deployment and live URL; a successful local build alone does not establish it.
+
+## Public release / 公开发布
+
+On 2026-10-22, Sites confirmed the deployment succeeded at https://mood-rater-audio.baysky.chatgpt.site and the audience was set to public. Independent cookie-free HTTP checks returned 200 for `/`, `/annotate`, `/about`, `/research`, `/legacy/`, `/demo.wav` and `/api/identity`. Identity was anonymous; `/api/admin/studies` returned401, including with forged local-test cookies and identity headers. The deployed demo audio matched the local bytes. The hosted legacy HTML preserved the original content; the hosting provider appends its own security script, so the raw HTTP response hash differs from the source.
+
+The public browser successfully switched to Chinese, opened practice, played the real audio, recorded two keyboard inputs and displayed a completed trace (99% coverage, one pass).
+
+The production administrator login currently requires the owner to finish ChatGPT sign-in and dashboard activation. The full research collection loop was verified locally, but is not yet certified end-to-end in production. No production participant data was seeded for these checks. Custom-domain redirect is pending the domain details.
+
+公开页面与音频录制已真实验证；研究后台仍需所有者首次登录激活，生产研究闭环尚未完成验收。测试未写入生产参与者记录。自有域名跳转等待域名信息。

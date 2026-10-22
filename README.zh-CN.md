@@ -2,9 +2,9 @@
 
 [English](README.md) · [标注协议](docs/PROTOCOL.md) · [部署说明](docs/DEPLOYMENT.md) · [研究 API](docs/API.md)
 
-Mood Rater 用于记录聆听音频时，感知情绪或自身感受如何随时间变化。新版在杨思敏博士研究实现的基础上，增加中英界面、连续效价—唤醒度标注、本地草稿、区间重录和研究邀请流程。
+Mood Rater 用于记录聆听音频时，感知情绪或自身感受如何随时间变化。新版在Simin Yang博士研究实现的基础上，增加中英界面、连续效价—唤醒度标注、本地草稿、区间重录和研究邀请流程。
 
-升级在独立 Git worktree 的 `codex/mood-rater-v2` 分支开发，原始 `main` 基线保留。预期公开地址为 [mood-rater-audio.baysky.chatgpt.site](https://mood-rater-audio.baysky.chatgpt.site)；此处记录的是部署目标，不代表已经发布或完成生产验收。
+升级在独立 Git worktree 的 `codex/mood-rater-v2` 分支开发，原始 `main` 基线保留。公开网站：[mood-rater-audio.baysky.chatgpt.site](https://mood-rater-audio.baysky.chatgpt.site)。2026-10-22 已验证公开页面与线上标注。正式采集研究数据前，所有者仍需完成首次 ChatGPT 登录及后台激活。
 
 ## 可以做什么
 
