@@ -3,16 +3,17 @@
 .drawnTrace{stroke-dasharray:1;stroke-dashoffset:0;animation-duration:var(--motion-duration);animation-timing-function:linear;animation-iteration-count:infinite}
 .traveller{offset-path:var(--trajectory-path);offset-distance:100%;offset-anchor:0px 0px;offset-rotate:0deg;transform-box:view-box;animation-duration:var(--motion-duration);animation-timing-function:linear;animation-iteration-count:infinite}
 .staticPoint{display:none}
+.wordPlacement{animation-duration:var(--motion-duration);animation-timing-function:linear;animation-iteration-count:infinite}
 .word{opacity:1;animation-duration:var(--motion-duration);animation-timing-function:ease-in-out;animation-iteration-count:infinite}
 .word text{font-family:Inter,"Helvetica Neue","PingFang SC","Microsoft YaHei",Arial,sans-serif;font-size:12px;fill:#45604c;letter-spacing:.1px}
 .art .uprightAxis{writing-mode:horizontal-tb;transform:translateY(-50%);letter-spacing:0;font-size:10px}
-.art[data-motion-paused=true] .trail,.art[data-motion-paused=true] .drawnTrace,.art[data-motion-paused=true] .traveller,.art[data-motion-paused=true] .word{animation-play-state:paused}
+.art[data-motion-paused=true] .trail,.art[data-motion-paused=true] .drawnTrace,.art[data-motion-paused=true] .traveller,.art[data-motion-paused=true] .word,.art[data-motion-paused=true] .wordPlacement{animation-play-state:paused}
 .bottom{gap:10px;flex-wrap:wrap}
 .caption{margin-left:auto}
 .motionButton{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:28px;padding:3px 7px;border:1px solid #cdd9c8;border-radius:6px;background:#f8faf5;color:#4d6856;font-size:10px;line-height:1.4;white-space:nowrap}
 .motionButton:hover{background:#e4ecde}
 .motionButton[aria-pressed=true]{background:#e4ecde;border-color:#aebfa7}
 .reducedLabel{display:none;font-size:9px;color:#788976}
-@supports not (offset-path:path("M0 0L1 1")){.traveller{display:none}.staticPoint{display:inline}.trail,.drawnTrace,.word{animation-name:none!important;opacity:1;stroke-dashoffset:0;transform:none}.wordPlacement{transform:translate(var(--static-label-x),var(--static-label-y))}}
+@supports not (offset-path:path("M0 0L1 1")){.traveller{offset-path:none;offset-distance:0;animation-name:none!important;transform:none}.movingPoint,.motionButton{display:none}.staticPoint{display:inline}.trail,.drawnTrace,.word{animation-name:none!important;opacity:1;stroke-dashoffset:0;transform:none}.wordPlacement{animation-name:none!important;transform:translate(var(--static-label-x),var(--static-label-y))}}
 @media(max-width:420px){.bottom{gap:5px}.motionButton{padding:3px 5px}.caption{font-size:9px}}
-@media(prefers-reduced-motion:reduce){.trail,.drawnTrace,.word{animation-name:none!important;stroke-dashoffset:0;opacity:1;transform:none}.traveller{display:none;animation-name:none!important}.staticPoint{display:inline}.wordPlacement{transform:translate(var(--static-label-x),var(--static-label-y))}.motionButton{display:none}.reducedLabel{display:inline}.caption{margin-left:auto}}
+@media(prefers-reduced-motion:reduce){.trail,.drawnTrace,.word{animation-name:none!important;stroke-dashoffset:0;opacity:1;transform:none}.traveller{offset-path:none;offset-distance:0;animation-name:none!important;transform:none}.movingPoint{display:none}.staticPoint{display:inline}.wordPlacement{animation-name:none!important;transform:translate(var(--static-label-x),var(--static-label-y))}.motionButton{display:none}.reducedLabel{display:inline}.caption{margin-left:auto}}

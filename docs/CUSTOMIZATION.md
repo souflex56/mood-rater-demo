@@ -76,7 +76,11 @@ Use a new interface ID/version when changing a study’s guidance. New sessions 
 
 The homepage illustration follows `neutral → peaceful → tender → cheerful → enthusiastic → aggressive → anger` at their configured VA positions. It repeats every 13 seconds and fades its entire trail before restarting. The sequence and timing live in [`hero-trajectory-data.ts`](../app/components/hero-trajectory-data.ts); labels and coordinates use matching IDs from `emotion-tags.json`. If one of these IDs is omitted from a custom list, the illustration uses that word's original supplied coordinates and label. This is a decorative demonstration, not recorded annotation data.
 
+The active emotion caption travels with the dot. Its local offset adjusts at the plot edges to keep the bilingual text visible. Pause freezes the point and caption together; reduced motion shows a static path and labels.
+
 首页示意动画按 `neutral → peaceful → tender → cheerful → enthusiastic → aggressive → anger` 的配置坐标移动，每 13 秒循环一次，重启前整条轨迹逐渐淡出。顺序和时间参数在 [`hero-trajectory-data.ts`](../app/components/hero-trajectory-data.ts)；文字和坐标优先采用 `emotion-tags.json` 中同 ID 的词。自定义词表缺少某个 ID 时，示意动画保留该词原始坐标与文案。它只用于演示，不是采集的标注数据。
+
+当前情绪词跟随圆点移动，靠近边缘时调整相对位置，保持中英文完整可见。暂停会同时冻结圆点和标签；减少动态效果时显示静态轨迹与词语。
 
 ## 4. Reuse the component / 复用组件
 

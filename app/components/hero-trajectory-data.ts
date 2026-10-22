@@ -26,10 +26,19 @@ export type HeroSegment = { start: HeroPoint; control1: HeroPoint; control2: Her
 export type HeroWaypoint = HeroPoint & {
   tag: EmotionTag; fromConfig: boolean; progress: number; arrivalSeconds: number;
   labelX: number; labelY: number; labelWidth: number; staticLabelX: number; staticLabelY: number;
+  labelFrames: { time: number; x: number; y: number }[];
 };
 const bound = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value));
 const boundedPoint = (x: number, y: number): HeroPoint => ({ x: bound(x, HERO_PLOT.left, HERO_PLOT.right), y: bound(y, HERO_PLOT.top, HERO_PLOT.bottom) });
 const fmt = (value: number) => Number(value.toFixed(6));
+
+/** An upright caption below the travelling point, kept inside the SVG edges. */
+export function heroLabelOffset(point: HeroPoint, width: number): HeroPoint {
+  return {
+    x: bound(point.x - width / 2, 12, 348 - width) - point.x,
+    y: bound(point.y + 18, 12, 261) - point.y,
+  };
+}
 
 export function heroPointForVA(valence: number, arousal: number): HeroPoint {
   return {
@@ -71,10 +80,25 @@ export function buildHeroTrajectory(tags: readonly EmotionTag[]): { path: string
   const waypoints = selected.map((point, index): HeroWaypoint => {
     if (index > 0) traversed += segments[index - 1].length;
     const labelWidth = LABEL_WIDTHS[index];
-    const labelX = bound(point.x > 180 ? point.x - labelWidth - 14 : point.x + 12, 20, 340 - labelWidth);
-    const labelY = bound(point.y + 12, 20, 270);
+    const { x: labelX, y: labelY } = heroLabelOffset(point, labelWidth);
+    const arrivalSeconds = index * HERO_STEP_SECONDS;
+    const labelFrames = [{ time: arrivalSeconds, x: labelX, y: labelY }, { time: arrivalSeconds + HERO_WAYPOINT_HOLD_SECONDS, x: labelX, y: labelY }];
+    const segment = segments[index];
+    if (segment) {
+      // Match the marker's arc-distance timing; only the edge-safe local offset changes.
+      const samples = Array.from({ length: 65 }, (_, step) => heroCubicPoint(segment, step / 64));
+      let distance = 0;
+      const distances = samples.map((sample, step) => {
+        if (step) distance += Math.hypot(sample.x - samples[step - 1].x, sample.y - samples[step - 1].y);
+        return distance;
+      });
+      samples.slice(1).forEach((sample, step) => labelFrames.push({
+        time: arrivalSeconds + HERO_WAYPOINT_HOLD_SECONDS + (HERO_STEP_SECONDS - HERO_WAYPOINT_HOLD_SECONDS) * (distance ? distances[step + 1] / distance : (step + 1) / 64),
+        ...heroLabelOffset(sample, labelWidth),
+      }));
+    }
     return { ...point, progress: totalLength > 0 ? traversed / totalLength : 0, arrivalSeconds: index * HERO_STEP_SECONDS,
-      labelX, labelY, labelWidth, staticLabelX: STATIC_LABELS[index][0], staticLabelY: STATIC_LABELS[index][1] };
+      labelX, labelY, labelWidth, labelFrames, staticLabelX: STATIC_LABELS[index][0], staticLabelY: STATIC_LABELS[index][1] };
   });
   const path = `M${fmt(selected[0].x)} ${fmt(selected[0].y)}${segments.map(segment => `C${fmt(segment.control1.x)} ${fmt(segment.control1.y)} ${fmt(segment.control2.x)} ${fmt(segment.control2.y)} ${fmt(segment.end.x)} ${fmt(segment.end.y)}`).join('')}`;
   return { path, waypoints, segments, totalLength };

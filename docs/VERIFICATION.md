@@ -2,6 +2,15 @@
 
 Local verification: 2026-10-22. This record describes observed checks, not a guarantee of production capacity.
 
+## Captions following the point / 情绪词跟随圆点
+
+Verified locally on 2026-10-22:
+
+- Active captions share the travelling point's SVG motion group. Their local placement follows the curve's arc timing and adjusts near the SVG edges. The requested seven-word sequence, 13-second loop and shared fade remain unchanged.
+- Desktop browser inspection confirmed the visible caption is inside the moving group, located next to the marker, with zero horizontal document overflow. Pausing froze point progress at 2.17984% across separate checks, and all 15 point/caption animation states were paused. Resume worked.
+- The complete card and bilingual moving captions fit browser viewport previews at 390 × 844 and 320 × 568. The footer phrase 感受正在变化 remains outside the plot.
+- Four trajectory tests passed, including caption bounds at sampled path and extreme coordinates; TypeScript checking passed. Reduced-motion and unsupported-motion CSS retain static labels with the moving parent transform removed; OS preference switching was not separately exercised.
+
 ## Chinese axis wording and unobstructed hero / 中文坐标文案与首页无遮挡轨迹
 
 Verified locally on 2026-10-22:

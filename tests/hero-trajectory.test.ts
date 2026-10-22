@@ -1,10 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { defaultVAInterface } from '../lib/va-config.ts';
-import { buildHeroTrajectory, heroCubicPoint, HERO_PLOT } from '../app/components/hero-trajectory-data.ts';
+import { buildHeroTrajectory, heroCubicPoint, heroLabelOffset, HERO_PLOT } from '../app/components/hero-trajectory-data.ts';
 
 const ids = ['neutral', 'peaceful', 'tender', 'cheerful', 'enthusiastic', 'aggressive', 'anger'];
 const positions = [[.5, .5], [.85, .23], [.74, .49], [.89, .67], [.9, .8], [.51, .6], [.17, .83]];
+
+test('travelling captions stay inside the SVG for every path sample and edge coordinates', () => {
+  const result = buildHeroTrajectory(defaultVAInterface.tags);
+  for (const [index, waypoint] of result.waypoints.entries()) {
+    let previousTime = waypoint.arrivalSeconds;
+    for (const frame of waypoint.labelFrames) {
+      assert.ok(Number.isFinite(frame.x) && Number.isFinite(frame.y));
+      assert.ok(frame.time >= previousTime);
+      previousTime = frame.time;
+    }
+    const segment = result.segments[index];
+    const points = segment ? Array.from({ length: 101 }, (_, step) => heroCubicPoint(segment, step / 100)) : [waypoint];
+    points.push({ x: 25, y: 15 }, { x: 335, y: 285 });
+    for (const point of points) {
+      const offset = heroLabelOffset(point, waypoint.labelWidth);
+      assert.ok(point.x + offset.x >= 12 - 1e-9);
+      assert.ok(point.x + offset.x + waypoint.labelWidth <= 348 + 1e-9);
+      assert.ok(point.y + offset.y >= 12 - 1e-9);
+      assert.ok(point.y + offset.y + 27 + 4 <= 292 + 1e-9);
+    }
+  }
+});
 
 test('hero visits all seven requested VA positions in order, including each cubic endpoint', () => {
   const result = buildHeroTrajectory(defaultVAInterface.tags);

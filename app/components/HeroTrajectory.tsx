@@ -23,7 +23,8 @@ function animationRules(prefix: string) {
   const labels = trajectory.waypoints.map((waypoint, index) => {
     const next = trajectory.waypoints[index + 1];
     const out = next ? `${percent(next.arrivalSeconds - .35)}%{opacity:1;transform:translateY(0)}${percent(next.arrivalSeconds - .05)}%,100%{opacity:0;transform:translateY(-3px)}` : '100%{opacity:1;transform:translateY(0)}';
-    return `@keyframes ${prefix}-word-${index}{0%,${percent(waypoint.arrivalSeconds)}%{opacity:0;transform:translateY(4px)}${percent(waypoint.arrivalSeconds + .16)}%{opacity:1;transform:translateY(0)}${out}}`;
+    const attachment = waypoint.labelFrames.map(frame => `${percent(frame.time)}%{transform:translate(${rounded(frame.x)}px,${rounded(frame.y)}px)}`).join('');
+    return `@keyframes ${prefix}-attachment-${index}{${attachment}}@keyframes ${prefix}-word-${index}{0%,${percent(waypoint.arrivalSeconds)}%{opacity:0;transform:translateY(4px)}${percent(waypoint.arrivalSeconds + .16)}%{opacity:1;transform:translateY(0)}${out}}`;
   }).join('');
   const fade = `0%{opacity:0}${percent(HERO_FADE_IN_SECONDS)}%,${percent(HERO_FADE_START_SECONDS)}%{opacity:1}${percent(HERO_FADE_END_SECONDS)}%,100%{opacity:0}`;
   return `@keyframes ${prefix}-line{${line}}@keyframes ${prefix}-point{${point}}@keyframes ${prefix}-trail{${fade}}${labels}`;
@@ -72,12 +73,13 @@ export default function HeroTrajectory() {
         <circle cx={start.x} cy={start.y} r="5" fill="#b39370"/>
         <g className={styles.staticPoint} aria-hidden="true"><circle cx={end.x} cy={end.y} r="15" fill="#24594e" fillOpacity=".12"/><circle cx={end.x} cy={end.y} r="6" fill="#24594e" stroke="white" strokeWidth="3"/></g>
         <g className={styles.traveller} style={{ animationName: `${animationPrefix}-point` }} data-hero-traveller="true" aria-hidden="true">
+          <g className={styles.movingPoint} data-hero-marker="true">
           <circle r="15" fill="#24594e" fillOpacity=".12"/>
           <circle r="6" fill="#24594e" stroke="white" strokeWidth="3"/>
-        </g>
+          </g>
         {trajectory.waypoints.map(({ tag, x, y, labelX, labelY, labelWidth, staticLabelX, staticLabelY, progress, arrivalSeconds, fromConfig }, index) => {
           const wordLabel = locale === 'zh-CN' ? `${tag.label.en} · ${tag.label['zh-CN']}` : tag.label.en;
-          const labelStyle = { '--static-label-x': `${staticLabelX}px`, '--static-label-y': `${staticLabelY}px` } as CSSProperties;
+          const labelStyle = { '--static-label-x': `${staticLabelX}px`, '--static-label-y': `${staticLabelY}px`, animationName: `${animationPrefix}-attachment-${index}` } as CSSProperties;
           return <g key={tag.id} className={styles.wordPlacement} transform={`translate(${labelX} ${labelY})`} style={labelStyle} aria-hidden="true"
             data-hero-waypoint={tag.id} data-valence={tag.valence} data-arousal={tag.arousal} data-point-x={x} data-point-y={y}
             data-arc-progress={progress} data-arrival-seconds={arrivalSeconds} data-configured-tag={fromConfig}>
@@ -88,6 +90,7 @@ export default function HeroTrajectory() {
             <text x="21" y="17.2">{fitLabel(wordLabel, labelWidth)}</text>
           </g>
         </g>;})}
+        </g>
         </g>
       </svg>
     </div>
