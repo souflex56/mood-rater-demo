@@ -3,7 +3,6 @@
 import { AudioLines, Globe2, Menu, X } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import Link from 'next/link';
 import { useLanguage } from './LanguageProvider';
 
 export default function SiteShell({ children }: { children: ReactNode }) {
@@ -19,7 +18,7 @@ export default function SiteShell({ children }: { children: ReactNode }) {
   return <>
     <a className="skip-link" href="#main">{t('Skip to content', '跳至内容')}</a>
     <header className="site-header">
-      <Link href="/" className="brand" aria-label={t('Mood Rater home', 'Mood Rater 首页')}><span className="brand-mark"><AudioLines size={22}/></span><span>Mood Rater</span></Link>
+      <a href="/" className="brand" aria-label={t('Mood Rater home', 'Mood Rater 首页')}><span className="brand-mark"><AudioLines size={22}/></span><span>Mood Rater</span></a>
       <nav className={open ? 'nav-links is-open' : 'nav-links'} aria-label={t('Main navigation', '主导航')}>
         {links.map(([href, label]) => <a key={href} href={href} aria-current={path === href ? 'page' : undefined} onClick={() => setOpen(false)}>{label}</a>)}
       </nav>
@@ -30,7 +29,7 @@ export default function SiteShell({ children }: { children: ReactNode }) {
     </header>
     <main id="main">{children}</main>
     <footer className="site-footer">
-      <Link href="/" className="footer-brand">Mood Rater</Link>
+      <a href="/" className="footer-brand">Mood Rater</a>
       <div className="footer-links">
         <a href="/about#data">{t('Data and privacy', '数据说明')}</a>
       </div>
