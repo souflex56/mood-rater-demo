@@ -1,6 +1,6 @@
 'use client';
 
-import { AudioLines, ArrowUpRight, Globe2, Menu, X } from 'lucide-react';
+import { AudioLines, Globe2, Menu, X } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -33,10 +33,7 @@ export default function SiteShell({ children }: { children: ReactNode }) {
       <Link href="/" className="footer-brand">Mood Rater</Link>
       <div className="footer-links">
         <a href="/about#data">{t('Data and privacy', '数据说明')}</a>
-        <a href="/legacy/" target="_blank" rel="noreferrer">{t('Original demo', '历史原版演示')}<ArrowUpRight size={12}/></a>
-        <a href="https://github.com/souflex56/mood-rater-demo/tree/codex/mood-rater-v2" target="_blank" rel="noreferrer">GitHub<ArrowUpRight size={12}/></a>
       </div>
-      <p className="footer-note">{t('Based on doctoral research by Simin Yang.', '基于 Simin Yang 的博士研究。')}</p>
     </footer>
   </>;
 }
