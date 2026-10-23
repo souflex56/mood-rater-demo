@@ -57,7 +57,7 @@ export default function About() {
       <p>{t('Audio collections, emotion words, selection circles, colors and axis labels can be configured separately. Saved sessions retain their configuration when settings change. An optional research collection backend is available for separate deployments and is disabled in this demo. No advertising or third-party analytics are included.', '音频库、情绪参考词、选择圆圈、配色和坐标轴标签可分别配置，后续修改不会改变已有标注记录所用的配置。项目保留可选的数据收集服务，供独立部署时启用；本演示默认关闭。本站不包含广告或第三方行为分析。')}</p>
 
       <h2>{t('Sample audio', '示例音频')}</h2>
-      <p>{t('Bundled examples are locally generated synthetic sounds for learning the controls. They are not validated research stimuli or normative emotion examples. The original standalone demo is available from the footer.', '内置示例采用本项目生成的合成音，仅供熟悉操作，不是经过验证的研究刺激材料或标准情绪示例。历史原版单页演示可从页脚打开。')}</p>
+      <p>{t('Bundled examples are locally generated synthetic sounds for learning the controls. They are not validated research stimuli or normative emotion examples.', '内置示例采用本项目生成的合成音，仅供熟悉操作，不是经过验证的研究刺激材料或标准情绪示例。')}</p>
       <div className="form-actions">
         <a className="button primary" href="/annotate?demo=1">{t('Try sample audio', '试用示例音频')}</a>
         <a className="inline-link" href="/customize">{t('Configuration guide', '自定义指南')}<ArrowUpRight size={14}/></a>
