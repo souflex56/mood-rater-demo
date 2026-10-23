@@ -75,3 +75,35 @@ test('curves stay inside the plot and progress remains finite for edge and coinc
     }
   }
 });
+
+
+test('complete locale-sized captions fit mobile and desktop animation bounds and static rows', () => {
+  // Full 12px labels measured in the browser, including chip padding. The
+  // narrowest illustration corresponds to the supported 320px page viewport.
+  const localeWidths = [Array(8).fill(56), [69, 69, 78, 67, 75, 97, 90, 62]];
+  for (const viewportWidth of [214, 284, 416]) for (const widths of localeWidths) {
+    const scale = 360 / viewportWidth;
+    const height = 27 * scale;
+    const result = buildHeroTrajectory(defaultVAInterface.tags, { widths: widths.map(width => width * scale), height });
+    for (const [index, waypoint] of result.waypoints.entries()) {
+      assert.ok(waypoint.staticLabelX >= 12);
+      assert.ok(waypoint.staticLabelX + waypoint.labelWidth <= 348);
+      assert.ok(waypoint.staticLabelY >= 12);
+      assert.ok(waypoint.staticLabelY + height <= 288);
+      if (index % 2) {
+        const previous = result.waypoints[index - 1];
+        assert.ok(previous.staticLabelX + previous.labelWidth < waypoint.staticLabelX);
+      }
+      if (index > 1) assert.ok(result.waypoints[index - 2].staticLabelY + height < waypoint.staticLabelY);
+      const segment = result.segments[index];
+      const points = segment ? Array.from({ length: 101 }, (_, step) => heroCubicPoint(segment, step / 100)) : [waypoint];
+      for (const point of points) {
+        const offset = heroLabelOffset(point, waypoint.labelWidth, height);
+        assert.ok(point.x + offset.x >= 12 - 1e-9);
+        assert.ok(point.x + offset.x + waypoint.labelWidth <= 348 + 1e-9);
+        assert.ok(point.y + offset.y >= 12 - 1e-9);
+        assert.ok(point.y + offset.y + height + 4 <= 292 + 1e-9);
+      }
+    }
+  }
+});

@@ -15,7 +15,7 @@ import styles from './Annotator.module.css';
 
 const MAX_BYTES = MAX_AUDIO_BYTES;
 type PreparedAudio = { key: string; asset: AudioAsset; source: string; title: { en: string; 'zh-CN': string }; demoOnly: boolean };
-const DEMO: AudioAsset = { id: 'mood-rater-practice-v1', name: 'Sound study · 20 seconds', size: 0, mimeType: 'audio/wav', duration: 20, url: '/demo.wav' };
+const DEMO: AudioAsset = { id: 'mood-rater-practice-v1', name: 'Sound study (20 seconds)', size: 0, mimeType: 'audio/wav', duration: 20, url: '/demo.wav' };
 const clamp = (number: number) => Math.max(0, Math.min(1, number));
 const activePass = (session: AnnotationSessionV2 | null) => session?.passes.findLast(pass => !pass.revoked && pass.end === null);
 const errorText = (error: unknown) => error instanceof Error ? error.message : String(error);
@@ -335,7 +335,7 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
       const selected = reconnect ? added.find(item => item.asset.sha256 === current.asset.sha256) : added[0];
       if (selected) await activateAudio(selected, reconnect ? current : undefined);
       else if (reconnect && added.length) failures.push(t('The draft is still open. Select its original audio file to reconnect, or choose another clip in the playlist.', '草稿仍保留在此处。请选择原音频重新关联，或从列表中切换到其他音频。'));
-      if (failures.length) setError(failures.slice(0, 3).join(' · '));
+      if (failures.length) setError(failures.slice(0, 3).join('; '));
     } catch (error) { setError(audioError(error)); }
     finally { audioOperation.current = false; if (request === requestSequence.current) setBusy(false); if (localFileRef.current) localFileRef.current.value = ''; }
   }
@@ -494,53 +494,46 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
   const axisLabel = (axis: 'x' | 'y', field: 'name' | 'low' | 'high') => activeProfile.config.axes[axis][field][locale];
   return <div className={styles.workspace}>
     <div className={styles.workspaceTop}>
-      <div><p className="eyebrow">{research ? t('RESEARCH SESSION', '研究标注') : t('YOUR LISTENING SPACE', '标注工作区')}</p>
-        <h1>{practice ? t('A little practice, first.', '先练习，找到感觉。') : t('Listen. Feel. Trace.', '边听边记录')}</h1>
-        <p className={styles.subtitle}>{t('Follow how emotion changes, one moment at a time.', '开始标注后，在图中点击或拖动，记录情绪变化。')}</p>
-      </div>
+      <h1>{practice ? t('Annotation practice', '标注练习') : t('Emotion annotation', '情绪标注')}</h1>
       <div className={styles.topActions}>{practice ? <button className={styles.secondaryButton} onClick={finishPractice}><ArrowLeft size={16}/>{t('Finish practice', '结束练习')}</button> : <>
-        <button className={styles.textButton} onClick={startPractice} disabled={locked}><AudioLines size={16}/>{t('Try a practice', '练习一下')}</button>
-        <button className={styles.secondaryButton} onClick={() => { setShowDrafts(value => !value); void refreshDrafts(); }} disabled={locked}><FolderOpen size={16}/>{t('My drafts', '我的草稿')}{drafts.length > 0 && <span className={styles.count}>{drafts.length}</span>}</button>
+        <button className={styles.textButton} onClick={startPractice} disabled={locked}><AudioLines size={16}/>{t('Practice', '标注练习')}</button>
+        <button className={styles.secondaryButton} onClick={() => { setShowDrafts(value => !value); void refreshDrafts(); }} disabled={locked}><FolderOpen size={16}/>{t('Drafts', '草稿')}{drafts.length > 0 && <span className={styles.count}>{drafts.length}</span>}</button>
       </>}</div>
     </div>
 
-    <div className={styles.steps} aria-label={t('Annotation workflow', '标注流程')}>
-      {[t('Load & listen', '选择与试听'), t('Trace emotion', '标注情绪'), t('Review & save', '回顾与保存')].map((label, index) => <span key={label} className={((!session && index === 0) || (session && !stats.eventCount && index === 1) || (stats.eventCount > 0 && index === 2)) ? styles.stepActive : ''}><span>{index + 1}</span>{label}</span>)}
-    </div>
     {error && <div role="alert" className={styles.error}><Info size={17}/><span>{error}</span><button onClick={() => setError('')} aria-label={t('Dismiss error', '关闭错误提示')}>×</button></div>}
     {notice && <div role="status" className={styles.notice}><Info size={16}/><span>{notice}</span></div>}
-    {practice && <div className={styles.practiceNotice}><AudioLines size={17}/><span>{t('Practice mode · A synthesized 20-second sound study, created for this demo. No recordings are submitted or added to your drafts.', '练习模式 · 使用 20 秒合成音频。练习标注不会保存或提交。')}</span></div>}
+    {practice && <div className={styles.practiceNotice}><AudioLines size={17}/><span>{t('20-second synthetic audio. Practice is not saved or submitted.', '20 秒合成音频。练习不会保存或提交。')}</span></div>}
 
     {showDrafts && !practice && <section className={styles.drafts}>
-      <div className={styles.sectionHeading}><h2>{t('Saved on this device', '当前浏览器中的草稿')}</h2><button className={styles.textButton} onClick={() => setShowDrafts(false)}>{t('Close', '关闭')}</button></div>
-      <p>{t('Audio stays with you. Re-select the original local file when restoring a draft.', '草稿不包含音频文件。继续标注本地音频时，请按提示重新选择原文件。')}</p>
+      <div className={styles.sectionHeading}><h2>{t('Browser drafts', '浏览器草稿')}</h2><button className={styles.textButton} onClick={() => setShowDrafts(false)}>{t('Close', '关闭')}</button></div>
+      <p>{t('Drafts do not include audio. Re-select the original local file to continue.', '草稿不含音频。继续本地音频标注时，需重新选择原文件。')}</p>
       {!drafts.length && <p>{t('Your first annotation will be saved here automatically.', '开始标注后，草稿会自动保存在当前浏览器中。')}</p>}
-      {drafts.map(draft => <div className={styles.draftRow} key={draft.id}><div><strong>{draft.asset.name}</strong><span>{new Date(draft.updatedAt).toLocaleString(locale)} · {formatTime(draft.asset.duration)}</span></div><button className={styles.secondaryButton} disabled={locked} onClick={() => void restoreDraft(draft)}>{t('Restore', '恢复')}</button><button className={styles.iconButton} disabled={locked} aria-label={`${t('Delete draft', '删除草稿')} ${draft.asset.name}`} onClick={() => void removeDraft(draft)}><Trash2 size={16}/></button></div>)}
+      {drafts.map(draft => <div className={styles.draftRow} key={draft.id}><div><strong>{draft.asset.name}</strong><span>{new Date(draft.updatedAt).toLocaleString(locale)} ({formatTime(draft.asset.duration)})</span></div><button className={styles.secondaryButton} disabled={locked} onClick={() => void restoreDraft(draft)}>{t('Restore', '恢复')}</button><button className={styles.iconButton} disabled={locked} aria-label={`${t('Delete draft', '删除草稿')} ${draft.asset.name}`} onClick={() => void removeDraft(draft)}><Trash2 size={16}/></button></div>)}
     </section>}
 
     <div className={styles.mainGrid}>
       <section className={styles.listenCard} aria-label={t('Audio and session settings', '音频与标注设置')}>
-        <div className={styles.sectionHeading}><h2><span className={styles.sectionNumber}>01</span>{t('The audio', '聆听音频')}</h2><Volume2 size={19} strokeWidth={1.5}/></div>
+        <div className={styles.sectionHeading}><h2>{t('Audio', '音频')}</h2><Volume2 size={19} strokeWidth={1.5}/></div>
         {research && !practice && <div className={styles.assetList}>{research.study.assets.map((asset, index) => <button key={asset.id} className={`${styles.assetButton} ${session?.asset.id === asset.id ? styles.assetSelected : ''}`} disabled={locked || recording} onClick={() => void selectAsset(asset)}><span>{String(index + 1).padStart(2, '0')}</span><span>{asset.name}<small>{formatTime(asset.duration)}</small></span>{session?.asset.id === asset.id && <Check size={16}/>}</button>)}</div>}
         {!research && !practice && <>
           <div className={styles.clipPicker}>
-            <label className={styles.fieldLabel} htmlFor="audio-clip">{t('Choose an audio clip', '选择一段音频')}</label>
+            <label className={styles.fieldLabel} htmlFor="audio-clip">{t('Select audio', '选择音频')}</label>
             <select id="audio-clip" value={currentAudio?.key ?? ''} disabled={locked} onChange={event => void selectClip(event.target.value)}>
               <option value="" disabled>{t('Select a sample or add local files', '选择示例，或添加本地文件')}</option>
-              {library.clips.length > 0 && <optgroup label={t('Audio library', '音频库')}>{library.clips.map(clip => <option key={clip.id} value={`library:${clip.id}`}>{clip.title[locale]}{clip.demoOnly ? t(' · demo', ' · 演示') : ''}</option>)}</optgroup>}
+              {library.clips.length > 0 && <optgroup label={t('Audio library', '音频库')}>{library.clips.map(clip => <option key={clip.id} value={`library:${clip.id}`}>{clip.title[locale]}{clip.demoOnly ? t(' (demo)', '（演示）') : ''}</option>)}</optgroup>}
               {localClips.length > 0 && <optgroup label={t('Your local files', '你的本地文件')}>{localClips.map(clip => <option key={clip.key} value={clip.key}>{clip.title[locale]}</option>)}</optgroup>}
             </select>
-            <p className={styles.helper}>{t('Each clip keeps its own annotations. Switching stops and saves the current recording.', '每段音频的标注独立保存。切换音频时，会停止并保存当前标注。')}</p>
-            {currentAudio?.demoOnly && <p className={styles.demoAudioNote}>{t('Synthesized demo audio · no ground-truth emotion ratings.', '合成演示音频 · 未提供情绪参考评分。')}</p>}
+            {currentAudio?.demoOnly && <p className={styles.demoAudioNote}>{t('Synthetic audio without reference ratings.', '合成音频，无情绪参考评分。')}</p>}
           </div>
           <input ref={localFileRef} type="file" multiple accept="audio/*,.mp3,.wav,.m4a,.ogg,.flac,.aac,.webm" className={styles.hiddenInput} onChange={event => void loadLocal(Array.from(event.target.files ?? []))}/>
           <button className={`${styles.uploadZone} ${styles.uploadCompact}`} disabled={locked} onClick={() => localFileRef.current?.click()} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); if (!locked) void loadLocal(Array.from(event.dataTransfer.files)); }}>
             <span className={styles.uploadIcon}>{busy ? <LoaderCircle className={styles.spinner}/> : <Upload size={22}/>}</span>
-            <strong>{session && !source ? t('Reconnect original audio', '重新选择原音频') : t('Add your audio files', '添加你的音频文件')}</strong>
-            <span>{t('Choose or drop multiple files · up to 20', '可多选或拖放 · 每个标签页最多 20 个')}</span><small>{t('Each file: up to 30 min / 100 MB', '每个文件：最长 30 分钟，最大 100 MB')}</small>
+            <strong>{session && !source ? t('Reconnect original audio', '重新选择原音频') : t('Add local audio', '添加本地音频')}</strong>
+            <span>{t('Select or drop files (up to 20 per tab)', '多选或拖放，每个标签页最多 20 个')}</span><small>{t('Each file: up to 30 min / 100 MB', '每个文件：最长 30 分钟，最大 100 MB')}</small>
           </button>
         </>}
-        {session && <div className={styles.audioIdentity}><span className={styles.audioFileIcon}><FileAudio size={22} strokeWidth={1.5}/></span><div><strong title={session.asset.name}>{practice ? t('Sound study', '声音练习') : currentAudio?.title[locale] ?? session.asset.name}</strong><span>{formatTime(duration)} · {practice ? t('SYNTHESIZED AUDIO', '合成音频') : t('ORIGINAL SPEED · 1×', '原速播放 · 1×')}</span></div></div>}
+        {session && <div className={styles.audioIdentity}><span className={styles.audioFileIcon}><FileAudio size={22} strokeWidth={1.5}/></span><div><strong title={session.asset.name}>{practice ? t('Sound study', '声音练习') : currentAudio?.title[locale] ?? session.asset.name}</strong><span>{formatTime(duration)} {practice ? t('(synthetic audio)', '（合成音频）') : t('(1× speed)', '（1× 原速）')}</span></div></div>}
         <audio ref={mediaRef} src={source || undefined} preload="metadata" onPlay={() => setPlaying(true)} onPause={() => { setPlaying(false); stop('pause'); }}
           onLoadedMetadata={event => { if (pendingSeek.current > 0) { event.currentTarget.currentTime = Math.min(pendingSeek.current, event.currentTarget.duration); pendingSeek.current = 0; } }}
           onTimeUpdate={event => { setCurrentTime(event.currentTarget.currentTime); if (!activePass(sessionRef.current)) lastReliable.current = event.currentTarget.currentTime; }}
@@ -553,26 +546,26 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
           <button className={styles.playButton} disabled={!source || locked} onClick={() => void togglePlayback()} aria-label={playing ? t('Pause audio', '暂停音频') : t('Listen without recording', '试听，不记录标注')}>{playing ? <Pause size={20} fill="currentColor"/> : <Play size={20} fill="currentColor"/>}</button>
           <div className={styles.seekContainer}><input aria-label={t('Audio position', '音频播放位置')} type="range" min="0" max={duration || 1} step="0.01" value={Math.min(currentTime, duration || 1)} disabled={!source || locked} onChange={event => seek(Number(event.target.value))}/><div><span>{formatTime(currentTime)}</span><span>{formatTime(duration)}</span></div></div>
         </div>
-        <p className={styles.playerNote}>{t('Listening alone does not change your annotations.', '仅试听不会改变已有标注。')}</p>
+        <p className={styles.playerNote}>{t('Listening does not record ratings.', '试听不会记录评分。')}</p>
 
         <div className={styles.divider}/>
         <label className={styles.fieldLabel} htmlFor="emotion-target">{t('What are you rating?', '标注对象')}</label>
         <select id="emotion-target" value={selectedTarget === 'unknown' ? 'perceived' : selectedTarget} disabled={Boolean(session?.passes.length) || session?.mode === 'legacy' || Boolean(research) || locked} onChange={event => { const value = event.target.value as EmotionTarget; setTarget(value); const current = sessionRef.current; if (current && !current.passes.length) replace({ ...current, emotionTarget: value, revision: current.revision + 1, updatedAt: new Date().toISOString() }); }}>
           <option value="perceived">{t('Emotion expressed by the audio', '音频表达的情绪')}</option><option value="felt">{t('Emotion I feel while listening', '聆听时自身的感受')}</option>
         </select>
-        <p className={styles.helper}>{selectedTarget === 'unknown' ? t('Legacy session: the original annotation target is unknown.', '此旧版标注记录的原始标注对象未知。') : t('Fixed for each session, so the meaning of your ratings stays consistent.', '开始标注后不能更改对象；参与研究时，对象由研究者指定。')}</p>
+        <p className={styles.helper}>{selectedTarget === 'unknown' ? t('Legacy session: the original annotation target is unknown.', '此旧版标注记录的原始标注对象未知。') : research ? t('Set by the researcher.', '由研究者指定。') : t('Fixed once annotation begins.', '开始标注后不可更改。')}</p>
 
-        <details className={styles.instructions}><summary>{t('A quick guide', '简明操作指南')}<Info size={15}/></summary><ol><li>{t('Listen to the audio and decide which emotion to rate.', '先试听音频，确认标注对象。')}</li><li>{t('Press Record, then move the point as the emotion changes.', '开始标注后，在图中点击或拖动，随情绪变化调整圆点位置。')}</li><li>{t('Your last rating holds until you move again. Before the first input, the trace is blank.', '标注过程中，停止操作后保持上次评分；每轮首次输入前不记录评分。')}</li><li>{t('Pause, seek, then record again to replace a section. Undo restores the previous pass.', '暂停并定位后，可从当前位置开始新一轮标注，覆盖该轮经过的区间。撤销可恢复此前的标注。')}</li></ol><p>{t('Keyboard: use arrow keys on the plane (Shift for larger steps), or use the two sliders below. Pointer inputs are captured up to 30 Hz; exports include a derived 10 Hz series.', '也可使用方向键调整位置，按住 Shift 可增大步幅；下方滑块可分别调整两个维度。')}</p></details>
+        <details className={styles.instructions}><summary>{t('How to annotate', '操作说明')}<Info size={15}/></summary><ol><li>{t('Listen first and choose what to rate. Each clip saves separately; switching stops and saves the current recording.', '先试听并确认标注对象。各音频的标注独立保存；切换时会停止并保存当前标注。')}</li><li>{t('Press Record, then move the point as the emotion changes.', '开始标注后，在图中点击或拖动，随情绪变化调整圆点位置。')}</li><li>{t('Your last rating holds until you move again. Before the first input, the trace is blank.', '标注过程中，停止操作后保持上次评分；每轮首次输入前不记录评分。')}</li><li>{t('Pause, seek, then record again to replace a section. Undo restores the previous pass.', '暂停并定位后，可从当前位置开始新一轮标注，覆盖该轮经过的区间。撤销可恢复此前的标注。')}</li></ol><p>{t('Keyboard: use arrow keys on the plane (Shift for larger steps), or use the two sliders below. Pointer inputs are captured up to 30 Hz; exports include a derived 10 Hz series.', '也可使用方向键调整位置，按住 Shift 可增大步幅；下方滑块可分别调整两个维度。')}</p></details>
         <div className={styles.privacy}><ShieldCheck size={18}/><span>{research ? t('Your ratings upload only when you submit.', '只有点击「提交标注」后，标注数据才会上传。') : t('Your audio and annotations stay on this device.', '本地音频不会上传；标注保存在当前浏览器。')}</span></div>
       </section>
 
       <section className={styles.annotationCard} aria-label={t('Emotion annotation', '情绪标注')}>
-        <div className={styles.sectionHeading}><h2><span className={styles.sectionNumber}>02</span>{t('The emotion', '标注情绪')}</h2><span className={`${styles.statusBadge} ${recording ? styles.recordingBadge : ''}`}><span/>{recording ? t('Recording', '正在标注') : playing ? t('Listening', '正在试听') : t('Ready when you are', '准备好即可开始')}</span></div>
+        <div className={styles.sectionHeading}><h2>{t('Emotion', '标注情绪')}</h2><span className={`${styles.statusBadge} ${recording ? styles.recordingBadge : ''}`}><span/>{recording ? t('Recording', '正在标注') : playing ? t('Listening', '正在试听') : t('Ready', '待标注')}</span></div>
         <VAPlane profile={activeProfile} locale={locale} rating={rating} touched={touched} recording={recording} locked={locked} onChange={capture}/>
-        <p className={styles.planeHint} id="plane-help">{recording ? (hasInput ? t('Move as emotion changes. Releasing holds your last rating.', '随情绪变化调整圆点位置；停止操作后保持上次评分。') : t('Move the point to begin your trace. No rating has been recorded yet.', '在图中点击或拖动，开始记录评分。')) : t('Explore the plane, then press Record to save your movements.', '可先熟悉操作；开始标注后才会记录评分。')}</p>
+        <p className={styles.planeHint} id="plane-help">{recording ? (hasInput ? t('Move as emotion changes. Releasing holds your last rating.', '随情绪变化调整圆点位置；停止操作后保持上次评分。') : t('Move the point to begin your trace. No rating has been recorded yet.', '在图中点击或拖动，开始记录评分。')) : t('Ratings are captured only while recording.', '开始标注后才会记录评分。')}</p>
         {session && !session.interfaceProfile && <p className={styles.helper}>{t('This older session did not record its interface settings. The displayed guidance uses the current interface; the historical data stays unchanged.', '旧标注记录未保存界面配置，情绪参考词按当前配置显示；历史数据不受影响。')}</p>}
         <div className={styles.recordActions}><button className={`${styles.recordButton} ${recording ? styles.stopButton : ''}`} disabled={!source || locked} onClick={() => void toggleRecording()}>{recording ? <Square size={15} fill="currentColor"/> : <Circle size={15} fill="currentColor"/>}{recording ? t('Stop recording', '停止标注') : closedPasses ? t('Record from here', '从当前位置开始标注') : t('Start recording', '开始标注')}</button><button className={styles.undoButton} disabled={!closedPasses || recording || locked} onClick={() => { if (sessionRef.current) { replace(undoPass(sessionRef.current)); setNotice(t('Last recording undone. The previous trace is restored.', '已撤销最近一次标注，恢复此前的轨迹。')); } }}><RotateCcw size={16}/>{t('Undo', '撤销')}</button></div>
-        <details className={styles.fineAdjustment}><summary>{t('Fine adjustment (optional)', '精细调整（可选）')}</summary><div className={styles.ratingSliders}>
+        <details className={styles.fineAdjustment}><summary>{t('Fine adjustment', '精细调整')}</summary><div className={styles.ratingSliders}>
           <label><span><i className={styles.valenceKey}/>{axisLabel('x', 'name')}<strong>{touched ? rating[0].toFixed(2) : '—'}</strong></span><input aria-label={`${axisLabel('x', 'name')}: ${axisLabel('x', 'low')}–${axisLabel('x', 'high')}`} type="range" min="0" max="1" step="0.01" value={rating[0]} disabled={locked} onChange={event => capture(Number(event.target.value), ratingRef.current[1], 'slider', true)}/></label>
           <label><span><i className={styles.arousalKey}/>{axisLabel('y', 'name')}<strong>{touched ? rating[1].toFixed(2) : '—'}</strong></span><input aria-label={`${axisLabel('y', 'name')}: ${axisLabel('y', 'low')}–${axisLabel('y', 'high')}`} type="range" min="0" max="1" step="0.01" value={rating[1]} disabled={locked} onChange={event => capture(ratingRef.current[0], Number(event.target.value), 'slider', true)}/></label>
         </div></details>
@@ -580,19 +573,18 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
     </div>
 
     <section className={styles.reviewCard} aria-label={t('Review and export', '回顾与导出')}>
-      <div className={styles.sectionHeading}><h2><span className={styles.sectionNumber}>03</span>{t('Your emotion trace', '标注轨迹')}</h2><div className={styles.legend}><span><i className={styles.valenceKey}/>{t('Valence', '愉悦度')}</span><span><i className={styles.arousalKey}/>{t('Arousal', '唤醒度')}</span><button className={styles.textButton} onClick={() => setShowTimeline(value => !value)}>{showTimeline ? t('Hide', '收起') : t('Show', '展开')}</button></div></div>
+      <div className={styles.sectionHeading}><h2>{t('Annotation trace', '标注轨迹')}</h2><div className={styles.legend}><span><i className={styles.valenceKey}/>{t('Valence', '愉悦度')}</span><span><i className={styles.arousalKey}/>{t('Arousal', '唤醒度')}</span><button className={styles.textButton} onClick={() => setShowTimeline(value => !value)}>{showTimeline ? t('Hide', '收起') : t('Show', '展开')}</button></div></div>
       {showTimeline && <AnnotationTimeline samples={samples} passes={preview?.passes ?? []} duration={duration} currentTime={currentTime} onSeek={seek} t={t}/>}
-      <div className={styles.reviewMeta}><span><strong>{Math.round(stats.coverage * 100)}%</strong> {t('coverage', '已标注时长占比')}</span><span><strong>{stats.eventCount.toLocaleString(locale)}</strong> {t('inputs', '次输入（含已撤销）')}</span><span><strong>{stats.passCount}</strong> {t('passes', '轮标注')}</span><span className={styles.gapNote}>{t('Gaps are missing data. Shaded areas show recording passes.', '空白表示缺失数据，阴影区域表示标注区间。')}</span></div>
+      <div className={styles.reviewMeta}><span><strong>{Math.round(stats.coverage * 100)}%</strong> {t('duration annotated', '已标注时长占比')}</span><span><strong>{stats.eventCount.toLocaleString(locale)}</strong> {t('inputs', '次输入（含已撤销）')}</span><span><strong>{stats.passCount}</strong> {t('passes', '轮标注')}</span><span className={styles.gapNote}>{t('Gaps are missing data. Shaded areas show recording passes.', '空白表示缺失数据，阴影区域表示标注区间。')}</span></div>
       <div className={styles.reviewBottom}>
-        <label className={styles.notesLabel}>{t('Listening notes', '聆听笔记')}<span>{t('optional', '选填')}</span><textarea rows={2} maxLength={4000} disabled={!session || recording || locked} value={session?.notes ?? ''} placeholder={t('Anything you want to remember about this recording…', '记下与此次标注有关的观察……')} onChange={event => { const current = sessionRef.current; if (current) replace({ ...current, notes: event.target.value, revision: current.revision + 1, updatedAt: new Date().toISOString() }); }}/></label>
+        <label className={styles.notesLabel}>{t('Notes', '备注')}<span>{t('optional', '选填')}</span><textarea rows={2} maxLength={4000} disabled={!session || recording || locked} value={session?.notes ?? ''} placeholder={t('Observations about this annotation', '此次标注的相关观察')} onChange={event => { const current = sessionRef.current; if (current) replace({ ...current, notes: event.target.value, revision: current.revision + 1, updatedAt: new Date().toISOString() }); }}/></label>
         <div className={styles.exportPanel}>
           <span className={`${styles.saveStatus} ${saveState === 'error' ? styles.saveError : ''}`} role="status">{practice ? <Info size={15}/> : saveState === 'saved' ? <CheckCircle2 size={15}/> : saveState === 'saving' ? <LoaderCircle size={15} className={styles.spinner}/> : <Info size={15}/>} {practice ? t('Practice is not saved', '练习不保存') : saveState === 'error' ? t('Local saving unavailable — export a copy', '浏览器保存失败，请导出备份') : saveState === 'saving' ? t('Saving on this device…', '正在保存到当前浏览器……') : session ? t('Saved on this device', '标注已保存到当前浏览器') : t('Local autosave when you begin', '开始后自动保存到当前浏览器')}</span>
           <div className={styles.exportButtons}><button className={styles.secondaryButton} disabled={!session || recording || practice} onClick={() => exportFile('json')}><ArrowDownToLine size={16}/>JSON</button><button className={styles.secondaryButton} disabled={!session || recording || practice} onClick={() => exportFile('csv')}><ArrowDownToLine size={16}/>CSV</button></div>
           {!research && !practice && <><input ref={importRef} className={styles.hiddenInput} type="file" accept=".json,application/json" onChange={event => void importFile(event.target.files?.[0])}/><button className={styles.textButton} disabled={recording || locked} onClick={() => importRef.current?.click()}>{t('Import a previous session', '导入标注备份')}</button></>}
         </div>
       </div>
-      {research && !practice && <div className={styles.submitPanel}><div><strong>{isSubmitted ? t('Submission confirmed', '提交已确认') : t('Ready to share with the researcher?', '准备好提交给研究者了吗？')}</strong><p>{isSubmitted ? t('Your annotation is durably saved on the server. You can choose the next audio.', '标注已保存在服务器，你可以选择下一段音频。') : t('Partial annotations are welcome. Only your annotation data and anonymous participant code are sent.', '也可以提交部分标注。仅发送标注数据与匿名参与者编号。')}</p></div><button className={styles.recordButton} disabled={!session || recording || locked || isSubmitted} onClick={() => void submit()}>{submission === 'sending' ? <LoaderCircle size={17} className={styles.spinner}/> : isSubmitted ? <Check size={17}/> : <CloudUpload size={17}/>} {submission === 'sending' ? `${t('Submitting', '正在提交')} ${submissionProgress}%` : isSubmitted ? t('Submitted', '已提交') : submission === 'error' ? t('Retry submission', '重新提交') : t('Submit annotation', '提交标注')}</button></div>}
+      {research && !practice && <div className={styles.submitPanel}><div><strong>{isSubmitted ? t('Submission confirmed', '提交已确认') : t('Submit to researcher', '提交给研究者')}</strong><p>{isSubmitted ? t('Your annotation is durably saved on the server. You can choose the next audio.', '标注已保存在服务器，你可以选择下一段音频。') : t('Partial annotations are accepted. Submission includes ratings, notes, edit history and participant code.', '可提交部分标注。内容包括评分、备注、修改历史及参与者编号。')}</p></div><button className={styles.recordButton} disabled={!session || recording || locked || isSubmitted} onClick={() => void submit()}>{submission === 'sending' ? <LoaderCircle size={17} className={styles.spinner}/> : isSubmitted ? <Check size={17}/> : <CloudUpload size={17}/>} {submission === 'sending' ? `${t('Submitting', '正在提交')} ${submissionProgress}%` : isSubmitted ? t('Submitted', '已提交') : submission === 'error' ? t('Retry submission', '重新提交') : t('Submit annotation', '提交标注')}</button></div>}
     </section>
-    <p className={styles.researchNote}>{t('A research tool for continuous emotion annotation. Based on the work of Yang, Reed, Chew & Barthet.', '用于连续情绪标注的研究工具。基于 Yang、Reed、Chew 与 Barthet 的研究。')} <a href="/about">{t('Read the research & method', '了解研究与方法')} →</a></p>
   </div>;
 }

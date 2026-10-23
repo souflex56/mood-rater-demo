@@ -1,5 +1,37 @@
-"use client";
-import { ArrowRight, ArrowUpRight, FileAudio, Fingerprint, Headphones, Play, ShieldCheck } from 'lucide-react';
+'use client';
+
+import { ArrowRight, ArrowUpRight, ShieldCheck } from 'lucide-react';
 import { useLanguage } from './components/LanguageProvider';
 import HeroTrajectory from './components/HeroTrajectory';
-export default function Home(){const {t}=useLanguage();return <div className="home-page"><section className="hero"><div className="hero-copy"><div className="eyebrow"><span className="status-dot"/>{t('A SPACE FOR LISTENING & DISCOVERY','聆听、感知与探索的空间')}</div><h1>{t('Hear the change.','听见变化，')}<br/><em>{t('Map the feeling.','标注情绪。')}</em></h1><p className="hero-description">{t('Every sound tells an emotional story. Trace yours as you listen, with a simple space for how it feels — moment by moment.','边听边在图中点击或拖动，记录情绪随时间的变化。')}</p><div className="hero-actions"><a href="/annotate" className="button primary">{t('Start annotating','开始标注')}<ArrowRight size={18}/></a><a href="/annotate?demo=1" className="button text-button"><Play size={15}/>{t('Try a short example','试用示例音频')}</a></div><div className="hero-assurance"><ShieldCheck size={15}/>{t('No sign-up. Your own audio stays on your device.','无需注册。本地音频不会上传；标注保存在当前浏览器。')}</div></div><HeroTrajectory/></section><section className="feature-strip" aria-label={t('Features','工具特性')}><div><span>01</span><strong>{t('Listen','聆听')}</strong><p>{t('Bring any audio','选择你的音频')}</p></div><div><span>02</span><strong>{t('Feel','感知')}</strong><p>{t('Move through two dimensions','在图中点击或拖动')}</p></div><div><span>03</span><strong>{t('Understand','理解')}</strong><p>{t('Review, refine, export','回顾、修正、导出')}</p></div><div className="strip-detail"><Fingerprint size={29}/><p>{t('Your perspective matters. There is no single right answer.','请按自己的判断标注，没有唯一的标准答案。')}</p></div></section><section className="paths-section"><div className="section-heading"><div><p className="eyebrow">{t('TWO WAYS TO EXPLORE','两种使用方式')}</p><h2>{t('For your curiosity.','自由体验，')}<br/>{t('For your next study.','按需定制。')}</h2></div><p>{t('Try the public demo, then adapt the audio and annotation space for your own project.','先体验标注工作区，再按项目需要定制音频与界面。')}</p></div><div className="path-grid"><a className="path-card" href="/annotate"><span className="card-icon"><Headphones size={24}/></span><span className="small-label">{t('PERSONAL WORKSPACE','标注工作区')}</span><h3>{t('Follow your own listening.','边听边记录。')}</h3><p>{t('Open an audio file, trace its emotional changes, and take your annotations with you as JSON or CSV.','选择本地音频，记录情绪变化，并将结果导出为 JSON 或 CSV。')}</p><span className="path-link">{t('Open workspace','打开标注工作区')}<ArrowRight size={18}/></span><span className="path-tag">{t('Local & private','标注保存在浏览器')}</span></a><a className="path-card research-card" href="/customize"><span className="card-icon"><FileAudio size={24}/></span><span className="small-label">{t('MAKE IT YOURS','自定义你的项目')}</span><h3>{t('Adapt it to your research.','为你的研究定制。')}</h3><p>{t('Choose your audio collection, guide words, colors and axis labels. Start with the documented configuration files.','通过配置文件调整音频集合、情绪参考词、配色、坐标轴名称和端点标签，构建自己的版本。')}</p><span className="path-link">{t('Explore customization','查看自定义指南')}<ArrowRight size={18}/></span><span className="path-tag">{t('Reusable configuration','配置可复用')}</span></a></div></section><section className="research-note"><span className="eyebrow">{t('GROUNDED IN RESEARCH','源于研究')}</span><h2>{t('Emotion is personal.','情绪感知因人而异。')}<em>{t(' Its changes are worth understanding.','变化值得记录。')}</em></h2><p>{t('Inspired by Simin Yang’s doctoral work on time-varying emotion perception in music. This edition extends the approach to continuous annotation of everyday audio.','本工具源于 Simin Yang 关于音乐时变情绪感知的博士研究，本版将该方法扩展到通用音频的连续标注。')}</p><a href="/about" className="inline-link">{t('Read about the research','了解研究背景')}<ArrowUpRight size={16}/></a></section></div>;}
+
+export default function Home() {
+  const { t } = useLanguage();
+  return <div className="home-page">
+    <section className="hero">
+      <div className="hero-copy">
+        <h1>{t('Trace emotion', '记录音频中的')}<br/><em>{t('through sound.', '情绪变化')}</em></h1>
+        <p className="hero-description">{t('Listen, then click or drag on the emotion map to record changes over time.', '边听边在坐标图中点击或拖动，记录情绪随时间的变化。')}</p>
+        <div className="hero-actions">
+          <a href="/annotate" className="button primary">{t('Start annotating', '开始标注')}<ArrowRight size={18}/></a>
+          <a href="https://github.com/souflex56/mood-rater-demo/tree/codex/mood-rater-v2" className="inline-link" target="_blank" rel="noreferrer">GitHub<ArrowUpRight size={14}/></a>
+        </div>
+        <div className="hero-assurance"><ShieldCheck size={15}/><span>{t('No account needed. Local audio stays on your device; annotations stay in this browser.', '无需注册。本地音频不会上传，标注保存在当前浏览器。')}</span></div>
+      </div>
+      <HeroTrajectory/>
+    </section>
+    <section className="paths-section" aria-label={t('Configuration and research', '配置与研究')}>
+      <div className="path-grid">
+        <a className="path-card" href="/customize">
+          <h2>{t('Customize your study', '自定义配置')}</h2>
+          <p>{t('Configure audio, emotion words, colors and axis labels for your own deployment.', '调整音频、情绪参考词、配色与坐标轴标签，部署适合自己项目的版本。')}</p>
+          <span className="path-link">{t('View configuration guide', '查看配置指南')}<ArrowRight size={16}/></span>
+        </a>
+        <a className="path-card research-card" href="/about">
+          <h2>{t('Research background', '研究背景')}</h2>
+          <p>{t('Based on Simin Yang’s doctoral research on changing emotion perception in music, extended here to continuous annotation of general audio.', '源于 Simin Yang 关于音乐时变情绪感知的博士研究，本版扩展至通用音频的连续标注。')}</p>
+          <span className="path-link">{t('Read the research and citation', '了解研究与引用')}<ArrowRight size={16}/></span>
+        </a>
+      </div>
+    </section>
+  </div>;
+}

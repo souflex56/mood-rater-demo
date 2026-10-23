@@ -21,7 +21,7 @@ export default function VAPlane({ profile, locale, rating, touched, recording, l
   const pointerId = useRef<number | null>(null);
   const helpId = useId();
   const label = (value: LocalizedLabel) => value[locale];
-  const tagLabel = (tag: EmotionTag) => locale === 'zh-CN' && tag.label.en !== tag.label['zh-CN'] ? `${tag.label.en} · ${tag.label['zh-CN']}` : tag.label.en;
+  const tagLabel = (tag: EmotionTag) => locale === 'zh-CN' && tag.label.en !== tag.label['zh-CN'] ? `${tag.label['zh-CN']} (${tag.label.en})` : tag.label.en;
   const t = (en: string, zh: string) => locale === 'zh-CN' ? zh : en;
   const { axes, background, guide } = profile.config;
   const tags = useMemo(() => touched ? findNearbyTags(rating[0], rating[1], profile) : [], [touched, rating, profile]);

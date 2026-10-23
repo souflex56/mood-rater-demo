@@ -35,10 +35,10 @@ const boundedPoint = (x: number, y: number): HeroPoint => ({ x: bound(x, HERO_PL
 const fmt = (value: number) => Number(value.toFixed(6));
 
 /** An upright caption below the travelling point, kept inside the SVG edges. */
-export function heroLabelOffset(point: HeroPoint, width: number): HeroPoint {
+export function heroLabelOffset(point: HeroPoint, width: number, height = 27): HeroPoint {
   return {
     x: bound(point.x - width / 2, 12, 348 - width) - point.x,
-    y: bound(point.y + 18, 12, 261) - point.y,
+    y: bound(point.y + 18, 12, 288 - height) - point.y,
   };
 }
 
@@ -58,7 +58,7 @@ export function heroCubicPoint(segment: Omit<HeroSegment, 'length'>, t: number):
 }
 
 /** Catmull–Rom-derived cubics pass through each VA point; bounded controls keep the curve inside the plot. */
-export function buildHeroTrajectory(tags: readonly EmotionTag[]): { path: string; waypoints: HeroWaypoint[]; segments: HeroSegment[]; totalLength: number } {
+export function buildHeroTrajectory(tags: readonly EmotionTag[], labels?: { widths: readonly number[]; height: number }): { path: string; waypoints: HeroWaypoint[]; segments: HeroSegment[]; totalLength: number } {
   const selected = REQUESTED_TAGS.map(fallback => {
     const configured = tags.find(tag => tag.id === fallback.id);
     const tag = configured ?? fallback;
@@ -81,8 +81,9 @@ export function buildHeroTrajectory(tags: readonly EmotionTag[]): { path: string
   let traversed = 0;
   const waypoints = selected.map((point, index): HeroWaypoint => {
     if (index > 0) traversed += segments[index - 1].length;
-    const labelWidth = LABEL_WIDTHS[index];
-    const { x: labelX, y: labelY } = heroLabelOffset(point, labelWidth);
+    const labelWidth = labels?.widths[index] ?? LABEL_WIDTHS[index];
+    const labelHeight = labels?.height ?? 27;
+    const { x: labelX, y: labelY } = heroLabelOffset(point, labelWidth, labelHeight);
     const arrivalSeconds = index * HERO_STEP_SECONDS;
     const labelFrames = [{ time: arrivalSeconds, x: labelX, y: labelY }, { time: arrivalSeconds + HERO_WAYPOINT_HOLD_SECONDS, x: labelX, y: labelY }];
     const segment = segments[index];
@@ -96,11 +97,17 @@ export function buildHeroTrajectory(tags: readonly EmotionTag[]): { path: string
       });
       samples.slice(1).forEach((sample, step) => labelFrames.push({
         time: arrivalSeconds + HERO_WAYPOINT_HOLD_SECONDS + (HERO_STEP_SECONDS - HERO_WAYPOINT_HOLD_SECONDS) * (distance ? distances[step + 1] / distance : (step + 1) / 64),
-        ...heroLabelOffset(sample, labelWidth),
+        ...heroLabelOffset(sample, labelWidth, labelHeight),
       }));
     }
+    // A complete, non-overlapping legend when motion is reduced. Each row is
+    // centered independently so longer English words fit alongside shorter ones.
+    const pair = index - index % 2;
+    const rowWidth = (labels?.widths[pair] ?? 0) + (labels?.widths[pair + 1] ?? 0) + 12;
+    const staticLabelX = labels ? (360 - rowWidth) / 2 + (index % 2 ? labels.widths[pair] + 12 : 0) : STATIC_LABELS[index][0];
+    const staticLabelY = labels ? (300 - (4 * labelHeight + 3 * 12)) / 2 + Math.floor(index / 2) * (labelHeight + 12) : STATIC_LABELS[index][1];
     return { ...point, progress: totalLength > 0 ? traversed / totalLength : 0, arrivalSeconds: index * HERO_STEP_SECONDS,
-      labelX, labelY, labelWidth, labelFrames, staticLabelX: STATIC_LABELS[index][0], staticLabelY: STATIC_LABELS[index][1] };
+      labelX, labelY, labelWidth, labelFrames, staticLabelX, staticLabelY };
   });
   const path = `M${fmt(selected[0].x)} ${fmt(selected[0].y)}${segments.map(segment => `C${fmt(segment.control1.x)} ${fmt(segment.control1.y)} ${fmt(segment.control2.x)} ${fmt(segment.control2.y)} ${fmt(segment.end.x)} ${fmt(segment.end.y)}`).join('')}`;
   return { path, waypoints, segments, totalLength };
