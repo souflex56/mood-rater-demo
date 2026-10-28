@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-28",
+  "method": {
+    "model": "PANNs Cnn6 (AudioSet)",
+    "checkpoint": "https://zenodo.org/records/3987831/files/Cnn6_mAP%3D0.343.pth",
+    "checkpointMd5": "e25e26b84585b14c7754c91e48efc9be",
+    "code": "https://github.com/qiuqiangkong/audioset_tagging_cnn",
+    "windowSeconds": 10,
+    "frontend": "Checkpoint STFT convolution and mel-filter weights; published Cnn6 evaluation graph; CPU PyTorch",
+    "note": "Uncalibrated class scores support screening; they are not proof of absence of all faint music, nor emotion labels."
+  },
+  "results": [
+    {
+      "name": "kennedy-final",
+      "speechScores": [
+        0.81382,
+        0.8633,
+        0.85809,
+        0.839,
+        0.74215,
+        0.84345
+      ],
+      "musicScores": [
+        0.06578,
+        0.04769,
+        0.03796,
+        0.03103,
+        0.02717,
+        0.07684
+      ],
+      "clipId": "kennedy-rice-speech-no-music-v1",
+      "url": "/audio/kennedy-rice-speech-60s.mp3",
+      "sha256": "18112b93cada1711a8fc1bc10e827b61ad7f0b12c53c5373d9dc3ccd8ba3c2ca"
+    },
+    {
+      "name": "zheng-final",
+      "speechScores": [
+        0.89477,
+        0.86885,
+        0.83965,
+        0.81908,
+        0.83589,
+        0.87629
+      ],
+      "musicScores": [
+        0.03491,
+        0.06016,
+        0.05371,
+        0.03861,
+        0.06289,
+        0.05279
+      ],
+      "clipId": "zheng-qinwen-no-music-interview-v1",
+      "url": "/audio/zheng-qinwen-unscored-interview-60s.mp3",
+      "sha256": "4a5d4445d1b4792d9b7212d195ceab34119edc55610927302764519f97cd655f"
+    }
+  ],
+  "controls": [
+    {
+      "name": "piano-control",
+      "speechScores": [
+        0.02115,
+        0.02155,
+        0.01788,
+        0.03149,
+        0.0187,
+        0.01937
+      ],
+      "musicScores": [
+        0.65072,
+        0.55634,
+        0.63609,
+        0.59639,
+        0.61752,
+        0.59745
+      ]
+    },
+    {
+      "name": "previous-mixed-interview",
+      "speechScores": [
+        0.88567,
+        0.82251,
+        0.91345,
+        0.85732,
+        0.80719,
+        0.83802
+      ],
+      "musicScores": [
+        0.07928,
+        0.18841,
+        0.07605,
+        0.71911,
+        0.77637,
+        0.292
+      ]
+    }
+  ]
+}

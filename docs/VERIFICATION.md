@@ -2,6 +2,25 @@
 
 Local verification: 2026-10-22. This record describes observed checks, not a guarantee of production capacity.
 
+## Speech without a music bed / 无配乐语音候选
+
+Verified locally on 2026-10-28 after the user rejected background music; this section does not claim a production release:
+
+- Replaced the two previous local speech candidates with continuous 60-second recordings: JFK’s Rice University address (8:00–9:00 on the decoded archival timeline) and a different China News Service interview with Zheng Qinwen (0:55.440–1:55.440). The former is an archival live address; the latter includes comments about perseverance and the feelings surrounding victory. Natural crowd/room sounds and archival noise remain. No music-removal, speech synthesis, internal silence removal or sentence concatenation was performed.
+- An independent PANNs Cnn6 screen used the published checkpoint (publisher MD5 verified), its stored STFT/mel filters and the published evaluation graph. Each final MP3 was classified in six 10-second windows. Maximum Music scores were 0.07684 (English) and 0.06289 (Mandarin); minimum Speech scores were 0.74215 and 0.81908. The previous rejected mixed interview reached Music 0.77637; the piano control reached 0.65072. These uncalibrated model scores are screening evidence, not proof that all faint music is absent, and no independent human listening rating is claimed. Exact scores and final audio hashes are in [the screening report](audio-music-screening-2026-10-28.json).
+- All 49 Node tests passed with no skips. Actual PCM duration was 60 seconds for both speech files. English leading/trailing/longest quiet were 0 / 0 / 0 seconds under the test’s −40 dBFS threshold (archival noise remains); Mandarin values were 0.06 / 0.14 / 0.62 seconds. Timestamp normalization handles non-monotonic timestamps in the archival source. Both music files remain byte-identical to the published versions; the speech files retain their exact screened bytes.
+- Chromium read both actual media durations as 60 seconds, played them and accepted short click-recording passes. A Mandarin JSON export contained the new ID, actual SHA-256, duration 60 and two pointer events. Chinese picker labels showed both new sources; the 390-pixel layout had no horizontal overflow or alerts. TypeScript checking, production build and whitespace checks passed.
+
+## Continuous expressive speech / 连续情绪对白与采访
+
+Verified locally on 2026-10-28 after the full-minute revision; this section does not claim a production release:
+
+- Replaced the two audiobook excerpts with 60-second continuous intervals: human-voiced dialogue from Elephants Dream (7:09–8:09 of the selected Commons file), and Zheng Qinwen’s published post-match interview soundtrack (0:20–1:20). The user selected continuous dialogue/speech with natural emotional variation. No isolated emotion sentences were concatenated. The two music examples remain unchanged.
+- Selection uses the film’s disagreement context and the interviewee’s remarks about her breakthrough and happiness; these descriptions are not reference emotion labels. Original music, effects, ambience and natural pauses remain. Source intervals, licenses, attribution, SHA-256 values and the Mandarin source’s pending Commons license-review status are documented in [the recording credits](../public/audio/README.md).
+- All 49 Node tests passed, including actual MP3 decoding: English leading quiet 0.18 s, trailing quiet 0 s, longest quiet run 2.02 s; Mandarin values 0 / 0 / 0 s at the test’s −40 dBFS RMS threshold. Soundtrack/ambience energy can remain present between spoken lines, so this is not a speech-activity or perceptual-emotion test.
+- Chromium independently decoded both files to 60 seconds. Every 10-second section had sound: English RMS ranged from −27.1 to −12.9 dBFS; Mandarin from −25.9 to −20.1 dBFS. Both recordings played and accepted a short click-recording pass. A Mandarin JSON export contained its new ID, actual SHA-256, duration 60 and two pointer events.
+- Both new bilingual picker labels displayed at 60 seconds. English and Chinese had zero horizontal overflow at 390 × 844. TypeScript checking, production build and whitespace checks passed. These local signal/browser checks do not constitute independent human ratings of the emotion or physical-device certification.
+
 ## Full-minute excerpts and silence regression / 60 秒片段与静音修复
 
 Verified locally on 2026-10-28 after the initial recording replacement; this section does not claim a production release:

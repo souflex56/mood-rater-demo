@@ -13,8 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCES = {
     "chopin-nocturne-op9-no2-v2": ("chopin.ogg", 3.43, 2),
     "vivaldi-spring-allegro-v2": ("vivaldi.ogg", 0.70, 2),
-    "alice-rabbit-hole-narration-v2": ("alice.mp3", 115.78, 1),
-    "zhufu-mandarin-narration-v1": ("zhufu.mp3", 36.36, 1),
+    "kennedy-rice-speech-no-music-v1": ("kennedy.ogg", 480.0, 1),
+    "zheng-qinwen-no-music-interview-v1": ("zheng-raw.webm", 55.44, 1),
 }
 
 
@@ -33,10 +33,11 @@ def main():
         filename, start, channels = SOURCES[clip["id"]]
         duration = clip["duration"]
         destination = ROOT / ("public" + clip["url"])
-        # Trimming alone retains original timestamps. Reset them BEFORE fading,
-        # otherwise a source starting at 115 s could be entirely past a 60 s fade.
+        # Normalize irregular archival timestamps, trim on the decoded timeline,
+        # then reset again so boundary fades are relative to the excerpt.
+        normalize = "asetpts=N/SR/TB," if filename in {"kennedy.ogg", "zheng-raw.webm"} else ""
         filters = (
-            f"atrim=start={start}:duration={duration},asetpts=PTS-STARTPTS,"
+            f"{normalize}atrim=start={start}:duration={duration},asetpts=PTS-STARTPTS,"
             f"afade=t=in:st=0:d=0.015,afade=t=out:st={duration - .015}:d=0.015"
         )
         subprocess.run([

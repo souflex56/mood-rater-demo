@@ -21,9 +21,9 @@ Open the URL printed by the server, normally `http://127.0.0.1:5173`. Keep `conf
 
 ## 2. Choose an audio collection / 配置音频集合
 
-[`config/audio-library.json`](../config/audio-library.json) defines the public clip picker. The supplied examples are actual recordings: **Chopin’s Nocturne Op. 9 No. 2** (piano), **Vivaldi’s Spring, Allegro** (strings), **Alice in Wonderland** (English narration by Kara Shallenberg), and **Lu Xun’s New Year’s Sacrifice / 祝福** (Mandarin narration by Jing Li). Each clip is 60 seconds, with the opening silence and spoken introductions excluded. They have no reference emotion ratings or experimental validation. See the [recording credits and excerpt details](../public/audio/README.md).
+[`config/audio-library.json`](../config/audio-library.json) defines the public clip picker. The supplied examples are actual recordings: **Chopin’s Nocturne Op. 9 No. 2** (piano), **Vivaldi’s Spring, Allegro** (strings), **JFK’s Rice University address** (English archival speech), and **a separate Zheng Qinwen interview on perseverance** (Mandarin, China News Service), with the two speech excerpts screened for absence of a music bed. Each clip is 60 seconds, with the opening silence excluded; speech examples retain a continuous passage and the source’s natural emotional development. They have no reference emotion ratings or experimental validation. See the [recording credits and excerpt details](../public/audio/README.md).
 
-[`config/audio-library.json`](../config/audio-library.json) 定义公开音频选择列表。内置真实录音片段包括肖邦《夜曲》Op. 9 No. 2（钢琴）、维瓦尔第《春》第一乐章（弦乐）、Kara Shallenberg 的《爱丽丝梦游仙境》英文朗读，以及 Jing Li 的鲁迅《祝福》中文朗读。各片段均为 60 秒，并跳过开头空白与朗读介绍。这些示例不预设情绪评分，也未作实验效度验证。来源、授权和截取位置见[录音说明](../public/audio/README.md)。
+[`config/audio-library.json`](../config/audio-library.json) 定义公开音频选择列表。内置真实录音片段包括肖邦《夜曲》Op. 9 No. 2（钢琴）、维瓦尔第《春》第一乐章（弦乐）、肯尼迪莱斯大学现场英文演讲，以及中国新闻社录制的另一段郑钦文谈坚持与胜利感受的中文访谈；两段语音按无配乐要求筛选。各片段均为 60 秒，跳过开头空白；语音示例保留连续原声和自然的情绪起伏。这些示例不预设情绪评分，也未作实验效度验证。来源、授权和截取位置见[录音说明](../public/audio/README.md)。
 
 Put audio files under `public/audio/` and use same-origin root-relative URLs. For example, `public/audio/my-clip.wav` is served as `/audio/my-clip.wav`:
 
@@ -53,7 +53,7 @@ Put audio files under `public/audio/` and use same-origin root-relative URLs. Fo
 
 文件 ID 应唯一：音频未变时保持稳定，替换刺激材料时使用新 ID。清单最多 50 个片段。`demoOnly` 用于标记示例，不会把文件设为私密，也不表示其适用于研究。`duration`（秒）和 `size`（字节）只是可选目录提示，选择时检查实际文件。清单只接受同源根路径，拒绝外部 URL、路径穿越及未知字段。
 
-可选的 `credit` 包含 `creator`、`sourceUrl`、`license`、`licenseUrl`，用于显示演奏者／朗读者、原始来源和授权。链接必须为 HTTPS，仅用于出处展示，播放仍使用同源文件。
+可选的 `credit` 包含 `creator`、`sourceUrl`、`license`、`licenseUrl`，用于显示演奏者／说话者、原始来源和授权。链接必须为 HTTPS，仅用于出处展示，播放仍使用同源文件。
 
 访客也可一次选择或拖入本地文件，当前标签页最多保留 20 个不同文件；每个片段独立保存会话、草稿和导出结果。本地音频不会上传，每个文件不超过 100 MiB、30 分钟，并需浏览器支持。
 

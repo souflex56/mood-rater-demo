@@ -38,40 +38,40 @@
       "size": 961092
     },
     {
-      "id": "alice-rabbit-hole-narration-v2",
+      "id": "kennedy-rice-speech-no-music-v1",
       "title": {
-        "en": "English speech · Alice in Wonderland",
-        "zh-CN": "英文朗读 ·《爱丽丝梦游仙境》"
+        "en": "English speech · JFK’s Moon address",
+        "zh-CN": "英文演讲 · 肯尼迪莱斯大学演讲"
       },
-      "url": "/audio/alice-rabbit-hole-narration-60s.mp3",
+      "url": "/audio/kennedy-rice-speech-60s.mp3",
       "mimeType": "audio/mpeg",
       "demoOnly": true,
       "duration": 60,
       "credit": {
-        "creator": "Kara Shallenberg · LibriVox",
-        "sourceUrl": "https://librivox.org/alices-adventures-in-wonderland-by-lewis-carroll-4/",
-        "license": "Public domain (LibriVox)",
-        "licenseUrl": "https://librivox.org/pages/public-domain/"
+        "creator": "John F. Kennedy · John F. Kennedy Presidential Library & Museum",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jfk_rice_university_we_choose_to_go_to_the_moon.ogg",
+        "license": "Public domain (US government)",
+        "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
       },
-      "size": 720835
+      "size": 720877
     },
     {
-      "id": "zhufu-mandarin-narration-v1",
+      "id": "zheng-qinwen-no-music-interview-v1",
       "title": {
-        "en": "Mandarin speech · Lu Xun: New Year’s Sacrifice",
-        "zh-CN": "中文朗读 · 鲁迅《祝福》"
+        "en": "Mandarin interview · Zheng Qinwen on perseverance",
+        "zh-CN": "中文访谈 · 郑钦文谈坚持与喜悦"
       },
-      "url": "/audio/zhufu-mandarin-narration-60s.mp3",
+      "url": "/audio/zheng-qinwen-unscored-interview-60s.mp3",
       "mimeType": "audio/mpeg",
       "demoOnly": true,
       "duration": 60,
       "credit": {
-        "creator": "Jing Li · LibriVox",
-        "sourceUrl": "https://librivox.org/multilingual-short-works-collection-026-poetry-prose-by-various/",
-        "license": "Public domain (LibriVox)",
-        "licenseUrl": "https://librivox.org/pages/public-domain/"
+        "creator": "中国新闻社 / China News Service · speaker: 郑钦文 / Zheng Qinwen",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%E3%80%90%E5%B7%B4%E9%BB%8E%E5%A5%A5%E8%BF%90%E4%BC%9A%E3%80%91%E9%83%91%E9%92%A6%E6%96%87%EF%BC%9A%E5%86%8D%E8%89%B0%E9%9A%BE%E7%9A%84%E6%97%B6%E5%88%BB%E6%88%91%E9%83%BD%E6%B2%A1%E6%9C%89%E6%83%B3%E8%BF%87%E6%94%BE%E5%BC%83.webm",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
       },
-      "size": 720838
+      "size": 720878
     }
   ]
 }
