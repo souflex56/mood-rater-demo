@@ -21,9 +21,9 @@ Open the URL printed by the server, normally `http://127.0.0.1:5173`. Keep `conf
 
 ## 2. Choose an audio collection / 配置音频集合
 
-[`config/audio-library.json`](../config/audio-library.json) defines the public clip picker. The supplied examples are actual recordings: **Chopin’s Nocturne Op. 9 No. 2** (piano, 30 s), **Vivaldi’s Spring, Allegro** (strings, 30 s), and **Alice in Wonderland** (English narration by Kara Shallenberg, 31 s). They have no reference emotion ratings or experimental validation. See the [recording credits and excerpt details](../public/audio/README.md).
+[`config/audio-library.json`](../config/audio-library.json) defines the public clip picker. The supplied examples are actual recordings: **Chopin’s Nocturne Op. 9 No. 2** (piano), **Vivaldi’s Spring, Allegro** (strings), **Alice in Wonderland** (English narration by Kara Shallenberg), and **Lu Xun’s New Year’s Sacrifice / 祝福** (Mandarin narration by Jing Li). Each clip is 60 seconds, with the opening silence and spoken introductions excluded. They have no reference emotion ratings or experimental validation. See the [recording credits and excerpt details](../public/audio/README.md).
 
-[`config/audio-library.json`](../config/audio-library.json) 定义公开音频选择列表。内置真实录音片段包括肖邦《夜曲》Op. 9 No. 2（钢琴，30 秒）、维瓦尔第《春》第一乐章（弦乐，30 秒），以及 Kara Shallenberg 的《爱丽丝梦游仙境》英文朗读（31 秒）。这些示例不预设情绪评分，也未作实验效度验证。来源、授权和截取位置见[录音说明](../public/audio/README.md)。
+[`config/audio-library.json`](../config/audio-library.json) 定义公开音频选择列表。内置真实录音片段包括肖邦《夜曲》Op. 9 No. 2（钢琴）、维瓦尔第《春》第一乐章（弦乐）、Kara Shallenberg 的《爱丽丝梦游仙境》英文朗读，以及 Jing Li 的鲁迅《祝福》中文朗读。各片段均为 60 秒，并跳过开头空白与朗读介绍。这些示例不预设情绪评分，也未作实验效度验证。来源、授权和截取位置见[录音说明](../public/audio/README.md)。
 
 Put audio files under `public/audio/` and use same-origin root-relative URLs. For example, `public/audio/my-clip.wav` is served as `/audio/my-clip.wav`:
 

@@ -2,58 +2,76 @@
   "version": 1,
   "clips": [
     {
-      "id": "chopin-nocturne-op9-no2-v1",
+      "id": "chopin-nocturne-op9-no2-v2",
       "title": {
         "en": "Piano · Chopin: Nocturne Op. 9 No. 2",
         "zh-CN": "钢琴 · 肖邦《夜曲》Op. 9 No. 2"
       },
-      "url": "/audio/chopin-nocturne-op9-no2-30s.mp3",
+      "url": "/audio/chopin-nocturne-op9-no2-60s.mp3",
       "mimeType": "audio/mpeg",
       "demoOnly": true,
-      "duration": 30,
+      "duration": 60,
       "credit": {
         "creator": "Peter Johnston",
         "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chopin_Nocturne_No._2_in_E_Flat_Major,_Op._9.ogg",
         "license": "CC0 1.0",
         "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
       },
-      "size": 481209
+      "size": 961025
     },
     {
-      "id": "vivaldi-spring-allegro-v1",
+      "id": "vivaldi-spring-allegro-v2",
       "title": {
         "en": "Strings · Vivaldi: Spring, Allegro",
         "zh-CN": "弦乐 · 维瓦尔第《春》第一乐章"
       },
-      "url": "/audio/vivaldi-spring-allegro-30s.mp3",
+      "url": "/audio/vivaldi-spring-allegro-60s.mp3",
       "mimeType": "audio/mpeg",
       "demoOnly": true,
-      "duration": 30,
+      "duration": 60,
       "credit": {
         "creator": "John Harrison · Robert Turizziani · Wichita State University Chamber Players",
         "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vivaldi_-_Four_Seasons_1_Spring_mvt_1_Allegro_-_John_Harrison_violin.oga",
         "license": "CC BY-SA 4.0",
         "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
       },
-      "size": 481270
+      "size": 961092
     },
     {
-      "id": "alice-rabbit-hole-narration-v1",
+      "id": "alice-rabbit-hole-narration-v2",
       "title": {
         "en": "English speech · Alice in Wonderland",
         "zh-CN": "英文朗读 ·《爱丽丝梦游仙境》"
       },
-      "url": "/audio/alice-rabbit-hole-narration-31s.mp3",
+      "url": "/audio/alice-rabbit-hole-narration-60s.mp3",
       "mimeType": "audio/mpeg",
       "demoOnly": true,
-      "duration": 31,
+      "duration": 60,
       "credit": {
         "creator": "Kara Shallenberg · LibriVox",
         "sourceUrl": "https://librivox.org/alices-adventures-in-wonderland-by-lewis-carroll-4/",
         "license": "Public domain (LibriVox)",
         "licenseUrl": "https://librivox.org/pages/public-domain/"
       },
-      "size": 372906
+      "size": 720835
+    },
+    {
+      "id": "zhufu-mandarin-narration-v1",
+      "title": {
+        "en": "Mandarin speech · Lu Xun: New Year’s Sacrifice",
+        "zh-CN": "中文朗读 · 鲁迅《祝福》"
+      },
+      "url": "/audio/zhufu-mandarin-narration-60s.mp3",
+      "mimeType": "audio/mpeg",
+      "demoOnly": true,
+      "duration": 60,
+      "credit": {
+        "creator": "Jing Li · LibriVox",
+        "sourceUrl": "https://librivox.org/multilingual-short-works-collection-026-poetry-prose-by-various/",
+        "license": "Public domain (LibriVox)",
+        "licenseUrl": "https://librivox.org/pages/public-domain/"
+      },
+      "size": 720838
     }
   ]
 }

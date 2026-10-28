@@ -17,7 +17,7 @@ test('audio library validates, clones bilingual labels, and accepts an empty cus
   assert.notEqual(parsed.clips[0].title.en, input.clips[0].title.en);
   assert.notEqual(parsed.clips[0].credit!.creator, input.clips[0].credit!.creator);
   assert.deepEqual(parseAudioLibrary({ version: 1, clips: [] }), { version: 1, clips: [] });
-  assert.equal(parsed.clips.length, 3);
+  assert.equal(parsed.clips.length, 4);
   assert.ok(parsed.clips.every(clip => clip.demoOnly && clip.title.en && clip.title['zh-CN']));
 });
 
@@ -96,7 +96,7 @@ test('bundled music and speech excerpts have distinct MP3 bytes, matching sizes 
     assert.equal(clip.mimeType, 'audio/mpeg');
     assert.equal(file.toString('ascii', 0, 3), 'ID3');
     assert.equal(clip.size, file.length);
-    assert.ok(clip.duration && clip.duration >= 25 && clip.duration <= 45);
+    assert.equal(clip.duration, 60);
     assert.ok(clip.credit?.creator && clip.credit?.sourceUrl && clip.credit?.license && clip.credit?.licenseUrl);
     assert.doesNotMatch(clip.title.en, /tone steps|soft pulses|layered tones|synthetic/i);
     assert.ok(file.length < MAX_AUDIO_BYTES);

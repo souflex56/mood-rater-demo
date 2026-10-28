@@ -2,6 +2,17 @@
 
 Local verification: 2026-10-22. This record describes observed checks, not a guarantee of production capacity.
 
+## Full-minute excerpts and silence regression / 60 秒片段与静音修复
+
+Verified locally on 2026-10-28 after the initial recording replacement; this section does not claim a production release:
+
+- All four current examples are 60 seconds: Chopin piano, Vivaldi strings, a newly selected English Alice in Wonderland passage, and Mandarin narration of Lu Xun’s 祝福 by Jing Li. [Credits](../public/audio/README.md) record source intervals, licenses, performers/readers and new checksums. Changed recordings use new IDs and URLs.
+- The former English excerpt had only about 2.5 seconds of sound followed by 28.5 seconds of silence. Output-side seeking retained the original timestamps when applying its fade. The earlier duration/playback checks did not detect this defect. The replacement pipeline explicitly trims, resets timestamps, then fades; the English interval is now 1:55.780–2:55.780 of the source recording.
+- FFmpeg decoded every new file to actual PCM and measured 60 seconds. Using 20 ms RMS windows at −40 dBFS, leading quiet was 0.06 / 0.04 / 0.06 / 0.20 seconds and the longest quiet run was 0.06 / 0.24 / 2.26 / 1.58 seconds, respectively. Trailing quiet was at most 0.56 seconds. Each 10-second section contained audible signal; natural narration pauses were preserved.
+- Chromium independently decoded all four hosted local assets with Web Audio: every duration was 60 seconds, and every 10-second RMS level was between −30.9 and −17.0 dBFS. Each selected source played and accepted a short click-recording pass without a media error. A Chinese-clip JSON export contained its new asset ID, actual SHA-256, 60-second duration and two pointer events.
+- Practice used the 60-second piano excerpt and restored the Mandarin clip on exit. Both language pickers listed all four clips at 60 seconds. At 390 × 844, English and Chinese document widths both equalled viewport width. The English audio-card screenshot showed the source/license links and 1:00 duration without horizontal overflow.
+- All 49 Node tests passed, with no skipped tests, including the new decoded-audio regression check. TypeScript checking and the production build passed. The signal test requires FFmpeg and explicitly reports a skip if unavailable; changing audio assets requires running it with FFmpeg installed. These checks verify encoded audio content, not independent human listening-quality ratings or physical-device certification.
+
 ## Recorded music and human speech / 真实音乐与真人朗读
 
 Verified locally on 2026-10-28; this section does not claim a production release:

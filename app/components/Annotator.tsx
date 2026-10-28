@@ -16,7 +16,7 @@ import styles from './Annotator.module.css';
 const MAX_BYTES = MAX_AUDIO_BYTES;
 type PreparedAudio = { key: string; asset: AudioAsset; source: string; title: { en: string; 'zh-CN': string }; demoOnly: boolean };
 const PRACTICE_CLIP = defaultAudioLibrary.clips[0];
-const DEMO: AudioAsset = { id: 'mood-rater-practice-chopin-v1', name: PRACTICE_CLIP.title.en, size: PRACTICE_CLIP.size!, mimeType: PRACTICE_CLIP.mimeType, duration: PRACTICE_CLIP.duration!, url: PRACTICE_CLIP.url };
+const DEMO: AudioAsset = { id: `mood-rater-practice-${PRACTICE_CLIP.id}`, name: PRACTICE_CLIP.title.en, size: PRACTICE_CLIP.size!, mimeType: PRACTICE_CLIP.mimeType, duration: PRACTICE_CLIP.duration!, url: PRACTICE_CLIP.url };
 const clamp = (number: number) => Math.max(0, Math.min(1, number));
 const activePass = (session: AnnotationSessionV2 | null) => session?.passes.findLast(pass => !pass.revoked && pass.end === null);
 const errorText = (error: unknown) => error instanceof Error ? error.message : String(error);
@@ -505,7 +505,7 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
 
     {error && <div role="alert" className={styles.error}><Info size={17}/><span>{error}</span><button onClick={() => setError('')} aria-label={t('Dismiss error', '关闭错误提示')}>×</button></div>}
     {notice && <div role="status" className={styles.notice}><Info size={16}/><span>{notice}</span></div>}
-    {practice && <div className={styles.practiceNotice}><AudioLines size={17}/><span>{t('30-second piano excerpt. Practice is not saved or submitted.', '30 秒钢琴演奏片段。练习不会保存或提交。')}</span></div>}
+    {practice && <div className={styles.practiceNotice}><AudioLines size={17}/><span>{t('60-second piano excerpt. Practice is not saved or submitted.', '60 秒钢琴演奏片段。练习不会保存或提交。')}</span></div>}
 
     {showDrafts && !practice && <section className={styles.drafts}>
       <div className={styles.sectionHeading}><h2>{t('Browser drafts', '浏览器草稿')}</h2><button className={styles.textButton} onClick={() => setShowDrafts(false)}>{t('Close', '关闭')}</button></div>
