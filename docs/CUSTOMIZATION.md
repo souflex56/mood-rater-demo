@@ -21,9 +21,9 @@ Open the URL printed by the server, normally `http://127.0.0.1:5173`. Keep `conf
 
 ## 2. Choose an audio collection / 配置音频集合
 
-[`config/audio-library.json`](../config/audio-library.json) defines the public clip picker. The supplied three examples are **Tone steps / 阶梯音**, **Soft pulses / 轻柔脉冲**, and **Layered tones / 叠层音**. They are synthetic sounds for learning the interaction, with no assigned emotional meaning or experimental validation.
+[`config/audio-library.json`](../config/audio-library.json) defines the public clip picker. The supplied examples are actual recordings: **Chopin’s Nocturne Op. 9 No. 2** (piano, 30 s), **Vivaldi’s Spring, Allegro** (strings, 30 s), and **Alice in Wonderland** (English narration by Kara Shallenberg, 31 s). They have no reference emotion ratings or experimental validation. See the [recording credits and excerpt details](../public/audio/README.md).
 
-[`config/audio-library.json`](../config/audio-library.json) 定义公开音频选择列表。内置的阶梯音、轻柔脉冲、叠层音是用于熟悉操作的合成音，不预设情绪含义，也未作实验效度验证。
+[`config/audio-library.json`](../config/audio-library.json) 定义公开音频选择列表。内置真实录音片段包括肖邦《夜曲》Op. 9 No. 2（钢琴，30 秒）、维瓦尔第《春》第一乐章（弦乐，30 秒），以及 Kara Shallenberg 的《爱丽丝梦游仙境》英文朗读（31 秒）。这些示例不预设情绪评分，也未作实验效度验证。来源、授权和截取位置见[录音说明](../public/audio/README.md)。
 
 Put audio files under `public/audio/` and use same-origin root-relative URLs. For example, `public/audio/my-clip.wav` is served as `/audio/my-clip.wav`:
 
@@ -46,11 +46,14 @@ Put audio files under `public/audio/` and use same-origin root-relative URLs. Fo
 
 - Keep IDs unique and stable for unchanged audio; use a new ID when replacing a stimulus. The manifest supports up to 50 clips.
 - `demoOnly` identifies an example clip; it does not make the file private or establish that it is suitable for a study.
+- Optional `credit` contains `creator`, `sourceUrl`, `license` and `licenseUrl`. These appear beside the selected recording. Credit links must use HTTPS; they are attribution links, not playback URLs.
 - `duration` (seconds) and `size` (bytes) are optional catalog hints. Actual media duration and bytes are checked on selection.
 - Hosted clip URLs must be same-origin root-relative paths. External URLs, traversal and unknown configuration fields are rejected.
 - Visitors may also select or drop up to 20 unique local files in the current tab. Each clip has its own session, draft and export; local files are not uploaded. Each file must be within 100 MiB and 30 minutes and playable by the browser.
 
 文件 ID 应唯一：音频未变时保持稳定，替换刺激材料时使用新 ID。清单最多 50 个片段。`demoOnly` 用于标记示例，不会把文件设为私密，也不表示其适用于研究。`duration`（秒）和 `size`（字节）只是可选目录提示，选择时检查实际文件。清单只接受同源根路径，拒绝外部 URL、路径穿越及未知字段。
+
+可选的 `credit` 包含 `creator`、`sourceUrl`、`license`、`licenseUrl`，用于显示演奏者／朗读者、原始来源和授权。链接必须为 HTTPS，仅用于出处展示，播放仍使用同源文件。
 
 访客也可一次选择或拖入本地文件，当前标签页最多保留 20 个不同文件；每个片段独立保存会话、草稿和导出结果。本地音频不会上传，每个文件不超过 100 MiB、30 分钟，并需浏览器支持。
 

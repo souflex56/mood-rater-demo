@@ -15,7 +15,8 @@ import styles from './Annotator.module.css';
 
 const MAX_BYTES = MAX_AUDIO_BYTES;
 type PreparedAudio = { key: string; asset: AudioAsset; source: string; title: { en: string; 'zh-CN': string }; demoOnly: boolean };
-const DEMO: AudioAsset = { id: 'mood-rater-practice-v1', name: 'Sound study (20 seconds)', size: 0, mimeType: 'audio/wav', duration: 20, url: '/demo.wav' };
+const PRACTICE_CLIP = defaultAudioLibrary.clips[0];
+const DEMO: AudioAsset = { id: 'mood-rater-practice-chopin-v1', name: PRACTICE_CLIP.title.en, size: PRACTICE_CLIP.size!, mimeType: PRACTICE_CLIP.mimeType, duration: PRACTICE_CLIP.duration!, url: PRACTICE_CLIP.url };
 const clamp = (number: number) => Math.max(0, Math.min(1, number));
 const activePass = (session: AnnotationSessionV2 | null) => session?.passes.findLast(pass => !pass.revoked && pass.end === null);
 const errorText = (error: unknown) => error instanceof Error ? error.message : String(error);
@@ -491,6 +492,7 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
   const closedPasses = session?.passes.filter(pass => !pass.revoked && pass.end !== null).length ?? 0;
   const selectedTarget = session?.emotionTarget ?? target;
   const currentAudio = [...libraryClips, ...localClips].find(item => item.source === source && item.asset.sha256 === session?.asset.sha256);
+  const currentLibraryClip = practice ? PRACTICE_CLIP : library.clips.find(clip => clip.url === session?.asset.url);
   const axisLabel = (axis: 'x' | 'y', field: 'name' | 'low' | 'high') => activeProfile.config.axes[axis][field][locale];
   return <div className={styles.workspace}>
     <div className={styles.workspaceTop}>
@@ -503,7 +505,7 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
 
     {error && <div role="alert" className={styles.error}><Info size={17}/><span>{error}</span><button onClick={() => setError('')} aria-label={t('Dismiss error', '关闭错误提示')}>×</button></div>}
     {notice && <div role="status" className={styles.notice}><Info size={16}/><span>{notice}</span></div>}
-    {practice && <div className={styles.practiceNotice}><AudioLines size={17}/><span>{t('20-second synthetic audio. Practice is not saved or submitted.', '20 秒合成音频。练习不会保存或提交。')}</span></div>}
+    {practice && <div className={styles.practiceNotice}><AudioLines size={17}/><span>{t('30-second piano excerpt. Practice is not saved or submitted.', '30 秒钢琴演奏片段。练习不会保存或提交。')}</span></div>}
 
     {showDrafts && !practice && <section className={styles.drafts}>
       <div className={styles.sectionHeading}><h2>{t('Browser drafts', '浏览器草稿')}</h2><button className={styles.textButton} onClick={() => setShowDrafts(false)}>{t('Close', '关闭')}</button></div>
@@ -520,11 +522,11 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
           <div className={styles.clipPicker}>
             <label className={styles.fieldLabel} htmlFor="audio-clip">{t('Select audio', '选择音频')}</label>
             <select id="audio-clip" value={currentAudio?.key ?? ''} disabled={locked} onChange={event => void selectClip(event.target.value)}>
-              <option value="" disabled>{t('Select a sample or add local files', '选择示例，或添加本地文件')}</option>
-              {library.clips.length > 0 && <optgroup label={t('Audio library', '音频库')}>{library.clips.map(clip => <option key={clip.id} value={`library:${clip.id}`}>{clip.title[locale]}{clip.demoOnly ? t(' (demo)', '（演示）') : ''}</option>)}</optgroup>}
+              <option value="" disabled>{t('Select music or speech, or add local files', '选择音乐或人声片段，或添加本地文件')}</option>
+              {library.clips.length > 0 && <optgroup label={t('Audio library', '音频库')}>{library.clips.map(clip => <option key={clip.id} value={`library:${clip.id}`}>{clip.title[locale]}{clip.duration ? ` · ${clip.duration} ${t('s', '秒')}` : ''}</option>)}</optgroup>}
               {localClips.length > 0 && <optgroup label={t('Your local files', '你的本地文件')}>{localClips.map(clip => <option key={clip.key} value={clip.key}>{clip.title[locale]}</option>)}</optgroup>}
             </select>
-            {currentAudio?.demoOnly && <p className={styles.demoAudioNote}>{t('Synthetic audio without reference ratings.', '合成音频，无情绪参考评分。')}</p>}
+            {currentAudio?.demoOnly && <p className={styles.demoAudioNote}>{t('Example clip; no reference emotion ratings.', '示例音频，不预设情绪评分。')}</p>}
           </div>
           <input ref={localFileRef} type="file" multiple accept="audio/*,.mp3,.wav,.m4a,.ogg,.flac,.aac,.webm" className={styles.hiddenInput} onChange={event => void loadLocal(Array.from(event.target.files ?? []))}/>
           <button className={`${styles.uploadZone} ${styles.uploadCompact}`} disabled={locked} onClick={() => localFileRef.current?.click()} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); if (!locked) void loadLocal(Array.from(event.dataTransfer.files)); }}>
@@ -533,7 +535,11 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
             <span>{t('Select or drop files (up to 20 per tab)', '多选或拖放，每个标签页最多 20 个')}</span><small>{t('Each file: up to 30 min / 100 MB', '每个文件：最长 30 分钟，最大 100 MB')}</small>
           </button>
         </>}
-        {session && <div className={styles.audioIdentity}><span className={styles.audioFileIcon}><FileAudio size={22} strokeWidth={1.5}/></span><div><strong title={session.asset.name}>{practice ? t('Sound study', '声音练习') : currentAudio?.title[locale] ?? session.asset.name}</strong><span>{formatTime(duration)} {practice ? t('(synthetic audio)', '（合成音频）') : t('(1× speed)', '（1× 原速）')}</span></div></div>}
+        {session && <div className={styles.audioIdentity}><span className={styles.audioFileIcon}><FileAudio size={22} strokeWidth={1.5}/></span><div><strong title={session.asset.name}>{practice ? PRACTICE_CLIP.title[locale] : currentAudio?.title[locale] ?? session.asset.name}</strong><span>{formatTime(duration)} {t('(1× speed)', '（1× 原速）')}</span></div></div>}
+        {currentLibraryClip?.credit && <p className={styles.audioCredit}>
+          {currentLibraryClip.credit.creator} · <a href={currentLibraryClip.credit.sourceUrl} target="_blank" rel="noreferrer">{t('Original recording', '原始录音')}</a> · <a href={currentLibraryClip.credit.licenseUrl} target="_blank" rel="noreferrer">{currentLibraryClip.credit.license}</a>
+          <span>{t('Excerpted and encoded as MP3.', '已截取片段并转为 MP3。')}</span>
+        </p>}
         <audio ref={mediaRef} src={source || undefined} preload="metadata" onPlay={() => setPlaying(true)} onPause={() => { setPlaying(false); stop('pause'); }}
           onLoadedMetadata={event => { if (pendingSeek.current > 0) { event.currentTarget.currentTime = Math.min(pendingSeek.current, event.currentTarget.duration); pendingSeek.current = 0; } }}
           onTimeUpdate={event => { setCurrentTime(event.currentTarget.currentTime); if (!activePass(sessionRef.current)) lastReliable.current = event.currentTarget.currentTime; }}

@@ -2,6 +2,16 @@
 
 Local verification: 2026-10-22. This record describes observed checks, not a guarantee of production capacity.
 
+## Recorded music and human speech / 真实音乐与真人朗读
+
+Verified locally on 2026-10-28; this section does not claim a production release:
+
+- The default picker now offers Chopin piano, Vivaldi strings and Kara Shallenberg’s English narration from Alice in Wonderland. Each is a new byte-bound audio identity. Sources, licenses, original intervals and SHA-256 checksums are recorded in [the audio credits](../public/audio/README.md); the workspace exposes recording and license links.
+- All three MP3 assets decoded successfully with FFmpeg. Browser selection independently read actual durations of 30, 30 and 31 seconds. Each selected source played and accepted a short click-recording pass without a media error.
+- Switching between clips retained separate recordings. A JSON export of the Vivaldi clip contained its new asset ID, actual SHA-256, 30-second duration and two pointer events; no reference emotion labels were supplied.
+- Practice used the 30-second piano recording and restored the previous clip on exit. English and Chinese picker text and attribution links were checked. At 390 × 844, both locales had document width equal to viewport width, with no horizontal overflow.
+- All 48 Node tests passed, including safe and optional credit metadata, clone independence, manifest limits, byte-distinct bundled assets and per-clip draft isolation. TypeScript checking and the production build passed. These were local Chromium viewport checks, not physical-device or independent listening-quality certification.
+
 ## Sorrow waypoint / 新增哀伤节点
 
 Verified locally on 2026-10-22:

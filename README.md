@@ -8,7 +8,7 @@ The upgrade lives on `codex/mood-rater-v2` in a separate Git worktree. The origi
 
 ## Try it
 
-1. Open the [demo](https://mood-rater-audio.baysky.chatgpt.site/annotate). Choose a bundled example or load local audio. You can keep multiple clips in the picker, with a separate session for each.
+1. Open the [demo](https://mood-rater-audio.baysky.chatgpt.site/annotate). Choose a bundled example or load local audio. You can keep multiple clips in the picker, with a separate session for each. Bundled examples include recorded piano, strings and human narration; [sources and licenses](public/audio/README.md) are included.
 2. Choose what to rate: **emotion expressed by the audio** or **emotion you feel while listening**. The question is fixed once recording begins.
 3. Press **Start recording**, then move the point as the emotion changes. Valence runs left to right; arousal runs bottom to top. Both use **0–1**.
 4. Pause and seek to review. **Record from here** replaces a section; **Undo** revokes the latest recording pass.
@@ -56,7 +56,7 @@ Audio and interface configuration are separate from the annotation engine. New s
 
 | Item | Default demo behavior |
 | --- | --- |
-| Bundled library | Three synthetic examples; configurable list of up to 50 clips |
+| Bundled library | Piano, strings and human speech excerpts; configurable list of up to 50 clips |
 | Local collection | Up to 20 unique local files in the current tab |
 | Audio | Up to 30 minutes and 100 MiB per file; browser-supported formats |
 | Input capture | Pointer movement up to 30 Hz; down/up and explicit keyboard/slider actions can add events |
@@ -65,7 +65,7 @@ Audio and interface configuration are separate from the annotation engine. New s
 | Export | Per-session JSON with raw inputs/configuration; CSV with derived samples |
 | JSON import | Up to 100 MiB in the interface, validated before restoration |
 
-Local audio files are not saved in IndexedDB. Re-select the original file after refreshing; its saved SHA-256 fingerprint is checked. Clearing site storage removes drafts, so export important work. Bundled synthetic examples teach the controls; they are not validated research stimuli or normative emotion examples.
+Local audio files are not saved in IndexedDB. Re-select the original file after refreshing; its saved SHA-256 fingerprint is checked. Clearing site storage removes drafts, so export important work. Bundled recordings are excerpts from actual performances and human narration; they are not validated research stimuli or normative emotion examples. Their sources, licenses and excerpt intervals are documented in [the audio credits](public/audio/README.md).
 
 Imported free sessions receive a new local ID and source-session provenance, avoiding overwrite of newer work. Legacy JSON preserves original observations and unknown metadata. Choosing new audio does not retroactively identify legacy audio. The tool does not perform automatic emotion recognition, diagnostic scoring or the paper’s statistical analysis.
 

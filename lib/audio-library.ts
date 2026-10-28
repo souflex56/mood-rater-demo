@@ -10,6 +10,7 @@ export type AudioLibraryClip = {
   /** Optional catalogue hints. Playback always checks the actual file. */
   duration?: number;
   size?: number;
+  credit?: { creator: string; sourceUrl: string; license: string; licenseUrl: string };
 };
 export type AudioLibrary = { version: 1; clips: AudioLibraryClip[] };
 export const MAX_LOCAL_AUDIO_FILES = 20;
@@ -28,7 +29,7 @@ export function parseAudioLibrary(value: unknown): AudioLibrary {
   if (data.version !== 1 || !Array.isArray(data.clips) || data.clips.length > 50) throw new TypeError('Audio library version must be 1, with at most 50 clips.');
   const ids = new Set<string>();
   const clips = data.clips.map((value, index): AudioLibraryClip => {
-    const clip = record(value, ['id', 'title', 'url', 'mimeType', 'demoOnly'], ['duration', 'size'], `Clip ${index + 1}`);
+    const clip = record(value, ['id', 'title', 'url', 'mimeType', 'demoOnly'], ['duration', 'size', 'credit'], `Clip ${index + 1}`);
     if (typeof clip.id !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,79}$/.test(clip.id) || ids.has(clip.id)) throw new TypeError('Clip IDs must be unique identifiers of at most 80 characters.');
     ids.add(clip.id);
     const title = record(clip.title, ['en', 'zh-CN'], [], 'Clip title');
@@ -41,7 +42,20 @@ export function parseAudioLibrary(value: unknown): AudioLibrary {
     if (typeof clip.demoOnly !== 'boolean') throw new TypeError('Clip demoOnly must be boolean.');
     if (clip.duration !== undefined && (typeof clip.duration !== 'number' || !Number.isFinite(clip.duration) || clip.duration <= 0 || clip.duration > 1800)) throw new TypeError('Duration hint must be greater than zero and at most 1800 seconds.');
     if (clip.size !== undefined && (typeof clip.size !== 'number' || !Number.isInteger(clip.size) || clip.size <= 0 || clip.size > MAX_AUDIO_BYTES)) throw new TypeError('Size hint must be a positive integer no larger than 100 MB.');
-    return { id: clip.id, title: { en: title.en as string, 'zh-CN': title['zh-CN'] as string }, url: clip.url, mimeType: clip.mimeType, demoOnly: clip.demoOnly, ...(clip.duration === undefined ? {} : { duration: clip.duration as number }), ...(clip.size === undefined ? {} : { size: clip.size as number }) };
+    let credit: AudioLibraryClip['credit'];
+    if (clip.credit !== undefined) {
+      const data = record(clip.credit, ['creator', 'sourceUrl', 'license', 'licenseUrl'], [], 'Clip credit');
+      for (const field of ['creator', 'sourceUrl', 'license', 'licenseUrl']) {
+        if (typeof data[field] !== 'string' || !(data[field] as string).trim() || (data[field] as string).length > 1000 || /[\u0000-\u001f\u007f]/.test(data[field] as string)) throw new TypeError('Clip credits must contain nonempty text of at most 1000 characters.');
+      }
+      for (const field of ['sourceUrl', 'licenseUrl']) {
+        let url: URL;
+        try { url = new URL(data[field] as string); } catch { throw new TypeError('Credit links must use HTTPS.'); }
+        if (url.protocol !== 'https:' || url.username || url.password) throw new TypeError('Credit links must use HTTPS without credentials.');
+      }
+      credit = { creator: data.creator as string, sourceUrl: data.sourceUrl as string, license: data.license as string, licenseUrl: data.licenseUrl as string };
+    }
+    return { id: clip.id, title: { en: title.en as string, 'zh-CN': title['zh-CN'] as string }, url: clip.url, mimeType: clip.mimeType, demoOnly: clip.demoOnly, ...(clip.duration === undefined ? {} : { duration: clip.duration as number }), ...(clip.size === undefined ? {} : { size: clip.size as number }), ...(credit ? { credit } : {}) };
   });
   return { version: 1, clips };
 }

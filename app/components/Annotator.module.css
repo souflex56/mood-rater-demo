@@ -133,6 +133,9 @@
 .workspace select:disabled { background: #fafbf6; color: #69785f; opacity: 1; }
 .helper { margin: 8px 0 0; color: #939d88; font-size: 12px; line-height: 1.6; }
 .demoAudioNote { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.audioCredit { margin: 12px 0; color: var(--muted); font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
+.audioCredit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.audioCredit span { display: block; }
 .instructions { margin-top: 24px; padding-top: 16px; border-top: 1px solid #edf0e7; color: #657658; font-size: 12px; line-height: 1.7; }
 .instructions summary { display: flex; justify-content: space-between; align-items: center; list-style: none; cursor: pointer; font-size: 14px; font-weight: 500; }
 .instructions summary::-webkit-details-marker { display: none; }

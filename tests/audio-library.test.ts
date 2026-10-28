@@ -13,10 +13,25 @@ test('audio library validates, clones bilingual labels, and accepts an empty cus
   const input = library();
   const parsed = parseAudioLibrary(input);
   input.clips[0].title.en = 'changed';
+  input.clips[0].credit!.creator = 'changed';
   assert.notEqual(parsed.clips[0].title.en, input.clips[0].title.en);
+  assert.notEqual(parsed.clips[0].credit!.creator, input.clips[0].credit!.creator);
   assert.deepEqual(parseAudioLibrary({ version: 1, clips: [] }), { version: 1, clips: [] });
   assert.equal(parsed.clips.length, 3);
   assert.ok(parsed.clips.every(clip => clip.demoOnly && clip.title.en && clip.title['zh-CN']));
+});
+
+test('audio credits are optional, complete and restricted to safe HTTPS attribution links', () => {
+  const input = library();
+  delete input.clips[0].credit;
+  assert.equal(parseAudioLibrary(input).clips[0].credit, undefined);
+  for (const field of ['sourceUrl', 'licenseUrl'] as const) {
+    for (const url of ['javascript:alert(1)', 'http://example.com', '//example.com', 'https://user:secret@example.com']) {
+      const value = library(); value.clips[0].credit![field] = url;
+      assert.throws(() => parseAudioLibrary(value), TypeError);
+    }
+  }
+  assert.throws(() => parseAudioLibrary({ version: 1, clips: [{ ...input.clips[0], credit: { creator: 'A' } }] }), TypeError);
 });
 
 test('audio library rejects ambiguous identities, non-audio MIME, missing language, unknown keys and limits', () => {
@@ -74,21 +89,18 @@ test('switching draft lookup retains each audio’s raw events and notes without
   assert.deepEqual(sessions, snapshot);
 });
 
-test('bundled demo WAV files are distinct bounded PCM assets with actual 12/15/18 second duration', () => {
+test('bundled music and speech excerpts have distinct MP3 bytes, matching sizes and recording credits', () => {
   const hashes = new Set<string>();
-  const durations: number[] = [];
   for (const clip of defaultAudioLibrary.clips) {
     const file = readFileSync(new URL(`../public${clip.url}`, import.meta.url));
-    assert.equal(file.toString('ascii', 0, 4), 'RIFF');
-    assert.equal(file.toString('ascii', 8, 12), 'WAVE');
-    assert.equal(file.readUInt16LE(20), 1);
-    assert.equal(file.readUInt16LE(22), 1);
-    assert.equal(file.readUInt16LE(34), 16);
-    assert.equal(file.readUInt32LE(40) + 44, file.length);
+    assert.equal(clip.mimeType, 'audio/mpeg');
+    assert.equal(file.toString('ascii', 0, 3), 'ID3');
+    assert.equal(clip.size, file.length);
+    assert.ok(clip.duration && clip.duration >= 25 && clip.duration <= 45);
+    assert.ok(clip.credit?.creator && clip.credit?.sourceUrl && clip.credit?.license && clip.credit?.licenseUrl);
+    assert.doesNotMatch(clip.title.en, /tone steps|soft pulses|layered tones|synthetic/i);
     assert.ok(file.length < MAX_AUDIO_BYTES);
-    durations.push(file.readUInt32LE(40) / file.readUInt32LE(28));
     hashes.add(createHash('sha256').update(file).digest('hex'));
   }
-  assert.deepEqual(durations, [12, 15, 18]);
   assert.equal(hashes.size, defaultAudioLibrary.clips.length);
 });

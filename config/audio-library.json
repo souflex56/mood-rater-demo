@@ -2,25 +2,58 @@
   "version": 1,
   "clips": [
     {
-      "id": "tone-steps",
-      "title": { "en": "Tone steps", "zh-CN": "阶梯音" },
-      "url": "/audio/tone-steps.wav",
-      "mimeType": "audio/wav",
-      "demoOnly": true
+      "id": "chopin-nocturne-op9-no2-v1",
+      "title": {
+        "en": "Piano · Chopin: Nocturne Op. 9 No. 2",
+        "zh-CN": "钢琴 · 肖邦《夜曲》Op. 9 No. 2"
+      },
+      "url": "/audio/chopin-nocturne-op9-no2-30s.mp3",
+      "mimeType": "audio/mpeg",
+      "demoOnly": true,
+      "duration": 30,
+      "credit": {
+        "creator": "Peter Johnston",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chopin_Nocturne_No._2_in_E_Flat_Major,_Op._9.ogg",
+        "license": "CC0 1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+      },
+      "size": 481209
     },
     {
-      "id": "soft-pulses",
-      "title": { "en": "Soft pulses", "zh-CN": "轻柔脉冲" },
-      "url": "/audio/soft-pulses.wav",
-      "mimeType": "audio/wav",
-      "demoOnly": true
+      "id": "vivaldi-spring-allegro-v1",
+      "title": {
+        "en": "Strings · Vivaldi: Spring, Allegro",
+        "zh-CN": "弦乐 · 维瓦尔第《春》第一乐章"
+      },
+      "url": "/audio/vivaldi-spring-allegro-30s.mp3",
+      "mimeType": "audio/mpeg",
+      "demoOnly": true,
+      "duration": 30,
+      "credit": {
+        "creator": "John Harrison · Robert Turizziani · Wichita State University Chamber Players",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vivaldi_-_Four_Seasons_1_Spring_mvt_1_Allegro_-_John_Harrison_violin.oga",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+      },
+      "size": 481270
     },
     {
-      "id": "layered-tones",
-      "title": { "en": "Layered tones", "zh-CN": "叠层音" },
-      "url": "/audio/layered-tones.wav",
-      "mimeType": "audio/wav",
-      "demoOnly": true
+      "id": "alice-rabbit-hole-narration-v1",
+      "title": {
+        "en": "English speech · Alice in Wonderland",
+        "zh-CN": "英文朗读 ·《爱丽丝梦游仙境》"
+      },
+      "url": "/audio/alice-rabbit-hole-narration-31s.mp3",
+      "mimeType": "audio/mpeg",
+      "demoOnly": true,
+      "duration": 31,
+      "credit": {
+        "creator": "Kara Shallenberg · LibriVox",
+        "sourceUrl": "https://librivox.org/alices-adventures-in-wonderland-by-lewis-carroll-4/",
+        "license": "Public domain (LibriVox)",
+        "licenseUrl": "https://librivox.org/pages/public-domain/"
+      },
+      "size": 372906
     }
   ]
 }
