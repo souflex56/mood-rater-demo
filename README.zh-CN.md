@@ -81,7 +81,7 @@ Simin Yang、Courtney N. Reed、Elaine Chew、Mathieu Barthet：**“Examining E
 
 [IEEE 页面](https://ieeexplore.ieee.org/document/9468946) · [作者预印本](https://siminyang6.wordpress.com/wp-content/uploads/2021/07/journalpaper_tac_preprint_0628.pdf) · [BibTeX](public/citation.bib)
 
-原研究使用带时间戳的点击标注，部分分析采用 1 Hz 阶梯重采样。连续拖动、通用音频、区间编辑和 10 Hz 导出属于工程扩展，既不是完整实验协议复现，也不能直接支持原论文的信度结论。引导词帮助定位所给 VA 空间，软件不会根据词语推断聆听者情绪。
+原研究使用带时间戳的点击标注，部分分析采用 1 Hz 阶梯重采样。通用音频、区间编辑和 10 Hz 导出属于工程扩展，既不是完整实验协议复现，也不能直接支持原论文的信度结论。引导词帮助定位所给 VA 空间，软件不会根据词语推断聆听者情绪。
 
 ## 与原版对比
 

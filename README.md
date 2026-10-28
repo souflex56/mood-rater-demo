@@ -81,7 +81,7 @@ Simin Yang, Courtney N. Reed, Elaine Chew, and Mathieu Barthet. **“Examining E
 
 [IEEE record](https://ieeexplore.ieee.org/document/9468946) · [Author preprint](https://siminyang6.wordpress.com/wp-content/uploads/2021/07/journalpaper_tac_preprint_0628.pdf) · [BibTeX](public/citation.bib)
 
-The original work used time-stamped clicks and, in part of its analysis, 1 Hz step resampling. Continuous dragging, general audio, interval editing and 10 Hz exports are engineering extensions. They do not reproduce the full experimental protocol or establish the paper’s reliability claims. The tags guide selection at their supplied VA positions; the software does not infer a listener’s emotion from these words.
+The original work used time-stamped clicks and, in part of its analysis, 1 Hz step resampling. General audio, interval editing and 10 Hz exports are engineering extensions. They do not reproduce the full experimental protocol or establish the paper’s reliability claims. The tags guide selection at their supplied VA positions; the software does not infer a listener’s emotion from these words.
 
 ## Compare with the original
 

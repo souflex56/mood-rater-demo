@@ -10,7 +10,7 @@ export default function Home() {
     <section className="hero">
       <div className="hero-copy">
         <h1>{t('Trace emotion', '记录音频中的')}<br/><em>{t('through sound.', '情绪变化')}</em></h1>
-        <p className="hero-description">{t('Listen, then click or drag on the emotion map to record changes over time.', '边听边在坐标图中点击或拖动，记录情绪随时间的变化。')}</p>
+        <p className="hero-description">{t('Listen and click on the emotion map to record changes over time.', '边听边在坐标图中点击，记录情绪随时间的变化。')}</p>
         <div className="hero-actions">
           <a href="/annotate" className="button primary">{t('Start annotating', '开始标注')}<ArrowRight size={18}/></a>
           <a href="https://github.com/souflex56/mood-rater-demo/tree/codex/mood-rater-v2" className="inline-link" target="_blank" rel="noreferrer">GitHub<ArrowUpRight size={14}/></a>

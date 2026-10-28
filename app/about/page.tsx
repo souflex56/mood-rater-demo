@@ -44,7 +44,7 @@ export default function About() {
       {error && <p role="status">{error}</p>}
 
       <h2>{t('Implementation and limits', '实现与限制')}</h2>
-      <p>{t('The original study used time-stamped clicks and, for part of its analysis, step resampling at 1 Hz. This edition adds continuous dragging, general audio, local drafts, interval re-recording and 10 Hz derived exports. These are engineering extensions, not a complete replication of the experimental protocol.', '原研究使用带时间戳的点击标注，部分分析采用 1 Hz 阶梯重采样。本版新增连续拖动、通用音频、本地草稿、区间重新标注和 10 Hz 派生导出，属于工程扩展，并非对原实验方案的完整复现。')}</p>
+      <p>{t('The original study used time-stamped clicks and, for part of its analysis, step resampling at 1 Hz. This edition adds general audio, local drafts, interval re-recording and 10 Hz derived exports. These are engineering extensions, not a complete replication of the experimental protocol.', '原研究使用带时间戳的点击标注，部分分析采用 1 Hz 阶梯重采样。本版新增通用音频、本地草稿、区间重新标注和 10 Hz 派生导出，属于工程扩展，并非对原实验方案的完整复现。')}</p>
       <p>{t('Only user inputs are observations. Within a recording interval, each value is held until the next input; gaps remain empty. Raw inputs and edit history are retained. Pointer movement is recorded at up to 30 Hz. Export frequency does not imply measurement precision, and response delay is not corrected.', '只有用户输入属于实际观测。标注区间内，两次输入之间保持最近一次评分；未标注区间保留为空。原始输入与修改历史均会保留。指针移动最高按 30 Hz 记录，导出频率不代表测量精度，数据也未校正反应延迟。')}</p>
       <p>{t('Each new input records coordinates, audio position and a device-clock UTC timestamp. Sessions retain the interface configuration used during annotation.', '每次新输入记录坐标、音频播放位置和设备时钟的 UTC 时间戳。标注记录保留当时的界面配置，便于核对参考词的显示条件。')}</p>
 
