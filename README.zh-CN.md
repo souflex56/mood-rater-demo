@@ -4,7 +4,7 @@
 
 在聆听音乐或人声时，通过愉悦度–唤醒度坐标记录情绪随时间的变化，并导出数据用于分析。支持中英双语，默认使用无需账号或数据库配置。
 
-[在线体验](https://mood-rater-audio.baysky.chatgpt.site/annotate) | [English](README.md) | [文档导航](docs/README.md) | [参与贡献](CONTRIBUTING.md#中文)
+[在线体验](https://mood-rater-audio.baysky.chatgpt.site/annotate) | [初始版本](https://mood-rater-audio.baysky.chatgpt.site/legacy/) | [English](README.md) | [文档导航](docs/README.md) | [参与贡献](CONTRIBUTING.md#中文)
 
 [![Mood Rater 中文标注工作区：音频控制、情绪坐标图与标注时间线](docs/images/annotation-zh-CN.jpg)](https://mood-rater-audio.baysky.chatgpt.site/annotate)
 
@@ -66,7 +66,7 @@ npm run dev
 | 开启研究参与者提交 | [可选研究后台](docs/DEPLOYMENT.md#optional-research-architecture--可选研究架构)、[API](docs/API.md) |
 | 查找代码、检查命令与历史记录 | [项目导航](docs/README.md)、[贡献指南](CONTRIBUTING.md#中文) |
 
-研究采集**默认关闭**，启用时需单独配置部署、存储和后台所有者。原始独立界面保存在 [`public/legacy/`](public/legacy/)，差异见[版本对比说明](docs/BASELINE.md)。
+研究采集**默认关闭**，启用时需单独配置部署、存储和后台所有者。
 
 ## 研究背景与引用
 

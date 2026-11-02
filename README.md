@@ -4,7 +4,7 @@
 
 A bilingual tool for annotating music and speech on a valence–arousal map. Listen, record your ratings over time, and export them for analysis. No account or database setup is needed for the default app.
 
-[Try the demo](https://mood-rater-audio.baysky.chatgpt.site/annotate) | [简体中文](README.zh-CN.md) | [Documentation](docs/README.md) | [Contributing](CONTRIBUTING.md)
+[Try the demo](https://mood-rater-audio.baysky.chatgpt.site/annotate) | [Initial version](https://mood-rater-audio.baysky.chatgpt.site/legacy/) | [简体中文](README.zh-CN.md) | [Documentation](docs/README.md) | [Contributing](CONTRIBUTING.md)
 
 [![Mood Rater annotation workspace with audio controls, an emotion map and a rating timeline](docs/images/annotation-en.jpg)](https://mood-rater-audio.baysky.chatgpt.site/annotate)
 
@@ -66,7 +66,7 @@ Change the configuration files to use your own recordings and interface settings
 | Enable participant submissions | [Optional research backend](docs/DEPLOYMENT.md#optional-research-architecture--可选研究架构), [API](docs/API.md) |
 | Find code, checks or historical records | [Project map](docs/README.md), [contributing](CONTRIBUTING.md) |
 
-Research collection is **disabled by default**. Enabling it requires a separate deployment with storage and owner configuration. The original standalone interface is preserved under [`public/legacy/`](public/legacy/); [comparison notes](docs/BASELINE.md) explain the difference.
+Research collection is **disabled by default**. Enabling it requires a separate deployment with storage and owner configuration.
 
 ## Research and citation
 
