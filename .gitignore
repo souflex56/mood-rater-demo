@@ -19,6 +19,7 @@ next-env.d.ts
 
 # Test output
 /coverage/
+/.playwright-mcp/
 
 # Package-manager logs
 npm-debug.log*
@@ -43,8 +44,5 @@ yarn-error.log*
 
 # OS metadata
 .DS_Store
-
-outputs/
-.env
 
 !.env.example

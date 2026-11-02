@@ -9,7 +9,7 @@ const copy = (): VAInterfaceProfile => structuredClone(defaultVAInterface);
 const tag = (id: string, valence: number, arousal: number): EmotionTag => ({ id, label: { en: id, 'zh-CN': id }, valence, arousal });
 
 test('all 97 original tags, translations, order and VA coordinates survive extraction exactly', () => {
-  const legacy = readFileSync(new URL('../mood-rater-final.html', import.meta.url), 'utf8');
+  const legacy = readFileSync(new URL('../public/legacy/index.html', import.meta.url), 'utf8');
   const data = /const emotionTags = (\[[\s\S]*?\n        \]);/.exec(legacy)?.[1];
   const translations = /const emotionTranslations = (\{[\s\S]*?\n        \});/.exec(legacy)?.[1];
   assert.ok(data && translations);

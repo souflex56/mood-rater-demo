@@ -140,6 +140,6 @@ R2 storage and D1 indexes do not share a transaction. Submission completion stor
 
 R2 与 D1 不共享事务。提交先保存并校验 R2 不可变数据包，再把 D1 索引标为完成。使用相同提交重试可修复 R2 已成功、D1 未更新的状态。不要为“修复待完成状态”而手动删除上传分块。研究关闭后，既有结果和历史提交仍可导出。
 
-The original main baseline is commit `8e7ac2ffd99af7494a62193b25f434e36226d35d`; the upgrade is isolated on `codex/mood-rater-v2`. `/legacy/` serves the original UI, and root `mood-rater-final.html` remains the original standalone file. A source rollback and a database rollback are different operations: preserve production data and migration history when changing application versions. See [BASELINE.md](BASELINE.md).
+The original baseline is commit `8e7ac2ffd99af7494a62193b25f434e36226d35d`; `main` contains the current application. `/legacy/` serves the original UI, and `public/legacy/index.html` remains the original standalone file. A source rollback and a database rollback are different operations: preserve production data and migration history when changing application versions. See [BASELINE.md](BASELINE.md).
 
-原始 main 基线为提交 `8e7ac2ffd99af7494a62193b25f434e36226d35d`，升级独立保存在 `codex/mood-rater-v2`。`/legacy/` 提供原版界面，根目录 HTML 保留独立运行能力。源码回退与数据库回退是两回事；更换应用版本时，应保留生产数据与迁移历史。详见 [BASELINE.md](BASELINE.md)。
+原始基线为提交 `8e7ac2ffd99af7494a62193b25f434e36226d35d`，`main` 为当前应用。`/legacy/` 提供原版界面，`public/legacy/index.html` 可独立打开。源码回退与数据库回退是两回事；更换应用版本时，应保留生产数据与迁移历史。详见 [BASELINE.md](BASELINE.md)。

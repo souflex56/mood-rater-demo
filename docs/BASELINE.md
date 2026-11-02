@@ -2,10 +2,10 @@
 
 Original commit: `8e7ac2ffd99af7494a62193b25f434e36226d35d`.
 
-The original main checkout is unchanged. Upgrade branch: `codex/mood-rater-v2`.
+`main` contains the current application. The original version remains recoverable at the commit above and in `public/legacy/`.
 
 - Visit `/legacy/` to run the byte-for-byte original interface.
-- The root `mood-rater-final.html` remains the original standalone application.
+- Open `public/legacy/index.html` directly for the original standalone application. Its bytes match the baseline `mood-rater-final.html`; duplicate legacy files have been removed from the repository root.
 - Compare code with `git diff 8e7ac2ffd99af7494a62193b25f434e36226d35d...HEAD`.
 - Original documentation: `/legacy/README.zh-CN.md`.
 

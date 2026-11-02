@@ -68,5 +68,11 @@
     "miniflare": {
       "sharp": "0.35.4"
     }
+  },
+  "description": "Bilingual audio emotion annotation with local drafts and JSON/CSV exports.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/souflex56/mood-rater-demo.git"
   }
 }

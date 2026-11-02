@@ -1,91 +1,83 @@
-# Mood Rater · Audio emotion annotation
+# Mood Rater
 
-**[Public homepage](https://mood-rater-audio.baysky.chatgpt.site) · [Open the demo](https://mood-rater-audio.baysky.chatgpt.site/annotate) · [Customization guide](docs/CUSTOMIZATION.md) · [简体中文](README.zh-CN.md)**
+**Trace how emotion changes through sound.**
 
-Mood Rater is a bilingual browser demo for tracing how emotion changes while listening to audio. It builds on Simin Yang’s doctoral research and provides a reusable starting point for audio annotation. **No account, database setup or researcher activation is needed to use the public demo or run the default local app.**
+A bilingual tool for annotating music and speech on a valence–arousal map. Listen, record your ratings over time, and export them for analysis. No account or database setup is needed for the default app.
 
-The upgrade lives on `codex/mood-rater-v2` in a separate Git worktree. The original `main` baseline and [original interface](https://mood-rater-audio.baysky.chatgpt.site/legacy/) remain available for comparison.
+[Try the demo](https://mood-rater-audio.baysky.chatgpt.site/annotate) | [简体中文](README.zh-CN.md) | [Documentation](docs/README.md) | [Contributing](CONTRIBUTING.md)
 
-## Try it
+[![Mood Rater annotation workspace with audio controls, an emotion map and a rating timeline](docs/images/annotation-en.jpg)](https://mood-rater-audio.baysky.chatgpt.site/annotate)
 
-1. Open the [demo](https://mood-rater-audio.baysky.chatgpt.site/annotate). Choose a bundled example or load local audio. You can keep multiple clips in the picker, with a separate session for each. Bundled examples include recorded piano, strings, an English live address and a Mandarin interview selected without background music (60 seconds each); [sources and licenses](public/audio/README.md) are included.
-2. Choose what to rate: **emotion expressed by the audio** or **emotion you feel while listening**. The question is fixed once recording begins.
-3. Press **Start recording**, then move the point as the emotion changes. Valence runs left to right; arousal runs bottom to top. Both use **0–1**.
-4. Pause and seek to review. **Record from here** replaces a section; **Undo** revokes the latest recording pass.
-5. Export **JSON** for raw inputs, editing history and interface settings, or **CSV** for the derived time series.
+*A local demonstration session. Ratings shown are illustrative, not participant data.*
 
-Mouse/touch, arrow keys and separate sliders are supported. Switch English/Chinese at any time. Listening without recording does not change data. Each new pass is blank until its first input; later values hold until the next input or pass end. Gaps remain missing. See the [annotation protocol](docs/PROTOCOL.md).
+## What you can do
 
-The square VA plane uses muted red, orange, blue and green, with an exact original-color preset available. All **97 guide words** retain their supplied coordinates and translations. A circle with **diameter = plane width / 8** selects at most five words inside it, shown inline below the plane, comma-separated and nearest-first. An empty circle shows no words. New inputs include audio time and device-clock UTC.
+- **Annotate over time.** Rate the emotion expressed by the audio or your own feelings while listening. Both axes use a 0–1 scale, with 97 emotion words as spatial guides.
+- **Review and revise.** Pause, seek, re-record a section, or undo the latest recording pass. Each audio clip has its own session.
+- **Keep work in your browser.** Local audio stays on your device. Drafts are saved in IndexedDB; export a backup before clearing browser storage.
+- **Take the data with you.** JSON preserves raw inputs and edit history. CSV provides a 10 Hz time series, with unannotated intervals left missing.
 
-## Run locally
+The interface supports English and Simplified Chinese, pointer input, touch, arrow keys and sliders. Four 60-second recordings are included: piano, strings, an English address and a Mandarin interview. [Audio credits and licenses →](public/audio/README.md)
 
-Use Node.js **22.13 or newer** and npm:
+## Get started
+
+### In your browser
+
+1. [Open the workspace](https://mood-rater-audio.baysky.chatgpt.site/annotate) and choose an example or add your own audio.
+2. Choose what to rate, press **Start recording**, and click on the emotion map as the audio plays.
+3. Stop to review, revise if needed, then export **JSON** or **CSV**.
+
+Local files can be up to 30 minutes and 100 MiB each. Audio files are not stored with drafts; re-select the original file to resume after a refresh. [User guide →](docs/USER-GUIDE.md)
+
+### On your computer
+
+Requires **Node.js 22.13+** and npm.
 
 ```sh
+git clone https://github.com/souflex56/mood-rater-demo.git
+cd mood-rater-demo
 npm run install:ci
 npm run dev
 ```
 
-Open the server’s printed URL, normally [localhost:5173](http://127.0.0.1:5173). The default demo does not require an environment file, login or D1 initialization. The v2 app uses a development server; `mood-rater-final.html` remains the original standalone file.
+Open the URL printed in your terminal, normally **http://127.0.0.1:5173**. The default app works without an environment file, login or cloud resources.
 
-```sh
-npm test
-npm run typecheck
-npm run lint
-npm run build
-```
+Built with React, TypeScript and Vinext, with optional Cloudflare Workers storage for research collection.
 
-The stack is React, TypeScript and Vinext. Browser IndexedDB stores drafts; the default workflow does not send audio or results to the research API.
+## Make it yours
 
-## Customize for your project
+Change the configuration files to use your own recordings and interface settings:
 
-Start with the [full customization guide](docs/CUSTOMIZATION.md) or the [public overview](https://mood-rater-audio.baysky.chatgpt.site/customize).
-
-| File | Purpose |
+| Configure | File |
 | --- | --- |
-| [`config/audio-library.json`](config/audio-library.json) | Audio collection, clip identities and bilingual labels |
-| [`config/emotion-tags.json`](config/emotion-tags.json) | Guide words, translations and VA positions |
-| [`config/va-interface.json`](config/va-interface.json) | Circle diameter, label count, four colors, X/Y names and endpoints |
-| [`config/va-interface-original.json`](config/va-interface-original.json) | Exact original palette preset |
-| [`config/project.json`](config/project.json) | Optional research collection flag, off by default |
+| Audio clips and bilingual titles | [`config/audio-library.json`](config/audio-library.json) |
+| Emotion words and their coordinates | [`config/emotion-tags.json`](config/emotion-tags.json) |
+| Map colors, axis labels and guide radius | [`config/va-interface.json`](config/va-interface.json) |
 
-Audio and interface configuration are separate from the annotation engine. New sessions retain their interface snapshot; changing defaults does not change saved sessions’ guidance. Axis names are display text: they do not swap axes or rename exported `valence`/`arousal` fields. See [VA configuration](docs/VA-CUSTOMIZATION.md).
+[Customization guide →](docs/CUSTOMIZATION.md)
 
-## Data and recovery
+## Documentation
 
-| Item | Default demo behavior |
+| I want to… | Start here |
 | --- | --- |
-| Bundled library | Four 60-second piano, strings, English live address and Mandarin interview excerpts; configurable list of up to 50 clips |
-| Local collection | Up to 20 unique local files in the current tab |
-| Audio | Up to 30 minutes and 100 MiB per file; browser-supported formats |
-| Input capture | Pointer movement up to 30 Hz; down/up and explicit keyboard/slider actions can add events |
-| Derived series | 10 Hz zero-order hold; missing values remain missing |
-| Drafts | Browser IndexedDB; available space depends on the browser |
-| Export | Per-session JSON with raw inputs/configuration; CSV with derived samples |
-| JSON import | Up to 100 MiB in the interface, validated before restoration |
+| Annotate, save and export | [User guide](docs/USER-GUIDE.md) |
+| Understand timestamps, missing values and editing | [Annotation protocol](docs/PROTOCOL.md) |
+| Configure or deploy my own instance | [Customization](docs/CUSTOMIZATION.md), [deployment](docs/DEPLOYMENT.md) |
+| Enable participant submissions | [Optional research backend](docs/DEPLOYMENT.md#optional-research-architecture--可选研究架构), [API](docs/API.md) |
+| Find code, checks or historical records | [Project map](docs/README.md), [contributing](CONTRIBUTING.md) |
 
-Local audio files are not saved in IndexedDB. Re-select the original file after refreshing; its saved SHA-256 fingerprint is checked. Clearing site storage removes drafts, so export important work. Bundled recordings are excerpts from actual performances, a live human address and an interview; they are not validated research stimuli or normative emotion examples. Their sources, licenses and excerpt intervals are documented in [the audio credits](public/audio/README.md).
+Research collection is **disabled by default**. Enabling it requires a separate deployment with storage and owner configuration. The original standalone interface is preserved under [`public/legacy/`](public/legacy/); [comparison notes](docs/BASELINE.md) explain the difference.
 
-Imported free sessions receive a new local ID and source-session provenance, avoiding overwrite of newer work. Legacy JSON preserves original observations and unknown metadata. Choosing new audio does not retroactively identify legacy audio. The tool does not perform automatic emotion recognition, diagnostic scoring or the paper’s statistical analysis.
+## Research and citation
 
-## Optional research collection
+Inspired by Simin Yang’s research on emotion perception in music:
 
-The invitation, participant submission and owner dashboard implementation remains available for advanced deployments. It is **disabled by default** through `config/project.json` (`researchEnabled: false`) and is not part of the normal demo flow.
+Simin Yang, Courtney N. Reed, Elaine Chew and Mathieu Barthet. *Examining Emotion Perception Agreement in Live Music Performance.* IEEE Transactions on Affective Computing, 14(2), 1442–1460, 2023 (early access 2021). [DOI](https://doi.org/10.1109/TAFFC.2021.3093787) | [BibTeX](public/citation.bib)
 
-To operate a collection service, enable the flag in your own deployment and follow [deployment and owner configuration](docs/DEPLOYMENT.md) and the [research API](docs/API.md). That optional workflow requires D1/R2 and authorized owner setup. Local smoke, recovery and capacity fixtures do not certify production availability or 1,000 concurrent users.
+General audio, interval editing and 10 Hz exports extend the original work. The tool collects human ratings; its tests do not establish psychometric validity or reproduce the paper’s findings. See the [protocol](docs/PROTOCOL.md#7-relationship-to-the-paper--与论文的关系).
 
-## Research reference
+## Contribute and reuse
 
-Simin Yang, Courtney N. Reed, Elaine Chew, and Mathieu Barthet. **“Examining Emotion Perception Agreement in Live Music Performance.”** *IEEE Transactions on Affective Computing*, **14**(2), 1442–1460, 2023. DOI: [10.1109/TAFFC.2021.3093787](https://doi.org/10.1109/TAFFC.2021.3093787). First published online in 2021.
+Bug reports, documentation, translations and focused improvements are welcome. [Read the contribution guide](CONTRIBUTING.md) or [open an issue](https://github.com/souflex56/mood-rater-demo/issues/new/choose).
 
-[IEEE record](https://ieeexplore.ieee.org/document/9468946) · [Author preprint](https://siminyang6.wordpress.com/wp-content/uploads/2021/07/journalpaper_tac_preprint_0628.pdf) · [BibTeX](public/citation.bib)
-
-The original work used time-stamped clicks and, in part of its analysis, 1 Hz step resampling. General audio, interval editing and 10 Hz exports are engineering extensions. They do not reproduce the full experimental protocol or establish the paper’s reliability claims. The tags guide selection at their supplied VA positions; the software does not infer a listener’s emotion from these words.
-
-## Compare with the original
-
-- Open [`/legacy/`](https://mood-rater-audio.baysky.chatgpt.site/legacy/); its example audio may depend on a third-party URL.
-- `mood-rater-final.html` remains the original standalone file.
-- Read the [original Chinese README](public/legacy/README.zh-CN.md) and [baseline record](docs/BASELINE.md).
-- Compare committed changes with `git diff 8e7ac2ffd99af7494a62193b25f434e36226d35d...HEAD`; `git status --short` identifies uncommitted work.
+Project code is licensed under [MIT](LICENSE). Bundled recordings and third-party code retain their own licenses; see [third-party notices](THIRD_PARTY_NOTICES.md) before redistributing them.

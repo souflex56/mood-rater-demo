@@ -1,91 +1,83 @@
-# Mood Rater · 音频时变情绪标注
+# Mood Rater
 
-**[公开首页](https://mood-rater-audio.baysky.chatgpt.site) · [打开标注演示](https://mood-rater-audio.baysky.chatgpt.site/annotate) · [自定义指南](docs/CUSTOMIZATION.md) · [English](README.md)**
+**记录音频中的情绪变化。**
 
-Mood Rater 是用于记录音频情绪随时间变化的中英双语浏览器演示，基于 Simin Yang 的博士研究，为音频标注提供可复用的起点。**使用公开演示或运行默认本地应用，无需账号、数据库配置或研究者激活。**
+在聆听音乐或人声时，通过愉悦度–唤醒度坐标记录情绪随时间的变化，并导出数据用于分析。支持中英双语，默认使用无需账号或数据库配置。
 
-升级在独立 Git worktree 的 `codex/mood-rater-v2` 分支开发。原始 `main` 基线和[原版界面](https://mood-rater-audio.baysky.chatgpt.site/legacy/)均保留，可随时对比。
+[在线体验](https://mood-rater-audio.baysky.chatgpt.site/annotate) | [English](README.md) | [文档导航](docs/README.md) | [参与贡献](CONTRIBUTING.md#中文)
 
-## 开始体验
+[![Mood Rater 中文标注工作区：音频控制、情绪坐标图与标注时间线](docs/images/annotation-zh-CN.jpg)](https://mood-rater-audio.baysky.chatgpt.site/annotate)
 
-1. 打开[标注演示](https://mood-rater-audio.baysky.chatgpt.site/annotate)，选择内置示例或载入本地音频。可在选择列表中保留多个片段，每个片段分别标注。内置示例包含真实钢琴、弦乐、按无配乐要求筛选的英文现场演讲与中文访谈（各 60 秒），附[来源与授权](public/audio/README.md)。
-2. 确定对象：**音频表达出的情绪**，或**聆听时我自身的感受**。开始记录后，该会话的标注对象固定。
-3. 点击「开始标注」，随情绪变化移动圆点。横轴愉悦度由左侧消极向右侧积极增加；纵轴唤醒度由下方平静向上方兴奋增加。均采用 **0–1**。
-4. 暂停、定位并回听。「从此处重新标注」可替换区间；「撤销」会撤销最近一轮录制。
-5. 导出 **JSON** 保留原始输入、编辑历史和界面配置；导出 **CSV** 获取派生时间序列。
+*本地演示会话，图中评分为示意数据，非参与者数据。*
 
-支持鼠标、触屏、方向键和独立滑块，可随时切换中英界面。仅试听不会修改数据。每轮首次输入前为空缺；之后保持最近评分，直到下次输入或该轮结束。空缺不会自动补齐。时间边界详见[标注协议](docs/PROTOCOL.md)。
+## 可以做什么
 
-正方形 VA 平面采用柔和红、橙、蓝、绿配色，另存原始配色预设。**97 个引导词**完整保留所给坐标与翻译。以点击位置为圆心，**直径为平面宽度的 1/8**，选择圈内最多五个词，在平面下方按距离并列显示，以逗号分隔；圈内没有词就不显示情绪词。新输入同时记录音频时间和设备 UTC。
+- **随时间标注。** 记录音频表达的情绪，或聆听时自身的感受。两个坐标轴均采用 0–1 范围，97 个情绪词帮助定位。
+- **回听与修改。** 暂停、定位、重新标注局部区间，或撤销最近一轮标注。不同音频分别保存。
+- **在浏览器中保存。** 本地音频不会上传，草稿保存在 IndexedDB。清除浏览器数据前，请先导出备份。
+- **导出分析数据。** JSON 保留原始输入与修改历史；CSV 提供 10 Hz 时间序列，未标注区间保持为空缺。
 
-## 本地运行
+支持鼠标、触屏、方向键和滑块。内置钢琴、弦乐、英文演讲和中文访谈四个 60 秒片段，附[音频来源与授权](public/audio/README.md)。
 
-需要 Node.js **22.13 或更新版本**及 npm：
+## 开始使用
+
+### 在线体验
+
+1. 打开[标注工作区](https://mood-rater-audio.baysky.chatgpt.site/annotate)，选择示例或添加本地音频。
+2. 确定标注对象，点击「开始标注」，边听边在情绪坐标图中点击。
+3. 停止后回顾或修改，完成后导出 **JSON** 或 **CSV**。
+
+每个本地音频最长 30 分钟、最大 100 MiB。草稿不包含音频文件；刷新后，重新选择原文件即可继续。[使用指南 →](docs/USER-GUIDE.zh-CN.md)
+
+### 本地运行
+
+需要 **Node.js 22.13+** 和 npm。
 
 ```sh
+git clone https://github.com/souflex56/mood-rater-demo.git
+cd mood-rater-demo
 npm run install:ci
 npm run dev
 ```
 
-打开终端输出的网址，通常为 [localhost:5173](http://127.0.0.1:5173)。默认演示不需要环境变量文件、登录或初始化 D1。新版通过开发服务器运行；`mood-rater-final.html` 仍是原始独立 HTML。
+打开终端输出的网址，通常为 **http://127.0.0.1:5173**。默认应用不需要环境变量文件、登录或云端资源。
 
-```sh
-npm test
-npm run typecheck
-npm run lint
-npm run build
-```
+技术栈为 React、TypeScript 和 Vinext；可选研究后台使用 Cloudflare Workers 及存储服务。
 
-技术栈为 React、TypeScript 和 Vinext。草稿存于浏览器 IndexedDB，默认流程不会向研究 API 上传音频或标注结果。
+## 用于自己的项目
 
-## 为自己的项目定制
+通过配置文件替换音频、调整参考词和界面：
 
-阅读[完整自定义指南](docs/CUSTOMIZATION.md)，或先看[网页概览](https://mood-rater-audio.baysky.chatgpt.site/customize)。
-
-| 文件 | 用途 |
+| 配置内容 | 文件 |
 | --- | --- |
-| [`config/audio-library.json`](config/audio-library.json) | 音频集合、片段身份及中英文案 |
-| [`config/emotion-tags.json`](config/emotion-tags.json) | 引导词、翻译及 VA 坐标 |
-| [`config/va-interface.json`](config/va-interface.json) | 圆圈直径、标签数量、四角配色、X/Y 轴名及端点文案 |
-| [`config/va-interface-original.json`](config/va-interface-original.json) | 完整保留原始配色的预设 |
-| [`config/project.json`](config/project.json) | 默认关闭的可选研究收集功能开关 |
+| 音频列表与中英文名称 | [`config/audio-library.json`](config/audio-library.json) |
+| 情绪词及其坐标 | [`config/emotion-tags.json`](config/emotion-tags.json) |
+| 配色、坐标轴标签与参考词筛选范围 | [`config/va-interface.json`](config/va-interface.json) |
 
-音频与界面配置独立于标注引擎。新会话保存界面快照，修改默认配置不会改变已有会话的引导。轴名只是展示文案，不交换横纵轴，也不更名导出的 `valence`、`arousal` 字段。详见 [VA 配置](docs/VA-CUSTOMIZATION.md)。
+[自定义指南 →](docs/CUSTOMIZATION.md)
 
-## 数据与恢复
+## 文档导航
 
-| 项目 | 默认演示行为 |
+| 我想…… | 阅读 |
 | --- | --- |
-| 内置集合 | 四段 60 秒钢琴、弦乐、英文现场演讲与中文访谈；配置列表最多 50 个片段 |
-| 本地集合 | 当前标签页最多 20 个不同文件 |
-| 音频 | 每文件最长 30 分钟、最大 100 MiB；格式取决于浏览器支持 |
-| 输入记录 | 指针移动最高 30 Hz；按下、抬起及键盘／滑块输入可额外产生事件 |
-| 派生序列 | 10 Hz，阶梯保持；缺失值保留为空 |
-| 草稿 | 浏览器 IndexedDB，可用空间取决于浏览器 |
-| 导出 | 每会话 JSON 包含原始输入与配置；CSV 包含派生采样 |
-| JSON 导入 | 界面支持最大 100 MiB，恢复前校验 |
+| 了解标注、保存和导出 | [使用指南](docs/USER-GUIDE.zh-CN.md) |
+| 理解时间戳、空缺与区间覆盖 | [标注协议](docs/PROTOCOL.md) |
+| 定制或部署自己的版本 | [自定义指南](docs/CUSTOMIZATION.md)、[部署指南](docs/DEPLOYMENT.md) |
+| 开启研究参与者提交 | [可选研究后台](docs/DEPLOYMENT.md#optional-research-architecture--可选研究架构)、[API](docs/API.md) |
+| 查找代码、检查命令与历史记录 | [项目导航](docs/README.md)、[贡献指南](CONTRIBUTING.md#中文) |
 
-本地音频文件本身不存入 IndexedDB。刷新后需重新选择原文件，系统校验保存的 SHA-256 指纹。清除网站存储会移除草稿，请及时导出重要内容。内置片段来自实际演奏、真人现场演讲和访谈，不是经过验证的研究刺激材料或标准情绪示例。来源、授权及截取区间见[录音说明](public/audio/README.md)。
+研究采集**默认关闭**，启用时需单独配置部署、存储和后台所有者。原始独立界面保存在 [`public/legacy/`](public/legacy/)，差异见[版本对比说明](docs/BASELINE.md)。
 
-导入自由标注 JSON 时分配新的本地 ID 并保留来源信息，避免旧导出覆盖新工作。旧版 JSON 保留原始观测与未知元数据；选择新音频不会反向确定旧记录的音频。本工具不包含自动情绪识别、诊断评分或论文统计分析流程。
+## 研究背景与引用
 
-## 可选研究收集
+工具设计参考了 Simin Yang 关于音乐情绪感知的研究：
 
-仓库保留研究邀请、参与者提交和所有者后台，供进阶部署使用。`config/project.json` 中 `researchEnabled` **默认为 `false`**，这些功能不属于普通演示流程。
+Simin Yang, Courtney N. Reed, Elaine Chew, Mathieu Barthet. *Examining Emotion Perception Agreement in Live Music Performance.* IEEE Transactions on Affective Computing, 14(2), 1442–1460, 2023（2021 年提前在线发表）。[DOI](https://doi.org/10.1109/TAFFC.2021.3093787) | [BibTeX](public/citation.bib)
 
-如需运营收集服务，在自己的部署中启用开关，再按[部署及所有者配置](docs/DEPLOYMENT.md)和[研究 API](docs/API.md)准备 D1/R2 与授权所有者。后端本地流程、故障恢复及容量测试不代表生产可用性或 1,000 人同时在线认证。
+通用音频、区间编辑和 10 Hz 导出属于工程扩展。本工具采集人的主观评分；软件测试不代表心理测量效度得到验证，也不代表复现了论文结论。详见[标注协议](docs/PROTOCOL.md#7-relationship-to-the-paper--与论文的关系)。
 
-## 研究出处
+## 参与贡献与使用许可
 
-Simin Yang、Courtney N. Reed、Elaine Chew、Mathieu Barthet：**“Examining Emotion Perception Agreement in Live Music Performance.”** *IEEE Transactions on Affective Computing*，**14**(2)，1442–1460，2023。DOI：[10.1109/TAFFC.2021.3093787](https://doi.org/10.1109/TAFFC.2021.3093787)。论文于 2021 年提前在线发表。
+欢迎反馈问题、完善文档和翻译，或提交范围明确的改进。请先阅读[贡献指南](CONTRIBUTING.md#中文)，也可以[新建 Issue](https://github.com/souflex56/mood-rater-demo/issues/new/choose)。
 
-[IEEE 页面](https://ieeexplore.ieee.org/document/9468946) · [作者预印本](https://siminyang6.wordpress.com/wp-content/uploads/2021/07/journalpaper_tac_preprint_0628.pdf) · [BibTeX](public/citation.bib)
-
-原研究使用带时间戳的点击标注，部分分析采用 1 Hz 阶梯重采样。通用音频、区间编辑和 10 Hz 导出属于工程扩展，既不是完整实验协议复现，也不能直接支持原论文的信度结论。引导词帮助定位所给 VA 空间，软件不会根据词语推断聆听者情绪。
-
-## 与原版对比
-
-- 打开 [`/legacy/`](https://mood-rater-audio.baysky.chatgpt.site/legacy/) 使用原版界面；其示例音频可能依赖第三方网址。
-- `mood-rater-final.html` 保留为原始独立 HTML 文件。
-- 阅读[原始中文说明](public/legacy/README.zh-CN.md)与[基线记录](docs/BASELINE.md)。
-- 用 `git diff 8e7ac2ffd99af7494a62193b25f434e36226d35d...HEAD` 查看已提交差异；`git status --short` 显示未提交内容。
+本项目代码采用 [MIT 许可证](LICENSE)。内置音频与第三方代码保留各自的许可；再分发前请查看[第三方许可说明](THIRD_PARTY_NOTICES.md)。
