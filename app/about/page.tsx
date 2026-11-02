@@ -5,6 +5,7 @@ import { ArrowUpRight, Copy, Check } from 'lucide-react';
 import { useLanguage } from '../components/LanguageProvider';
 
 const citation = 'S. Yang, C. N. Reed, E. Chew, and M. Barthet, “Examining Emotion Perception Agreement in Live Music Performance,” IEEE Transactions on Affective Computing, vol. 14, no. 2, pp. 1442–1460, 2023. doi: 10.1109/TAFFC.2021.3093787.';
+const researchUrl = 'https://ieeexplore.ieee.org/document/9468946';
 
 export default function About() {
   const { t } = useLanguage();
@@ -13,7 +14,7 @@ export default function About() {
   return <div className="page-wrap" style={{ maxWidth: 850 }}>
     <header className="page-intro">
       <h1>{t('Research and methods', '研究与方法')}</h1>
-      <p>{t('Mood Rater is based on Simin Yang’s doctoral research on how emotion perception changes over time in music.', 'Mood Rater 基于 Simin Yang 关于音乐情绪感知随时间变化的博士研究。')}</p>
+      <p>{t('Mood Rater is based on ', 'Mood Rater 基于 ')}<a className="text-link" href={researchUrl} target="_blank" rel="noreferrer">{t('Simin Yang’s research on how emotion perception changes over time in music', 'Simin Yang 关于音乐情绪感知随时间变化的研究')}</a>{t('.', '。')}</p>
     </header>
     <article className="rich-text">
       <h2>{t('Annotation dimensions', '标注维度')}</h2>
@@ -37,7 +38,7 @@ export default function About() {
           try { await navigator.clipboard.writeText(citation); setCopied(true); }
           catch { setError(t('Copy is unavailable. Select the citation above to copy it.', '无法自动复制，请选择上方引用文本手动复制。')); }
         }}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? t('Copied', '已复制') : t('Copy citation', '复制引用')}</button>
-        <a className="inline-link" href="https://ieeexplore.ieee.org/document/9468946" target="_blank" rel="noreferrer">IEEE<ArrowUpRight size={14}/></a>
+        <a className="inline-link" href={researchUrl} target="_blank" rel="noreferrer">{t('Read the paper on IEEE', '在 IEEE 阅读论文')}<ArrowUpRight size={14}/></a>
         <a className="inline-link" href="https://siminyang6.wordpress.com/wp-content/uploads/2021/07/journalpaper_tac_preprint_0628.pdf" target="_blank" rel="noreferrer">{t('Author preprint', '作者预印本')}<ArrowUpRight size={14}/></a>
         <a className="inline-link" href="/citation.bib" download>BibTeX</a>
       </div>

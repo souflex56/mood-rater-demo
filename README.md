@@ -42,7 +42,7 @@ npm run dev
 
 Open the URL printed in your terminal, normally **http://127.0.0.1:5173**. The default app works without an environment file, login or cloud resources.
 
-Built with React, TypeScript and Vinext, with optional Cloudflare Workers storage for research collection.
+Built with [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/) and [Vinext](https://github.com/cloudflare/vinext), with optional [Cloudflare Workers](https://developers.cloudflare.com/workers/) storage for research collection.
 
 ## Make it yours
 
@@ -70,9 +70,9 @@ Research collection is **disabled by default**. Enabling it requires a separate 
 
 ## Research and citation
 
-Inspired by Simin Yang’s research on emotion perception in music:
+Inspired by [Simin Yang’s research on emotion perception in music](https://ieeexplore.ieee.org/document/9468946):
 
-Simin Yang, Courtney N. Reed, Elaine Chew and Mathieu Barthet. *Examining Emotion Perception Agreement in Live Music Performance.* IEEE Transactions on Affective Computing, 14(2), 1442–1460, 2023 (early access 2021). [DOI](https://doi.org/10.1109/TAFFC.2021.3093787) | [BibTeX](public/citation.bib)
+Simin Yang, Courtney N. Reed, Elaine Chew and Mathieu Barthet. [*Examining Emotion Perception Agreement in Live Music Performance.*](https://ieeexplore.ieee.org/document/9468946) IEEE Transactions on Affective Computing, 14(2), 1442–1460, 2023 (early access 2021). [DOI](https://doi.org/10.1109/TAFFC.2021.3093787) | [BibTeX](public/citation.bib)
 
 General audio, interval editing and 10 Hz exports extend the original work. The tool collects human ratings; its tests do not establish psychometric validity or reproduce the paper’s findings. See the [protocol](docs/PROTOCOL.md#7-relationship-to-the-paper--与论文的关系).
 

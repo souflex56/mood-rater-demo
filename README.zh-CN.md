@@ -42,7 +42,7 @@ npm run dev
 
 打开终端输出的网址，通常为 **http://127.0.0.1:5173**。默认应用不需要环境变量文件、登录或云端资源。
 
-技术栈为 React、TypeScript 和 Vinext；可选研究后台使用 Cloudflare Workers 及存储服务。
+技术栈为 [React](https://react.dev/)、[TypeScript](https://www.typescriptlang.org/) 和 [Vinext](https://github.com/cloudflare/vinext)；可选研究后台使用 [Cloudflare Workers](https://developers.cloudflare.com/workers/) 及存储服务。
 
 ## 用于自己的项目
 
@@ -70,9 +70,9 @@ npm run dev
 
 ## 研究背景与引用
 
-工具设计参考了 Simin Yang 关于音乐情绪感知的研究：
+工具设计参考了 [Simin Yang 关于音乐情绪感知的研究](https://ieeexplore.ieee.org/document/9468946)：
 
-Simin Yang, Courtney N. Reed, Elaine Chew, Mathieu Barthet. *Examining Emotion Perception Agreement in Live Music Performance.* IEEE Transactions on Affective Computing, 14(2), 1442–1460, 2023（2021 年提前在线发表）。[DOI](https://doi.org/10.1109/TAFFC.2021.3093787) | [BibTeX](public/citation.bib)
+Simin Yang, Courtney N. Reed, Elaine Chew, Mathieu Barthet. [*Examining Emotion Perception Agreement in Live Music Performance.*](https://ieeexplore.ieee.org/document/9468946) IEEE Transactions on Affective Computing, 14(2), 1442–1460, 2023（2021 年提前在线发表）。[DOI](https://doi.org/10.1109/TAFFC.2021.3093787) | [BibTeX](public/citation.bib)
 
 通用音频、区间编辑和 10 Hz 导出属于工程扩展。本工具采集人的主观评分；软件测试不代表心理测量效度得到验证，也不代表复现了论文结论。详见[标注协议](docs/PROTOCOL.md#7-relationship-to-the-paper--与论文的关系)。
 

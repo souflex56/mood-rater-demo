@@ -3,7 +3,7 @@
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { useLanguage } from '../components/LanguageProvider';
 
-const source = 'https://github.com/souflex56/mood-rater-demo/blob/codex/mood-rater-v2/';
+const source = 'https://github.com/souflex56/mood-rater-demo/blob/main/';
 
 export default function CustomizePage() {
   const { t } = useLanguage();

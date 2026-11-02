@@ -121,7 +121,7 @@ Published study instructions and materials are fixed. New versions receive disti
 
 ## 7. Relationship to the paper / 与论文的关系
 
-Reference: S. Yang, C. N. Reed, E. Chew, and M. Barthet, “Examining Emotion Perception Agreement in Live Music Performance,” *IEEE Transactions on Affective Computing*, 14(2), 1442–1460, 2023; early access 2021. [DOI](https://doi.org/10.1109/TAFFC.2021.3093787) · [Author preprint](https://siminyang6.wordpress.com/wp-content/uploads/2021/07/journalpaper_tac_preprint_0628.pdf).
+Reference: S. Yang, C. N. Reed, E. Chew, and M. Barthet, [“Examining Emotion Perception Agreement in Live Music Performance,”](https://ieeexplore.ieee.org/document/9468946) *IEEE Transactions on Affective Computing*, 14(2), 1442–1460, 2023; early access 2021. [DOI](https://doi.org/10.1109/TAFFC.2021.3093787) | [Author preprint](https://siminyang6.wordpress.com/wp-content/uploads/2021/07/journalpaper_tac_preprint_0628.pdf).
 
 The original study’s time-stamped click collection and 1 Hz step-resampling analysis inform the design. The new 10 Hz continuous-input interface, general-audio support, editing and translations are extensions. Software tests verify implementation behavior; they do not validate psychometric reliability, response accuracy, cross-language equivalence or reproduction of the paper’s findings.
 

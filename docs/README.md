@@ -9,6 +9,7 @@
 | [User guide](USER-GUIDE.md) / [中文使用指南](USER-GUIDE.zh-CN.md) | Audio, recording, revisions, saving and export / 音频、标注、修改、保存与导出 |
 | [Annotation protocol / 标注协议](PROTOCOL.md) | Rating questions, clocks, interval boundaries, missing values and data formats / 标注对象、时钟、区间边界、空缺与数据格式 |
 | [Audio credits / 音频来源](../public/audio/README.md) | Recordings, licenses, excerpt intervals and reproducibility / 录音、许可、节选区间与复现 |
+| [Research paper / 研究论文](https://ieeexplore.ieee.org/document/9468946) | Simin Yang and colleagues’ study informing the design / 工具设计所参考的 Simin Yang 等人的研究；[BibTeX](../public/citation.bib) |
 
 ## Adapt and deploy / 定制与部署
 
