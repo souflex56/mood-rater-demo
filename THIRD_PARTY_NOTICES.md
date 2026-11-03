@@ -15,7 +15,6 @@ The [MIT license](LICENSE) covers original project code and documentation. It do
 | Material / 内容 | Notice / 许可位置 |
 | --- | --- |
 | shadcn Tailwind stylesheet | [`vendor/shadcn-tailwind-4.13.0.LICENSE.md`](vendor/shadcn-tailwind-4.13.0.LICENSE.md) |
-| Sites Vite plugin | [`scripts/vite/sites-vite-plugin.LICENSE`](scripts/vite/sites-vite-plugin.LICENSE) |
 
 Other installed packages retain the notices in their distributions. `package-lock.json` records the dependency versions; project licensing does not replace dependency licensing.
 

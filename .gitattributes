@@ -3,5 +3,4 @@
 
 # Keep GitHub language statistics focused on the application.
 vendor/** linguist-vendored
-scripts/vite/sites-vite-plugin.ts linguist-vendored
 public/legacy/** linguist-documentation

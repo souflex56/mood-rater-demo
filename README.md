@@ -36,13 +36,15 @@ Requires **Node.js 22.13+** and npm.
 ```sh
 git clone https://github.com/souflex56/mood-rater-demo.git
 cd mood-rater-demo
-npm run install:ci
+npm ci
 npm run dev
 ```
 
 Open the URL printed in your terminal, normally **http://127.0.0.1:5173**. The default app works without an environment file, login or cloud resources.
 
-Built with [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/) and [Vinext](https://github.com/cloudflare/vinext), with optional [Cloudflare Workers](https://developers.cloudflare.com/workers/) storage for research collection.
+Deploy on your choice of **Node.js or Docker host**; the public website is a demonstration. See the [self-hosting guide](docs/DEPLOYMENT.md).
+
+Built with [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/) and [Vinext](https://github.com/cloudflare/vinext). A separate [Cloudflare adapter](deploy/cloudflare/README.md) supports optional research collection.
 
 ## Make it yours
 
@@ -63,7 +65,7 @@ Change the configuration files to use your own recordings and interface settings
 | Annotate, save and export | [User guide](docs/USER-GUIDE.md) |
 | Understand timestamps, missing values and editing | [Annotation protocol](docs/PROTOCOL.md) |
 | Configure or deploy my own instance | [Customization](docs/CUSTOMIZATION.md), [deployment](docs/DEPLOYMENT.md) |
-| Enable participant submissions | [Optional research backend](docs/DEPLOYMENT.md#optional-research-architecture--可选研究架构), [API](docs/API.md) |
+| Enable participant submissions | [Optional research backend](deploy/cloudflare/README.md), [API](docs/API.md) |
 | Find code, checks or historical records | [Project map](docs/README.md), [contributing](CONTRIBUTING.md) |
 
 Research collection is **disabled by default**. Enabling it requires a separate deployment with storage and owner configuration.

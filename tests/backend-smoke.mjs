@@ -1,4 +1,4 @@
-// Integration test against the local Sites dev worker with migrations applied.
+// Integration test against the local Cloudflare dev worker with migrations applied.
 // Run: MOOD_API_BASE=http://127.0.0.1:3000 node tests/backend-smoke.mjs
 // Seeds one draft and two published versions in the local DB; never targets production.
 import assert from 'node:assert/strict';
@@ -8,7 +8,9 @@ const configuredTags=JSON.parse(readFileSync(new URL('../config/emotion-tags.jso
 const interfaceProfile={config:JSON.parse(readFileSync(new URL('../config/va-interface.json',import.meta.url),'utf8')),tagListId:configuredTags.id,tags:configuredTags.tags};
 const base=process.env.MOOD_API_BASE;
 if(!base || !['127.0.0.1','localhost'].includes(new URL(base).hostname))throw new Error('MOOD_API_BASE must be an explicit localhost URL');
-const owner={Cookie:'__sites_local_auth=1'};
+const proxySecret=process.env.MOOD_TEST_PROXY_SECRET;
+if(!proxySecret || proxySecret.length<32)throw new Error('Set MOOD_TEST_PROXY_SECRET to the local fixture secret (at least 32 characters)');
+const owner={'x-mood-rater-auth-key':proxySecret,'x-mood-rater-user-id':'local-research-owner','x-mood-rater-user-email':'owner@example.test'};
 const json={'Content-Type':'application/json'};
 async function req(path,{status=200,headers={},...init}={}){
   const response=await fetch(base+path,{...init,headers:{...headers}});
@@ -17,8 +19,9 @@ async function req(path,{status=200,headers={},...init}={}){
 const config={title:'Backend smoke '+new Date().toISOString(),titleZh:'集成测试',description:'Local fixture',descriptionZh:'本地测试',consent:'I agree',consentZh:'我同意',emotionTarget:'perceived'};
 assert.equal((await req('/api/identity')).isAdmin,false);
 await req('/api/admin/studies',{status:401});
-await req('/api/admin/studies',{status:401,headers:{'oai-authenticated-user-id':'local_seedy','oai-authenticated-user-email':'seedy@sites.test'}});
+await req('/api/admin/studies',{status:401,headers:{'x-mood-rater-user-id':'local-research-owner','x-mood-rater-user-email':'owner@example.test'}});
 assert.equal((await req('/api/identity',{headers:owner})).isAdmin,true);
+await req('/api/admin/studies',{status:403,headers:{...owner,'x-mood-rater-user-id':'another-user'}});
 await req('/api/admin/studies',{method:'POST',status:403,headers:{...owner,...json,Origin:'https://foreign.invalid'},body:JSON.stringify(config)});
 const {study}=await req('/api/admin/studies',{method:'POST',status:201,headers:{...owner,...json},body:JSON.stringify(config)});
 await req('/api/study/'+study.token,{status:404});

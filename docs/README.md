@@ -17,7 +17,8 @@
 | --- | --- |
 | [Customization / 自定义配置](CUSTOMIZATION.md) | Replace the audio library and configure your project / 替换音频库与项目配置 |
 | [VA interface / 坐标图配置](VA-CUSTOMIZATION.md) | Emotion words, coordinates, axes, colors and session snapshots / 参考词、坐标、坐标轴、配色与会话快照 |
-| [Deployment / 部署](DEPLOYMENT.md) | Local development, build, hosting and optional research setup / 本地开发、构建、托管与可选研究配置 |
+| [Self-hosting](DEPLOYMENT.md) / [自托管](DEPLOYMENT.zh-CN.md) | Run on your own Node.js or Docker host / 在自选的 Node.js 或 Docker 环境运行 |
+| [Optional Cloudflare backend / 可选 Cloudflare 后台](../deploy/cloudflare/README.md) | D1/R2 research collection and your identity provider / D1/R2 研究采集与自选身份服务 |
 | [Research API / 研究接口](API.md) | Invitations, participants, uploads and owner access / 邀请、参与者、上传与后台权限 |
 
 ## Find the code / 代码位置
@@ -30,8 +31,8 @@
 | `public/audio/` | Bundled recordings and attribution / 内置录音与署名 |
 | `public/legacy/` | Original standalone interface / 原版独立界面 |
 | `components/`, `hooks/` | Shared UI components and hooks / 通用组件 |
-| `worker/`, `db/`, `drizzle/` | Worker entry point, storage schema and migrations / Worker 入口、数据库定义与迁移 |
-| `scripts/`, `.openai/` | Build, local runtime and hosting integration / 构建、本地运行与托管集成 |
+| `deploy/cloudflare/`, `db/`, `drizzle/` | Optional Worker adapter, storage schema and migrations / 可选 Worker 适配、数据库定义与迁移 |
+| `scripts/`, `Dockerfile` | Audio preparation and deployment helpers / 音频制作与部署辅助文件 |
 | `tests/` | Annotation, persistence, configuration and audio checks / 标注、保存、配置与音频检查 |
 
 [Contribution guide / 贡献指南](../CONTRIBUTING.md) includes development commands and review expectations. [Third-party notices / 第三方许可说明](../THIRD_PARTY_NOTICES.md) identifies material with separate licenses.
@@ -41,6 +42,6 @@
 These are dated implementation and verification records, not getting-started instructions. / 以下是特定版本的实现与验收记录，首次使用无需阅读。
 
 - [Original baseline / 原版基线](BASELINE.md)
-- [UI review / 界面审阅记录](UI-REVIEW.md)
-- [Verification history / 验收记录](VERIFICATION.md)
+- [Archived UI review / 历史界面审阅](https://github.com/souflex56/mood-rater-demo/blob/codex/hosted-demo/docs/UI-REVIEW.md)
+- [Archived demo verification / 历史演示验收](https://github.com/souflex56/mood-rater-demo/blob/codex/hosted-demo/docs/VERIFICATION.md); current checks run in [CI](../.github/workflows/ci.yml) / 当前验证以 CI 为准
 - [Speech music-screening report / 语音配乐筛查](audio-music-screening-2026-10-28.json)

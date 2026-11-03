@@ -11,13 +11,13 @@ The default app is a local annotation demo. It needs no login, database initiali
 With Node.js 22.13 or newer / 使用 Node.js 22.13 或更新版本：
 
 ```sh
-npm run install:ci
+npm ci
 npm run dev
 ```
 
-Open the URL printed by the server, normally `http://127.0.0.1:5173`. Keep `config/project.json` set to `{"researchEnabled": false}` for the demo workflow. The optional service setup in [DEPLOYMENT.md](DEPLOYMENT.md) is only needed when operating research collection.
+Open the URL printed by the server, normally `http://127.0.0.1:5173`. Keep `config/project.json` set to `{"researchEnabled": false}` for the demo workflow. See [self-hosting](DEPLOYMENT.md) for Node.js and Docker deployment; the [Cloudflare backend](../deploy/cloudflare/README.md) is optional.
 
-打开终端输出的网址，通常为 `http://127.0.0.1:5173`。演示流程保持 `config/project.json` 为 `{"researchEnabled": false}`；只有运行研究收集服务时，才需要 [DEPLOYMENT.md](DEPLOYMENT.md) 中的可选服务配置。
+打开终端输出的网址，通常为 `http://127.0.0.1:5173`。演示流程保持 `config/project.json` 为 `{"researchEnabled": false}`；普通自托管见 [Node.js 与 Docker 部署指南](DEPLOYMENT.zh-CN.md)；[Cloudflare 研究后台](../deploy/cloudflare/README.md) 为可选项。
 
 ## 2. Choose an audio collection / 配置音频集合
 
@@ -118,9 +118,9 @@ Then inspect the actual page, select each configured clip, record a short trace 
 
 ## Optional collection service / 可选收集服务
 
-The repository retains research invitations, participant submissions and the owner dashboard, but the demo defaults to `researchEnabled: false`. Enabling collection in a separate deployment requires changing that flag, provisioning D1/R2 and configuring the authorized owner. See [deployment](DEPLOYMENT.md) and [API](API.md). None of this is required for local annotation and export.
+The repository retains research invitations, participant submissions and the owner dashboard, but the demo defaults to `researchEnabled: false`. Enabling collection in a separate deployment requires changing that flag, provisioning D1/R2 and configuring the authorized owner. See the [Cloudflare adapter](../deploy/cloudflare/README.md) and [API](API.md). None of this is required for local annotation and export.
 
-仓库保留研究邀请、参与者提交和所有者后台，但演示默认 `researchEnabled: false`。独立部署收集服务时，需修改该开关，准备 D1/R2，并配置授权所有者，见[部署说明](DEPLOYMENT.md)和 [API](API.md)。本地标注与导出不需要这些步骤。
+仓库保留研究邀请、参与者提交和所有者后台，但演示默认 `researchEnabled: false`。独立部署收集服务时，需修改该开关，准备 D1/R2，并配置授权所有者，见 [Cloudflare 适配说明](../deploy/cloudflare/README.md)和 [API](API.md)。本地标注与导出不需要这些步骤。
 
 Keep the [research attribution and implementation limits](../README.md#research-reference) when adapting the tool. New audio collections, translations or interface designs are not automatically validated by the cited paper.
 

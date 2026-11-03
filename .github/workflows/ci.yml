@@ -31,10 +31,21 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg
       - name: Install dependencies
-        run: npm run install:ci
+        run: npm ci
       - name: Test
         run: npm test
       - name: Typecheck
         run: npm run typecheck
       - name: Build
         run: npm run build
+      - name: Verify standalone bundle without the checkout
+        run: npm run test:self-host
+      - name: Build Docker image
+        run: docker build -t mood-rater-ci .
+      - name: Verify Docker image
+        run: |
+          docker run -d --name mood-rater-ci -p 127.0.0.1:4174:3000 mood-rater-ci
+          trap 'docker rm -f mood-rater-ci' EXIT
+          MOOD_SMOKE_BASE=http://127.0.0.1:4174 npm run test:self-host
+      - name: Build optional Cloudflare adapter
+        run: npm run build:cloudflare

@@ -2,7 +2,7 @@ import { env } from 'cloudflare:workers';
 import { eq } from 'drizzle-orm';
 import { getDb } from '@/db';
 import { settings } from '@/db/schema';
-import { getChatGPTUser } from '@/app/chatgpt-auth';
+import { authenticatedProxyUser, signInPath } from './auth';
 
 export class ApiError extends Error { constructor(public status: number, message: string) { super(message); } }
 export function bucket() { if (!env.BUCKET) throw new ApiError(503, 'Storage is not configured'); return env.BUCKET; }
@@ -36,17 +36,16 @@ export async function jsonBody(request: Request) {
   catch (error) { if (error instanceof ApiError) throw error; throw new ApiError(400, 'Invalid JSON request'); }
 }
 export async function identity(request: Request) {
-  let user = await getChatGPTUser();
-  if (user?.userId === 'local_seedy' && (!import.meta.env.DEV || !['127.0.0.1','localhost','[::1]'].includes(new URL(request.url).hostname))) user = null;
+  const user = await authenticatedProxyUser(request, env.AUTH_PROXY_SECRET);
   const configuredOwner = env.ADMIN_USER_ID;
   const pinnedOwner = (await getDb().select().from(settings).where(eq(settings.key, 'admin_user_id')).get())?.value;
   const ownerId = configuredOwner || pinnedOwner;
-  return { user, isAdmin: Boolean(user && ownerId && user.userId === ownerId),
+  return { user, signInPath: signInPath(env.AUTH_SIGN_IN_PATH), signOutPath: signInPath(env.AUTH_SIGN_OUT_PATH), isAdmin: Boolean(user && ownerId && user.userId === ownerId),
     canBootstrap: Boolean(user && !ownerId && env.ADMIN_BOOTSTRAP_EMAIL && user.email.trim().toLowerCase() === env.ADMIN_BOOTSTRAP_EMAIL.trim().toLowerCase()) };
 }
 export async function requireAdmin(request: Request) {
   const auth = await identity(request);
-  if (!auth.user) throw new ApiError(401, 'Sign in with ChatGPT first');
+  if (!auth.user) throw new ApiError(401, 'Sign in through the configured identity provider first');
   if (!auth.isAdmin) throw new ApiError(403, 'Only the research owner can access this resource');
   return auth.user;
 }

@@ -47,6 +47,7 @@
     "dist",
     ".vinext",
     ".wrangler",
+    "deploy/cloudflare/.wrangler",
     ".sites-runtime",
     "outputs",
     "work"

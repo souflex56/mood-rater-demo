@@ -9,7 +9,7 @@ const messages: Record<string, string> = {
   'Load failed': '加载失败，请检查网络连接后重试。',
   'NetworkError when attempting to fetch resource.': '网络请求失败，请检查连接后重试。',
   'Storage is not configured': '数据存储尚未配置，请联系网站所有者。',
-  'Sign in with ChatGPT first': '请先使用 ChatGPT 登录。',
+  'Sign in through the configured identity provider first': '请先通过部署者配置的身份服务登录。',
   'Only the research owner can access this resource': '仅研究所有者有权访问此内容。',
   'This account is not authorized to initialize the research owner': '此账号无权开通研究管理功能。',
   'The research owner has already been assigned': '研究所有者已设置。',

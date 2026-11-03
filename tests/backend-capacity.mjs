@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import { randomUUID, createHash } from 'node:crypto';
 const base=process.env.MOOD_API_BASE;
 if(!base||!['127.0.0.1','localhost'].includes(new URL(base).hostname))throw new Error('MOOD_API_BASE must be localhost');
-const owner={Cookie:'__sites_local_auth=1'};const json={'Content-Type':'application/json'};
+const proxySecret=process.env.MOOD_TEST_PROXY_SECRET;
+if(!proxySecret || proxySecret.length<32)throw new Error('Set MOOD_TEST_PROXY_SECRET to the local fixture secret (at least 32 characters)');
+const owner={'x-mood-rater-auth-key':proxySecret,'x-mood-rater-user-id':'local-research-owner','x-mood-rater-user-email':'owner@example.test'};const json={'Content-Type':'application/json'};
 async function api(path,body,headers={},method='POST') { const r=await fetch(base+path,{method,headers:{...headers,...(body instanceof Uint8Array?{}:json)},...(body===undefined?{}:{body:body instanceof Uint8Array?body:JSON.stringify(body)})});const text=await r.text();assert.equal(r.ok,true,`${r.status} ${path} ${text.slice(0,300)}`);return JSON.parse(text); }
 const {study}=await api('/api/admin/studies',{title:'Capacity fixture '+Date.now(),consent:'Local automated test',emotionTarget:'perceived'},owner);
 const audio=new Uint8Array(1024);

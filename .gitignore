@@ -34,7 +34,9 @@ yarn-error.log*
 
 # Checkout-local tool state
 /.wrangler/
+/deploy/cloudflare/.wrangler/
 /.sites-runtime/
+/.openai/
 
 # Workspace scaffolding and publication archives
 /.agents/

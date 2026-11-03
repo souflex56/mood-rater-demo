@@ -9,7 +9,7 @@ Reports, translations, documentation and focused code changes are welcome. For a
 Fork and clone the repository, then use Node.js 22.13+ and npm:
 
 ```sh
-npm run install:ci
+npm ci
 npm run dev
 ```
 
@@ -19,6 +19,7 @@ Before opening a pull request, run the checks relevant to your change:
 npm test
 npm run typecheck
 npm run build
+npm run test:self-host
 ```
 
 Install **FFmpeg** when changing bundled audio. `npm test` skips the decoded-audio check if FFmpeg is unavailable; an audio change needs that check to run. The [audio credits](public/audio/README.md) describe reproduction and required attribution.
@@ -30,7 +31,7 @@ Install **FFmpeg** when changing bundled audio. `npm test` skips the decoded-aud
 - Add regression coverage when behavior changes; documentation-only edits do not need new tests.
 - Keep credentials, local databases, build output and participant data out of commits. Use a small synthetic example to reproduce data issues.
 
-Project code uses the [MIT license](LICENSE). Preserve notices for third-party material and provide recording rights, source URLs and attribution with any new audio. GitHub checks test and build the app; they do not publish the website. Production publication is a separate maintainer action.
+Project code uses the [MIT license](LICENSE). Preserve notices for third-party material and provide recording rights, source URLs and attribution with any new audio. GitHub checks validate the self-hosted app and container. Choose your own host for publication; the public demonstration is maintained separately on `codex/hosted-demo`.
 
 ## 中文
 
@@ -40,4 +41,4 @@ Fork 并克隆仓库后，使用 Node.js 22.13+ 和 npm，依次执行上方的�
 
 PR 请说明解决的问题、最终行为与验证结果；界面修改附截图。中英文案保持一致，文案修改不应顺带改变标注对象、时间戳、空缺规则和导出格式。行为变更需要相应回归验证，纯文档修改无需新增测试。
 
-不要提交凭据、本地数据库、构建产物或参与者数据。复现数据问题请使用小型模拟样例。项目代码采用 MIT；第三方代码保留许可，新增录音需附来源、使用权限和署名。GitHub 检查只测试和构建，网站发布由维护者另行操作。
+不要提交凭据、本地数据库、构建产物或参与者数据。复现数据问题请使用小型模拟样例。项目代码采用 MIT；第三方代码保留许可，新增录音需附来源、使用权限和署名。GitHub 检查验证自托管应用与容器。使用者自选托管环境，公开演示另由 `codex/hosted-demo` 分支维护。

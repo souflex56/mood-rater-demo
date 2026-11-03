@@ -36,13 +36,15 @@
 ```sh
 git clone https://github.com/souflex56/mood-rater-demo.git
 cd mood-rater-demo
-npm run install:ci
+npm ci
 npm run dev
 ```
 
 打开终端输出的网址，通常为 **http://127.0.0.1:5173**。默认应用不需要环境变量文件、登录或云端资源。
 
-技术栈为 [React](https://react.dev/)、[TypeScript](https://www.typescriptlang.org/) 和 [Vinext](https://github.com/cloudflare/vinext)；可选研究后台使用 [Cloudflare Workers](https://developers.cloudflare.com/workers/) 及存储服务。
+可在自选的 **Node.js 或 Docker 环境**部署；公开网站仅供演示。详见[自托管指南](docs/DEPLOYMENT.zh-CN.md)。
+
+技术栈为 [React](https://react.dev/)、[TypeScript](https://www.typescriptlang.org/) 和 [Vinext](https://github.com/cloudflare/vinext)。需要集中采集研究数据时，可选择独立的 [Cloudflare 后台适配](deploy/cloudflare/README.md)。
 
 ## 用于自己的项目
 
@@ -62,8 +64,8 @@ npm run dev
 | --- | --- |
 | 了解标注、保存和导出 | [使用指南](docs/USER-GUIDE.zh-CN.md) |
 | 理解时间戳、空缺与区间覆盖 | [标注协议](docs/PROTOCOL.md) |
-| 定制或部署自己的版本 | [自定义指南](docs/CUSTOMIZATION.md)、[部署指南](docs/DEPLOYMENT.md) |
-| 开启研究参与者提交 | [可选研究后台](docs/DEPLOYMENT.md#optional-research-architecture--可选研究架构)、[API](docs/API.md) |
+| 定制或部署自己的版本 | [自定义指南](docs/CUSTOMIZATION.md)、[部署指南](docs/DEPLOYMENT.zh-CN.md) |
+| 开启研究参与者提交 | [可选研究后台](deploy/cloudflare/README.md)、[API](docs/API.md) |
 | 查找代码、检查命令与历史记录 | [项目导航](docs/README.md)、[贡献指南](CONTRIBUTING.md#中文) |
 
 研究采集**默认关闭**，启用时需单独配置部署、存储和后台所有者。

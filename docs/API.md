@@ -8,9 +8,9 @@ All routes are same-origin JSON unless stated otherwise. Errors are `{error, det
 
 ## Owner identity
 
-- `GET /api/identity` → `{user: {userId,email,displayName,fullName}|null,isAdmin,canBootstrap}`.
-- `POST /api/admin/bootstrap` → same response. This only works for the signed-in account whose verified platform email matches secret `ADMIN_BOOTSTRAP_EMAIL`, with no existing owner. The first authorized binding atomically pins `settings.admin_user_id`. `ADMIN_USER_ID`, if configured, overrides the pinned setting. There is no arbitrary first-user administration.
-- All other `/api/admin/**` routes require the single owner. Authenticated headers must be supplied/stripped by the Sites gateway; do not expose the origin worker directly with untrusted forwarded identity headers. `local_seedy` is accepted only in a dev build on a loopback URL using the starter's loopback-only local login.
+- `GET /api/identity` → `{user: {userId,email,displayName}|null,isAdmin,canBootstrap,signInPath,signOutPath}`.
+- `POST /api/admin/bootstrap` → same response. This only works for the signed-in account whose proxy-verified email matches secret `ADMIN_BOOTSTRAP_EMAIL`, with no existing owner. The first authorized binding atomically pins `settings.admin_user_id`. `ADMIN_USER_ID`, if configured, overrides the pinned setting. There is no arbitrary first-user administration.
+- All other `/api/admin/**` routes require the single owner. The optional backend accepts identity from a trusted authentication proxy only after validating its shared secret; unsigned client identity headers are ignored. The deployer chooses and configures that proxy. See the [identity adapter contract](../deploy/cloudflare/README.md#identity-adapter--身份适配).
 
 ## Studies
 

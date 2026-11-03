@@ -7,11 +7,13 @@ import { resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 const base=process.env.MOOD_API_BASE;
 if(!base||!['127.0.0.1','localhost'].includes(new URL(base).hostname))throw new Error('MOOD_API_BASE must be localhost');
-const directory=resolve('.wrangler/state/v3/d1/miniflare-D1DatabaseObject');
+const directory=resolve('deploy/cloudflare/.wrangler/state/v3/d1/miniflare-D1DatabaseObject');
 const files=readdirSync(directory).filter(p=>p.endsWith('.sqlite')&&p!=='metadata.sqlite');
 assert.equal(files.length,1,'Expected one local D1 database');const db=resolve(directory,files[0]);
 function sql(statement){execFileSync('python3',['-c','import sqlite3,sys\nc=sqlite3.connect(sys.argv[1]);c.executescript(sys.argv[2]);c.commit()',db,statement]);}
-const owner={Cookie:'__sites_local_auth=1'};const json={'Content-Type':'application/json'};
+const proxySecret=process.env.MOOD_TEST_PROXY_SECRET;
+if(!proxySecret || proxySecret.length<32)throw new Error('Set MOOD_TEST_PROXY_SECRET to the local fixture secret (at least 32 characters)');
+const owner={'x-mood-rater-auth-key':proxySecret,'x-mood-rater-user-id':'local-research-owner','x-mood-rater-user-email':'owner@example.test'};const json={'Content-Type':'application/json'};
 async function api(path,body,headers={},method='POST',status=200){const r=await fetch(base+path,{method,headers:{...headers,...(body instanceof Uint8Array?{}:json)},...(body===undefined?{}:{body:body instanceof Uint8Array?body:JSON.stringify(body)})});const result=await r.json();assert.equal(r.status,status,JSON.stringify(result));return result;}
 const {study}=await api('/api/admin/studies',{title:'Recovery fixture '+Date.now(),consent:'Local automated test'},owner,'POST',201);
 const audio=new Uint8Array(100);const upload=await api(`/api/admin/studies/${study.id}/uploads`,{name:'recovery.wav',size:100,mimeType:'audio/wav',duration:2},owner,'POST',201);
