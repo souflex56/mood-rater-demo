@@ -74,4 +74,4 @@ For ordinary development, use `npm run dev` at **http://127.0.0.1:5173**. This i
 
 ## Demonstration website
 
-[The public demo](https://mood-rater-audio.baysky.chatgpt.site/annotate) demonstrates the tool. Its existing hosting integration is preserved on the [maintainer demo branch](https://github.com/souflex56/mood-rater-demo/tree/codex/hosted-demo). It is separate from the default self-hosting workflow on `main`. Updating this repository does not automatically republish that demonstration.
+[The public demo](https://rater.zaoan.today/annotate) demonstrates the tool. Its existing hosting integration is preserved on the [maintainer demo branch](https://github.com/souflex56/mood-rater-demo/tree/codex/hosted-demo). It is separate from the default self-hosting workflow on `main`. Updating this repository does not automatically republish that demonstration.

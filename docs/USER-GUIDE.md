@@ -4,7 +4,7 @@
 
 ## Choose audio and a question
 
-Open the [annotation workspace](https://mood-rater-audio.baysky.chatgpt.site/annotate). Choose a bundled recording or add local files in a browser-supported audio format. Four 60-second examples are included; see their [sources and licenses](../public/audio/README.md).
+Open the [annotation workspace](https://rater.zaoan.today/annotate). Choose a bundled recording or add local files in a browser-supported audio format. Four 60-second examples are included; see their [sources and licenses](../public/audio/README.md).
 
 Choose **emotion expressed by the audio** (perceived emotion) or **emotion you feel while listening** (felt emotion). This question is fixed once you start recording. Create a new session to change it.
 

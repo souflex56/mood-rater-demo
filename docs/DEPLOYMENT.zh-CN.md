@@ -74,4 +74,4 @@ npm run test:self-host
 
 ## 公开演示
 
-[公开演示站](https://mood-rater-audio.baysky.chatgpt.site/annotate)仅展示工具功能。已有演示托管配置保存在[维护者演示分支](https://github.com/souflex56/mood-rater-demo/tree/codex/hosted-demo)，与 `main` 的默认自托管流程分开维护。更新本仓库不会自动重新发布该演示站。
+[公开演示站](https://rater.zaoan.today/annotate)仅展示工具功能。已有演示托管配置保存在[维护者演示分支](https://github.com/souflex56/mood-rater-demo/tree/codex/hosted-demo)，与 `main` 的默认自托管流程分开维护。更新本仓库不会自动重新发布该演示站。

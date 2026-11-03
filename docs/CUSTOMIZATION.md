@@ -1,6 +1,6 @@
 # Customize Mood Rater / 自定义 Mood Rater
 
-[Public demo / 公开演示](https://mood-rater-audio.baysky.chatgpt.site/annotate) · [English README](../README.md) · [中文说明](../README.zh-CN.md) · [VA details / VA 详细配置](VA-CUSTOMIZATION.md)
+[Public demo / 公开演示](https://rater.zaoan.today/annotate) · [English README](../README.md) · [中文说明](../README.zh-CN.md) · [VA details / VA 详细配置](VA-CUSTOMIZATION.md)
 
 The default app is a local annotation demo. It needs no login, database initialization or researcher activation. Configuration changes affect your rebuilt deployment; the public customization page is a guide, not an editor of the hosted site.
 

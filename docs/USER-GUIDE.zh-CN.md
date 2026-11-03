@@ -4,7 +4,7 @@
 
 ## 选择音频与标注对象
 
-打开[标注工作区](https://mood-rater-audio.baysky.chatgpt.site/annotate)，选择内置录音，或添加浏览器支持格式的本地音频。四个内置示例均为 60 秒，附[来源与授权](../public/audio/README.md)。
+打开[标注工作区](https://rater.zaoan.today/annotate)，选择内置录音，或添加浏览器支持格式的本地音频。四个内置示例均为 60 秒，附[来源与授权](../public/audio/README.md)。
 
 确定标注的是**音频表达的情绪**，还是**聆听时自身的感受**。开始标注后，该对象固定；需要更换时请建立新会话。
 

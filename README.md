@@ -4,9 +4,9 @@
 
 A bilingual tool for annotating music and speech on a valence–arousal map. Listen, record your ratings over time, and export them for analysis. No account or database setup is needed for the default app.
 
-[Try the demo](https://mood-rater-audio.baysky.chatgpt.site/annotate) | [Initial version](https://mood-rater-audio.baysky.chatgpt.site/legacy/) | [简体中文](README.zh-CN.md) | [Documentation](docs/README.md) | [Contributing](CONTRIBUTING.md)
+[Try the demo](https://rater.zaoan.today/annotate) | [Initial version](https://rater.zaoan.today/legacy/) | [简体中文](README.zh-CN.md) | [Documentation](docs/README.md) | [Contributing](CONTRIBUTING.md)
 
-[![Mood Rater annotation workspace with audio controls, an emotion map and a rating timeline](docs/images/annotation-en.jpg)](https://mood-rater-audio.baysky.chatgpt.site/annotate)
+[![Mood Rater annotation workspace with audio controls, an emotion map and a rating timeline](docs/images/annotation-en.jpg)](https://rater.zaoan.today/annotate)
 
 *A local demonstration session. Ratings shown are illustrative, not participant data.*
 
@@ -23,7 +23,7 @@ The interface supports English and Simplified Chinese, pointer input, touch, arr
 
 ### In your browser
 
-1. [Open the workspace](https://mood-rater-audio.baysky.chatgpt.site/annotate) and choose an example or add your own audio.
+1. [Open the workspace](https://rater.zaoan.today/annotate) and choose an example or add your own audio.
 2. Choose what to rate, press **Start recording**, and click on the emotion map as the audio plays.
 3. Stop to review, revise if needed, then export **JSON** or **CSV**.
 

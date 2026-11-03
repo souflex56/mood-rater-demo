@@ -1,6 +1,6 @@
 # VA interface configuration / VA 界面配置
 
-[Audio and project customization / 音频与项目配置](CUSTOMIZATION.md) · [Public demo / 公开演示](https://mood-rater-audio.baysky.chatgpt.site/annotate)
+[Audio and project customization / 音频与项目配置](CUSTOMIZATION.md) · [Public demo / 公开演示](https://rater.zaoan.today/annotate)
 
 The square VA plane preserves the original Mood Rater's red, orange, blue and green color families in a softer palette that fits the cream and sage interface. The original saturated palette remains available as a separate preset. Guided labels come from the exact 97-word list and Chinese translations supplied by the project owner. The old source comment says 95, but the array contains 97 distinct entries. No coordinates have been invented for words absent from that list, including the illustrative word “sweet” in the supplied thesis excerpt.
 

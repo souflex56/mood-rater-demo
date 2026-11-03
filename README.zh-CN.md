@@ -4,9 +4,9 @@
 
 在聆听音乐或人声时，通过愉悦度–唤醒度坐标记录情绪随时间的变化，并导出数据用于分析。支持中英双语，默认使用无需账号或数据库配置。
 
-[在线体验](https://mood-rater-audio.baysky.chatgpt.site/annotate) | [初始版本](https://mood-rater-audio.baysky.chatgpt.site/legacy/) | [English](README.md) | [文档导航](docs/README.md) | [参与贡献](CONTRIBUTING.md#中文)
+[在线体验](https://rater.zaoan.today/annotate) | [初始版本](https://rater.zaoan.today/legacy/) | [English](README.md) | [文档导航](docs/README.md) | [参与贡献](CONTRIBUTING.md#中文)
 
-[![Mood Rater 中文标注工作区：音频控制、情绪坐标图与标注时间线](docs/images/annotation-zh-CN.jpg)](https://mood-rater-audio.baysky.chatgpt.site/annotate)
+[![Mood Rater 中文标注工作区：音频控制、情绪坐标图与标注时间线](docs/images/annotation-zh-CN.jpg)](https://rater.zaoan.today/annotate)
 
 *本地演示会话，图中评分为示意数据，非参与者数据。*
 
@@ -23,7 +23,7 @@
 
 ### 在线体验
 
-1. 打开[标注工作区](https://mood-rater-audio.baysky.chatgpt.site/annotate)，选择示例或添加本地音频。
+1. 打开[标注工作区](https://rater.zaoan.today/annotate)，选择示例或添加本地音频。
 2. 确定标注对象，点击「开始标注」，边听边在情绪坐标图中点击。
 3. 停止后回顾或修改，完成后导出 **JSON** 或 **CSV**。
 

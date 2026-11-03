@@ -1,6 +1,6 @@
 # Documentation / 文档导航
 
-[English overview](../README.md) | [中文概览](../README.zh-CN.md) | [Live demo / 在线体验](https://mood-rater-audio.baysky.chatgpt.site/annotate)
+[English overview](../README.md) | [中文概览](../README.zh-CN.md) | [Live demo / 在线体验](https://rater.zaoan.today/annotate)
 
 ## Use the tool / 使用工具
 
