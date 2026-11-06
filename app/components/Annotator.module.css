@@ -116,17 +116,20 @@
 .audioIdentity > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .audioIdentity strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 500; }
 .audioIdentity span:not(.audioFileIcon) { color: #929b89; font-size: 12px; line-height: 1.5; }
-.playerControls { display: flex; align-items: center; gap: 16px; margin-top: 24px; }
-.playButton { display: grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; border: 1px solid #e0e7d7; border-radius: 50%; background: #eff3e9; color: #57704f; }
+.playerControls { display: flex; align-items: flex-start; gap: 12px; margin-top: 16px; }
+.playButton { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border: 1px solid #e0e7d7; border-radius: 50%; background: #eff3e9; color: #57704f; }
 .playButton:hover:not(:disabled) { background: #e0e9d7; }
 .playButton svg { width: 16px; height: 16px; }
 .seekContainer { flex: 1; min-width: 0; }
-.seekContainer > div { display: flex; justify-content: space-between; margin-top: 8px; color: #929b89; font-size: 12px; font-variant-numeric: tabular-nums; }
+.seekContainer > div { display: flex; justify-content: space-between; color: #929b89; font-size: 12px; font-variant-numeric: tabular-nums; }
 .workspace input[type=range] { appearance: none; -webkit-appearance: none; display: block; width: 100%; height: 4px; margin-left: 0; margin-right: 0; border-radius: 0; background: #e4e8dc; cursor: pointer; accent-color: #69815d; }
 .workspace input[type=range]::-webkit-slider-thumb { appearance: none; width: 12px; height: 12px; border: 2px solid #fff; border-radius: 50%; background: #6d8663; box-shadow: 0 0 0 1px #cbd6c0; }
 .workspace input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border: 2px solid #fff; border-radius: 50%; background: #6d8663; box-shadow: 0 0 0 1px #cbd6c0; }
 .workspace input[type=range]:disabled { opacity: .5; cursor: not-allowed; }
-.playerNote { margin: 12px 0 0; color: #9ba18f; font-size: 12px; line-height: 1.5; }
+/* Keep the seek track thin, with a full-height touch target above the plane. */
+.seekContainer input[type=range] { height: 44px; margin: 0; background: linear-gradient(#e4e8dc, #e4e8dc) center / 100% 4px no-repeat; }
+.seekContainer input[type=range]::-webkit-slider-thumb { width: 16px; height: 16px; }
+.seekContainer input[type=range]::-moz-range-thumb { width: 16px; height: 16px; }
 .divider { height: 1px; margin: 24px 0; background: #edf0e7; }
 .fieldLabel { display: block; margin-bottom: 8px; color: #5d7054; font-size: 14px; font-weight: 500; }
 .workspace select { width: 100%; min-height: 40px; padding: 8px 28px 8px 12px; border: 1px solid #dfe5d7; border-radius: 4px; background: #fffefa; color: #5d7054; font-size: 14px; }

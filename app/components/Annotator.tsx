@@ -542,19 +542,6 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
           {currentLibraryClip.credit.creator} · <a href={currentLibraryClip.credit.sourceUrl} target="_blank" rel="noreferrer">{t('Original recording', '原始录音')}</a> · <a href={currentLibraryClip.credit.licenseUrl} target="_blank" rel="noreferrer">{currentLibraryClip.credit.license}</a>
           <span>{t('Excerpted and encoded as MP3.', '已截取片段并转为 MP3。')}</span>
         </p>}
-        <audio ref={mediaRef} src={source || undefined} preload="metadata" onPlay={() => setPlaying(true)} onPause={() => { setPlaying(false); stop('pause'); }}
-          onLoadedMetadata={event => { if (pendingSeek.current > 0) { event.currentTarget.currentTime = Math.min(pendingSeek.current, event.currentTarget.duration); pendingSeek.current = 0; } }}
-          onTimeUpdate={event => { setCurrentTime(event.currentTarget.currentTime); if (!activePass(sessionRef.current)) lastReliable.current = event.currentTarget.currentTime; }}
-          onEnded={() => { stop('ended', sessionRef.current?.asset.duration); setPlaying(false); void persist(); }}
-          onWaiting={() => { if (activePass(sessionRef.current)) { stop('buffering', lastReliable.current); mediaRef.current?.pause(); setNotice(t('Audio is buffering. Press Record when playback is ready.', '音频正在缓冲，播放就绪后请重新开始标注。')); } }}
-          onSeeking={() => { if (activePass(sessionRef.current)) { stop('seek', lastReliable.current); mediaRef.current?.pause(); } }}
-          onRateChange={event => { if (event.currentTarget.playbackRate !== 1) { stop('interrupted', lastReliable.current); event.currentTarget.pause(); event.currentTarget.playbackRate = 1; } }}
-          onError={() => { stop('error', lastReliable.current); setPlaying(false); if (sourceRef.current) setError(t('This audio could not be loaded. Check the format or connection and try again.', '无法载入音频，请检查格式或网络连接后重试。')); }} />
-        <div className={styles.playerControls}>
-          <button className={styles.playButton} disabled={!source || locked} onClick={() => void togglePlayback()} aria-label={playing ? t('Pause audio', '暂停音频') : t('Listen without recording', '试听，不记录标注')}>{playing ? <Pause size={20} fill="currentColor"/> : <Play size={20} fill="currentColor"/>}</button>
-          <div className={styles.seekContainer}><input aria-label={t('Audio position', '音频播放位置')} type="range" min="0" max={duration || 1} step="0.01" value={Math.min(currentTime, duration || 1)} disabled={!source || locked} onChange={event => seek(Number(event.target.value))}/><div><span>{formatTime(currentTime)}</span><span>{formatTime(duration)}</span></div></div>
-        </div>
-        <p className={styles.playerNote}>{t('Listening does not record ratings.', '试听不会记录评分。')}</p>
 
         <div className={styles.divider}/>
         <label className={styles.fieldLabel} htmlFor="emotion-target">{t('What are you rating?', '标注对象')}</label>
@@ -569,6 +556,18 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
 
       <section className={styles.annotationCard} aria-label={t('Emotion annotation', '情绪标注')}>
         <div className={styles.sectionHeading}><h2>{t('Emotion', '标注情绪')}</h2><span className={`${styles.statusBadge} ${recording ? styles.recordingBadge : ''}`}><span/>{recording ? t('Recording', '正在标注') : playing ? t('Listening', '正在试听') : t('Ready', '待标注')}</span></div>
+        <audio ref={mediaRef} src={source || undefined} preload="metadata" onPlay={() => setPlaying(true)} onPause={() => { setPlaying(false); stop('pause'); }}
+          onLoadedMetadata={event => { if (pendingSeek.current > 0) { event.currentTarget.currentTime = Math.min(pendingSeek.current, event.currentTarget.duration); pendingSeek.current = 0; } }}
+          onTimeUpdate={event => { setCurrentTime(event.currentTarget.currentTime); if (!activePass(sessionRef.current)) lastReliable.current = event.currentTarget.currentTime; }}
+          onEnded={() => { stop('ended', sessionRef.current?.asset.duration); setPlaying(false); void persist(); }}
+          onWaiting={() => { if (activePass(sessionRef.current)) { stop('buffering', lastReliable.current); mediaRef.current?.pause(); setNotice(t('Audio is buffering. Press Record when playback is ready.', '音频正在缓冲，播放就绪后请重新开始标注。')); } }}
+          onSeeking={() => { if (activePass(sessionRef.current)) { stop('seek', lastReliable.current); mediaRef.current?.pause(); } }}
+          onRateChange={event => { if (event.currentTarget.playbackRate !== 1) { stop('interrupted', lastReliable.current); event.currentTarget.pause(); event.currentTarget.playbackRate = 1; } }}
+          onError={() => { stop('error', lastReliable.current); setPlaying(false); if (sourceRef.current) setError(t('This audio could not be loaded. Check the format or connection and try again.', '无法载入音频，请检查格式或网络连接后重试。')); }} />
+        <div className={styles.playerControls} role="group" aria-label={t('Audio playback', '音频播放')}>
+          <button className={styles.playButton} disabled={!source || locked} onClick={() => void togglePlayback()} aria-label={playing ? t('Pause audio', '暂停音频') : t('Listen without recording', '试听，不记录标注')}>{playing ? <Pause size={20} fill="currentColor"/> : <Play size={20} fill="currentColor"/>}</button>
+          <div className={styles.seekContainer}><input aria-label={t('Audio position', '音频播放位置')} type="range" min="0" max={duration || 1} step="0.01" value={Math.min(currentTime, duration || 1)} disabled={!source || locked} onChange={event => seek(Number(event.target.value))}/><div><span>{formatTime(currentTime)}</span><span>{formatTime(duration)}</span></div></div>
+        </div>
         <VAPlane profile={activeProfile} locale={locale} rating={rating} touched={touched} recording={recording} locked={locked} onChange={capture}/>
         <p className={styles.planeHint} id="plane-help">{recording ? (hasInput ? t('Click as emotion changes. Your last rating holds between inputs.', '随情绪变化调整圆点位置；停止操作后保持上次评分。') : t('Click on the emotion map to begin your trace. No rating has been recorded yet.', '在图中点击，开始记录评分。')) : t('Ratings are captured only while recording.', '开始标注后才会记录评分。')}</p>
         {session && !session.interfaceProfile && <p className={styles.helper}>{t('This older session did not record its interface settings. The displayed guidance uses the current interface; the historical data stays unchanged.', '旧标注记录未保存界面配置，情绪参考词按当前配置显示；历史数据不受影响。')}</p>}
