@@ -12,6 +12,7 @@ import { useLanguage } from './LanguageProvider';
 import AnnotationTimeline, { formatTime } from './AnnotationTimeline';
 import VAPlane from './VAPlane';
 import styles from './Annotator.module.css';
+import { sitePath } from '@/lib/paths';
 
 const MAX_BYTES = MAX_AUDIO_BYTES;
 type PreparedAudio = { key: string; asset: AudioAsset; source: string; title: { en: string; 'zh-CN': string }; demoOnly: boolean };
@@ -45,7 +46,7 @@ async function readAudio(file: Blob, url: string) {
   return { duration, sha256: await digest(await file.arrayBuffer()) };
 }
 async function fetchAudio(url: string): Promise<Blob> {
-  const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
+  const response = await fetch(sitePath(url), { signal: AbortSignal.timeout(30000) });
   if (!response.ok || !response.body) throw new Error('AUDIO_DOWNLOAD_FAILED');
   if (Number(response.headers.get('Content-Length')) > MAX_BYTES) throw new Error('AUDIO_TOO_LARGE');
   const reader = response.body.getReader();
@@ -133,7 +134,8 @@ export default function Annotator({ research, onSubmitted, interfaceProfile, aud
   const changeSource = useCallback((value: string) => {
     // Queued local clips and the practice backup may still need this URL.
     // URLs are released on failed preparation or when this annotator unmounts.
-    sourceRef.current = value; setSource(value);
+    const resolved = sitePath(value);
+    sourceRef.current = resolved; setSource(resolved);
   }, []);
   const stop = useCallback((reason: RecordingPass['endReason'] = 'stop', time?: number) => {
     const current = sessionRef.current;

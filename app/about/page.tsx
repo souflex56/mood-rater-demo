@@ -1,4 +1,5 @@
 'use client';
+import { sitePath } from '@/lib/paths';
 
 import { useState } from 'react';
 import { ArrowUpRight, Copy, Check } from 'lucide-react';
@@ -40,7 +41,7 @@ export default function About() {
         }}>{copied ? <Check size={14}/> : <Copy size={14}/>} {copied ? t('Copied', '已复制') : t('Copy citation', '复制引用')}</button>
         <a className="inline-link" href={researchUrl} target="_blank" rel="noreferrer">{t('Read the paper on IEEE', '在 IEEE 阅读论文')}<ArrowUpRight size={14}/></a>
         <a className="inline-link" href="https://siminyang6.wordpress.com/wp-content/uploads/2021/07/journalpaper_tac_preprint_0628.pdf" target="_blank" rel="noreferrer">{t('Author preprint', '作者预印本')}<ArrowUpRight size={14}/></a>
-        <a className="inline-link" href="/citation.bib" download>BibTeX</a>
+        <a className="inline-link" href={sitePath("/citation.bib")} download>BibTeX</a>
       </div>
       {error && <p role="status">{error}</p>}
 
@@ -60,8 +61,8 @@ export default function About() {
       <h2>{t('Sample audio', '示例音频')}</h2>
       <p>{t('Bundled examples are excerpts from recorded piano and string performances, a live human address and an interview selected without a music bed. Recording sources and licenses are shown in the workspace. These clips are not validated research stimuli or normative emotion examples.', '内置示例来自真实钢琴、弦乐演奏、按无配乐要求筛选的真人现场演讲和访谈，标注工作区提供录音来源与授权。这些片段不是经过验证的研究刺激材料或标准情绪示例。')}</p>
       <div className="form-actions">
-        <a className="button primary" href="/annotate?demo=1">{t('Try sample audio', '试用示例音频')}</a>
-        <a className="inline-link" href="/customize">{t('Configuration guide', '自定义指南')}<ArrowUpRight size={14}/></a>
+        <a className="button primary" href={sitePath("/annotate?demo=1")}>{t('Try sample audio', '试用示例音频')}</a>
+        <a className="inline-link" href={sitePath("/customize")}>{t('Configuration guide', '自定义指南')}<ArrowUpRight size={14}/></a>
       </div>
     </article>
   </div>;

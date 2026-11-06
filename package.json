@@ -17,7 +17,9 @@
     "dev:cloudflare": "node scripts/cloudflare.mjs dev",
     "build:cloudflare": "node scripts/cloudflare.mjs build",
     "preview:cloudflare": "wrangler dev --config dist/server/wrangler.json --port 5173 --persist-to deploy/cloudflare/.wrangler/state",
-    "test:self-host": "node tests/self-host-smoke.mjs"
+    "test:self-host": "node tests/self-host-smoke.mjs",
+    "build:static": "node scripts/build-static.mjs",
+    "test:static": "node tests/static-host-smoke.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
