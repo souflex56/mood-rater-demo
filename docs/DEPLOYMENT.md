@@ -91,4 +91,6 @@ For ordinary development, use `npm run dev` at **http://127.0.0.1:5173**. This i
 
 ## Demonstration website
 
-[The public demo](https://rater.zaoan.today/annotate) demonstrates the tool. Its existing hosting integration is preserved on the [maintainer demo branch](https://github.com/souflex56/mood-rater-demo/tree/codex/hosted-demo). It is separate from the default self-hosting workflow on `main`. Updating this repository does not automatically republish that demonstration.
+[The public demo](https://rater.zaoan.today/annotate/) uses the static GitHub Pages target. Once the static-hosting changes are merged into `main`, pushes to `main` publish it through `Deploy static demo`. The Node.js self-hosting target remains available separately. The earlier Sites integration is preserved on the [maintainer demo branch](https://github.com/souflex56/mood-rater-demo/tree/codex/hosted-demo).
+
+The Pages custom domain is `rater.zaoan.today`. In Namecheap Advanced DNS, its record is **CNAME Record**, Host **`rater`**, Value **`souflex56.github.io`**, TTL **Automatic**. Replace the former Sites CNAME target rather than adding a second record for the same Host. Do not include a protocol or repository path in the Value. Set the custom domain in GitHub Pages before changing DNS, then rebuild so Pages uses the root path, wait for its certificate, and enable **Enforce HTTPS**. Custom Actions deployments do not require a `CNAME` file in the repository.

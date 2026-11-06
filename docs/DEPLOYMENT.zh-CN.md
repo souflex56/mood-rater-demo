@@ -91,4 +91,6 @@ npm run test:self-host
 
 ## 公开演示
 
-[公开演示站](https://rater.zaoan.today/annotate)仅展示工具功能。已有演示托管配置保存在[维护者演示分支](https://github.com/souflex56/mood-rater-demo/tree/codex/hosted-demo)，与 `main` 的默认自托管流程分开维护。更新本仓库不会自动重新发布该演示站。
+[公开演示站](https://rater.zaoan.today/annotate/)使用 GitHub Pages 静态构建。静态托管改动合并到 `main` 后，推送到 `main` 会通过 `Deploy static demo` 自动发布。Node.js 自托管方式仍可独立使用。原有 Sites 配置保存在[维护者演示分支](https://github.com/souflex56/mood-rater-demo/tree/codex/hosted-demo)。
+
+Pages 自定义域名为 `rater.zaoan.today`。在 Namecheap Advanced DNS 中，该记录为 **CNAME Record**，Host 填 **`rater`**，Value 填 **`souflex56.github.io`**，TTL 选 **Automatic**。替换原有 Sites 的 CNAME 目标，不要给同一 Host 新增第二条记录；Value 不含协议或仓库路径。先在 GitHub Pages 设置域名，再修改 DNS 并重新构建，使 Pages 使用根路径；证书签发后开启 **Enforce HTTPS**。使用自定义 Actions 工作流发布时，仓库不需要 `CNAME` 文件。
