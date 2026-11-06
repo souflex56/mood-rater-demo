@@ -49,7 +49,7 @@ npm run test:static
 
 只发布 **`dist/static/`**，不要上传源码或整个 `dist/`。若使用 `https://你的账号.github.io/mood-rater-demo/` 这样的项目地址，执行 `NEXT_PUBLIC_BASE_PATH=/mood-rater-demo npm run build:static`。自定义域名从根路径 `/` 提供服务时，将该变量留空。路径前缀会作用于页面链接和音频请求，不会改变草稿中的音频标识；在项目子路径与自定义域名之间切换时需重新构建。
 
-仓库内的 `Deploy static demo` 工作流会在推送到 `main` 或初次适配分支 `codex/static-free-hosting` 时构建、检查并发布静态文件。首次运行前，在 **Settings → Pages → Source** 选择 **GitHub Actions**。工作流自动读取 Pages 的根路径或项目子路径，不需要额外托管密钥。`github-pages` 环境必须允许当前发布分支。按 GitHub 当前政策，公开仓库的 Pages 在使用额度内免费；自购域名仍有续费成本。
+仓库内的 `Deploy static demo` 工作流会在推送到 `main` 时构建、检查并发布静态文件，也可以手动运行。首次运行前，在 **Settings → Pages → Source** 选择 **GitHub Actions**。工作流自动读取 Pages 的根路径或项目子路径，不需要额外托管密钥。`github-pages` 环境必须允许 `main` 分支。按 GitHub 当前政策，公开仓库的 Pages 在使用额度内免费；自购域名仍有续费成本。
 
 使用发布后的 HTTPS 地址验证音频和标注。大陆连通性需要在访问者实际网络上检查，静态改造不代表任何特定地区的访问承诺。更换访问地址前，先从旧地址导出 JSON；浏览器草稿不会自动跨站共享。
 

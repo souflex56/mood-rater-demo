@@ -2,7 +2,7 @@ name: Deploy static demo
 
 on:
   push:
-    branches: [main, codex/static-free-hosting]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
