@@ -12,6 +12,7 @@ The default app supports annotation, local drafts, JSON/CSV export and the bundl
 | --- | --- | --- |
 | Node.js | Node.js 22.13+; a server or managed Node host | The complete `dist/standalone/` directory |
 | Docker | A Docker host; HTTPS proxy for public access | The image built from the root `Dockerfile` |
+| Static hosting | GitHub Pages or another HTTPS static host; research disabled | The complete `dist/static/` directory |
 | Optional research backend | Cloudflare Workers, D1/R2 and your authentication proxy | [Separate adapter](../deploy/cloudflare/README.md) |
 
 ## Node.js
@@ -34,7 +35,23 @@ The production process reads `PORT` (default `3000`) and `HOST` (default `0.0.0.
 
 For a managed Node service, set the install command to `npm ci --include=dev`, the build command to `npm run build`, and the start command to `npm start`. Development dependencies are needed during the build. No environment file, database initialization or identity service is needed for the default app.
 
-The server bundle is required; uploading only `dist/client/` or `public/` is not a supported deployment of this version.
+The Node.js target requires its server bundle; uploading only `dist/client/` or `public/` is not a supported Node deployment. Use the separate static target below for file-only hosting.
+
+## Static hosting / GitHub Pages
+
+The demo can run entirely from static files. Playback, annotation, interval editing, browser drafts and JSON/CSV export stay in the browser. Research collection must remain disabled. The static build uses the installed Next.js exporter in a temporary copy, excludes server-only endpoints and writes only publishable files to `dist/static/`; Node.js and Cloudflare source routes remain available for their own builds.
+
+```sh
+npm ci --include=dev
+npm run build:static
+npm run test:static
+```
+
+Publish **only `dist/static/`**, not the source checkout or the rest of `dist/`. For a project URL such as `https://your-account.github.io/mood-rater-demo/`, build with `NEXT_PUBLIC_BASE_PATH=/mood-rater-demo npm run build:static`. For a custom domain served at `/`, leave the variable empty. This prefix changes links and audio requests without changing saved audio identities. Rebuild when changing between a repository path and a custom domain.
+
+The `Deploy static demo` GitHub Actions workflow builds, verifies and publishes the static artifact on pushes to `main` or the initial `codex/static-free-hosting` branch. Enable **Settings → Pages → Source → GitHub Actions** before its first run. It obtains the root/subpath from Pages settings automatically and requires no hosting credentials. The `github-pages` environment must allow the deployment branch. Under GitHub's current policy, Pages is free for public repositories within its usage limits; a separately purchased domain still has its own renewal cost.
+
+Use the published HTTPS address for audio and annotation acceptance tests. GitHub Pages availability from mainland networks must be checked on visitors' actual networks; this build does not claim a particular regional availability. A changed origin does not automatically share browser drafts: export JSON from the old address before switching.
 
 ## Docker
 

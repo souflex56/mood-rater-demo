@@ -1,4 +1,5 @@
 'use client';
+import { sitePath } from '@/lib/paths';
 
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { useLanguage } from '../components/LanguageProvider';
@@ -19,7 +20,7 @@ export default function CustomizePage() {
       <p>{t('Edit the audio and interface configuration files, then rebuild and deploy your own version.', '修改音频与界面的配置文件，重新构建并部署自己的版本。')}</p>
       <div className="form-actions spaced">
         <a href={`${source}docs/CUSTOMIZATION.md`} className="button primary" target="_blank" rel="noreferrer">{t('Read the setup guide', '阅读配置指南')}<ArrowUpRight size={15}/></a>
-        <a href="/annotate" className="inline-link">{t('Open workspace', '打开标注工作区')}<ArrowRight size={16}/></a>
+        <a href={sitePath("/annotate")} className="inline-link">{t('Open workspace', '打开标注工作区')}<ArrowRight size={16}/></a>
       </div>
     </header>
     <section className="two-column customization-grid" aria-label={t('Customization options', '自定义选项')}>
@@ -33,7 +34,7 @@ export default function CustomizePage() {
       <h2>{t('Deployment and data', '部署与数据')}</h2>
       <p>{t('Local audio is not uploaded. Drafts stay in this browser and do not include audio files. Export JSON to retain raw inputs and interface settings, or CSV for the resampled time series.', '本地音频不会上传；标注草稿保存在当前浏览器，不包含音频文件。导出 JSON 可保留原始输入与界面配置，CSV 提供重采样后的评分序列。')}</p>
       <p>{t('Keep a versioned configuration for each study. The optional research collection backend is disabled by default and requires a separate deployment.', '请为每项研究保留配置版本。可选的数据收集服务默认关闭，需要另行部署。')}</p>
-      <a href="/about" className="inline-link">{t('Research background and citation', '研究背景与引用')}<ArrowRight size={14}/></a>
+      <a href={sitePath("/about")} className="inline-link">{t('Research background and citation', '研究背景与引用')}<ArrowRight size={14}/></a>
     </article>
   </div>;
 }

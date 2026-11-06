@@ -12,6 +12,7 @@
 | --- | --- | --- |
 | Node.js | Node.js 22.13+，自有服务器或托管 Node 服务 | 完整的 `dist/standalone/` 目录 |
 | Docker | Docker 主机；公开访问时配 HTTPS 代理 | 根目录 `Dockerfile` 构建的镜像 |
+| 静态托管 | GitHub Pages 等 HTTPS 静态托管；研究采集关闭 | 完整的 `dist/static/` 目录 |
 | 可选研究后台 | Cloudflare Workers、D1/R2 和自选身份代理 | [独立适配说明](../deploy/cloudflare/README.md) |
 
 ## Node.js
@@ -34,7 +35,23 @@ node server.js
 
 在托管 Node 服务中，安装命令设为 `npm ci --include=dev`，构建命令为 `npm run build`，启动命令为 `npm start`。构建时需要开发依赖。默认应用不需要环境变量文件、数据库初始化或身份服务。
 
-部署时需要完整的服务器运行包，不能只上传 `dist/client/` 或 `public/`。
+Node.js 部署需要完整的服务器运行包，不能只上传 `dist/client/` 或 `public/`。纯文件托管请使用下面独立的静态构建。
+
+## 静态托管与 GitHub Pages
+
+当前演示版可以完全由静态文件运行。音频播放、点击标注、区间修改、本地草稿和 JSON/CSV 导出仍在浏览器完成，研究采集需保持关闭。静态脚本在临时副本中调用已安装的 Next.js 导出器，排除需要服务器的接口，仅将可发布文件写入 `dist/static/`。Node.js 和 Cloudflare 构建仍使用原有源码路由。
+
+```sh
+npm ci --include=dev
+npm run build:static
+npm run test:static
+```
+
+只发布 **`dist/static/`**，不要上传源码或整个 `dist/`。若使用 `https://你的账号.github.io/mood-rater-demo/` 这样的项目地址，执行 `NEXT_PUBLIC_BASE_PATH=/mood-rater-demo npm run build:static`。自定义域名从根路径 `/` 提供服务时，将该变量留空。路径前缀会作用于页面链接和音频请求，不会改变草稿中的音频标识；在项目子路径与自定义域名之间切换时需重新构建。
+
+仓库内的 `Deploy static demo` 工作流会在推送到 `main` 或初次适配分支 `codex/static-free-hosting` 时构建、检查并发布静态文件。首次运行前，在 **Settings → Pages → Source** 选择 **GitHub Actions**。工作流自动读取 Pages 的根路径或项目子路径，不需要额外托管密钥。`github-pages` 环境必须允许当前发布分支。按 GitHub 当前政策，公开仓库的 Pages 在使用额度内免费；自购域名仍有续费成本。
+
+使用发布后的 HTTPS 地址验证音频和标注。大陆连通性需要在访问者实际网络上检查，静态改造不代表任何特定地区的访问承诺。更换访问地址前，先从旧地址导出 JSON；浏览器草稿不会自动跨站共享。
 
 ## Docker
 

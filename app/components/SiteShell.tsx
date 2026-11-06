@@ -1,4 +1,5 @@
 'use client';
+import { sitePath } from '@/lib/paths';
 
 import { AudioLines, Globe2, Menu, X } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
@@ -8,6 +9,7 @@ import { useLanguage } from './LanguageProvider';
 export default function SiteShell({ children }: { children: ReactNode }) {
   const { locale, setLocale, t } = useLanguage();
   const path = usePathname();
+  const normalizedPath = path?.replace(/\/$/, '') || '/';
   const [open, setOpen] = useState(false);
   const links = [
     ['/', t('Home', '首页')],
@@ -18,9 +20,9 @@ export default function SiteShell({ children }: { children: ReactNode }) {
   return <>
     <a className="skip-link" href="#main">{t('Skip to content', '跳至内容')}</a>
     <header className="site-header">
-      <a href="/" className="brand" aria-label={t('Mood Rater home', 'Mood Rater 首页')}><span className="brand-mark"><AudioLines size={22}/></span><span>Mood Rater</span></a>
+      <a href={sitePath("/")} className="brand" aria-label={t('Mood Rater home', 'Mood Rater 首页')}><span className="brand-mark"><AudioLines size={22}/></span><span>Mood Rater</span></a>
       <nav className={open ? 'nav-links is-open' : 'nav-links'} aria-label={t('Main navigation', '主导航')}>
-        {links.map(([href, label]) => <a key={href} href={href} aria-current={path === href ? 'page' : undefined} onClick={() => setOpen(false)}>{label}</a>)}
+        {links.map(([href, label]) => <a key={href} href={sitePath(href)} aria-current={normalizedPath === href || normalizedPath === (sitePath(href).replace(/\/$/, '') || '/') ? 'page' : undefined} onClick={() => setOpen(false)}>{label}</a>)}
       </nav>
       <div className="header-actions">
         <button className="language-toggle" onClick={() => setLocale(locale === 'en' ? 'zh-CN' : 'en')} aria-label={t('Switch to Chinese', '切换为英文')}><Globe2 size={16}/><span>{locale === 'en' ? '中文' : 'EN'}</span></button>
@@ -29,9 +31,9 @@ export default function SiteShell({ children }: { children: ReactNode }) {
     </header>
     <main id="main">{children}</main>
     <footer className="site-footer">
-      <a href="/" className="footer-brand">Mood Rater</a>
+      <a href={sitePath("/")} className="footer-brand">Mood Rater</a>
       <div className="footer-links">
-        <a href="/about#data">{t('Data and privacy', '数据说明')}</a>
+        <a href={sitePath("/about#data")}>{t('Data and privacy', '数据说明')}</a>
       </div>
     </footer>
   </>;

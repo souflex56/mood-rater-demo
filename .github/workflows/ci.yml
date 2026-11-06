@@ -49,3 +49,7 @@ jobs:
           MOOD_SMOKE_BASE=http://127.0.0.1:4174 npm run test:self-host
       - name: Build optional Cloudflare adapter
         run: npm run build:cloudflare
+      - name: Build static demo for a repository subpath
+        run: NEXT_PUBLIC_BASE_PATH=/mood-rater-demo npm run build:static
+      - name: Verify static files without an application server
+        run: npm run test:static
