@@ -4,11 +4,9 @@
 
 在聆听音乐或人声时，通过愉悦度–唤醒度坐标记录情绪随时间的变化，并导出数据用于分析。支持中英双语，默认使用无需账号或数据库配置。
 
-[在线体验](https://rater.zaoan.today/annotate) | [初始版本](https://rater.zaoan.today/legacy/) | [English](README.md) | [文档导航](docs/README.md) | [参与贡献](CONTRIBUTING.md#中文)
+[在线体验](https://rater.zaoan.today/annotate) | [English](README.md) | [文档导航](docs/README.md) | [参与贡献](CONTRIBUTING.md#中文)
 
 [![Mood Rater 中文标注工作区：音频控制、情绪坐标图与标注时间线](docs/images/annotation-zh-CN.jpg)](https://rater.zaoan.today/annotate)
-
-*本地演示会话，图中评分为示意数据，非参与者数据。*
 
 ## 可以做什么
 
@@ -83,3 +81,5 @@ Simin Yang, Courtney N. Reed, Elaine Chew, Mathieu Barthet. [*Examining Emotion 
 欢迎反馈问题、完善文档和翻译，或提交范围明确的改进。请先阅读[贡献指南](CONTRIBUTING.md#中文)，也可以[新建 Issue](https://github.com/souflex56/mood-rater-demo/issues/new/choose)。
 
 本项目代码采用 [MIT 许可证](LICENSE)。内置音频与第三方代码保留各自的许可；再分发前请查看[第三方许可说明](THIRD_PARTY_NOTICES.md)。
+
+*[初始版本](https://rater.zaoan.today/legacy/)*

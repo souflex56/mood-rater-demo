@@ -4,11 +4,9 @@
 
 A bilingual tool for annotating music and speech on a valence–arousal map. Listen, record your ratings over time, and export them for analysis. No account or database setup is needed for the default app.
 
-[Try the demo](https://rater.zaoan.today/annotate) | [Initial version](https://rater.zaoan.today/legacy/) | [简体中文](README.zh-CN.md) | [Documentation](docs/README.md) | [Contributing](CONTRIBUTING.md)
+[Try the demo](https://rater.zaoan.today/annotate) | [简体中文](README.zh-CN.md) | [Documentation](docs/README.md) | [Contributing](CONTRIBUTING.md)
 
 [![Mood Rater annotation workspace with audio controls, an emotion map and a rating timeline](docs/images/annotation-en.jpg)](https://rater.zaoan.today/annotate)
-
-*A local demonstration session. Ratings shown are illustrative, not participant data.*
 
 ## What you can do
 
@@ -83,3 +81,5 @@ General audio, interval editing and 10 Hz exports extend the original work. The 
 Bug reports, documentation, translations and focused improvements are welcome. [Read the contribution guide](CONTRIBUTING.md) or [open an issue](https://github.com/souflex56/mood-rater-demo/issues/new/choose).
 
 Project code is licensed under [MIT](LICENSE). Bundled recordings and third-party code retain their own licenses; see [third-party notices](THIRD_PARTY_NOTICES.md) before redistributing them.
+
+*[Initial version](https://rater.zaoan.today/legacy/)*
